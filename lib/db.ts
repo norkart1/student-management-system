@@ -1,7 +1,6 @@
 import { MongoClient, type Db } from "mongodb"
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017"
-const MONGODB_DB = process.env.MONGODB_DB || "student_management"
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/student_management"
 
 let cachedClient: MongoClient | null = null
 let cachedDb: Db | null = null
@@ -18,7 +17,7 @@ export async function connectToDatabase() {
   try {
     const client = new MongoClient(MONGODB_URI)
     await client.connect()
-    const db = client.db(MONGODB_DB)
+    const db = client.db()
 
     cachedClient = client
     cachedDb = db
