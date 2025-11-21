@@ -82,51 +82,51 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-6 md:p-12 bg-gradient-to-br from-gray-50 to-white">
-        <div className="w-full max-w-md">
-          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-            <div className="p-8 md:p-10">
-              <form onSubmit={handleLogin} className="space-y-6">
-                <div className="space-y-2">
+      <div className="flex-1 flex items-center justify-center p-4 md:p-8 bg-gradient-to-br from-gray-50 to-white">
+        <div className="w-full max-w-sm">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="p-6 md:p-8">
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-1.5">
                   <label className="text-sm font-medium text-gray-700">Full Name</label>
                   <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--tropical-secondary)]">
-                      <User className="w-5 h-5" strokeWidth={2} />
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--tropical-secondary)]">
+                      <User className="w-4 h-4" strokeWidth={2} />
                     </div>
                     <Input
                       type="text"
-                      placeholder="admin"
+                      placeholder="Enter your username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       disabled={loading}
-                      className="pl-12 h-14 rounded-2xl border-0 bg-[var(--tropical-mint)] text-gray-800 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[var(--tropical-secondary)]"
+                      className="pl-10 h-11 rounded-xl border-0 bg-[var(--tropical-mint)] text-gray-800 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[var(--tropical-secondary)]"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label className="text-sm font-medium text-gray-700">Password</label>
                   <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--tropical-secondary)]">
-                      <Lock className="w-5 h-5" strokeWidth={2} />
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--tropical-secondary)]">
+                      <Lock className="w-4 h-4" strokeWidth={2} />
                     </div>
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
+                      placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       disabled={loading}
-                      className="pl-12 pr-12 h-14 rounded-2xl border-0 bg-[var(--tropical-mint)] text-gray-800 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[var(--tropical-secondary)]"
+                      className="pl-10 pr-10 h-11 rounded-xl border-0 bg-[var(--tropical-mint)] text-gray-800 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[var(--tropical-secondary)]"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--tropical-secondary)] hover:text-[var(--tropical-primary)] transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--tropical-secondary)] hover:text-[var(--tropical-primary)] transition-colors"
                     >
                       {showPassword ? (
-                        <EyeOff className="w-5 h-5" strokeWidth={2} />
+                        <EyeOff className="w-4 h-4" strokeWidth={2} />
                       ) : (
-                        <Eye className="w-5 h-5" strokeWidth={2} />
+                        <Eye className="w-4 h-4" strokeWidth={2} />
                       )}
                     </button>
                   </div>
@@ -148,7 +148,7 @@ export default function LoginPage() {
                 </div>
 
                 {error && (
-                  <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
+                  <div className="text-red-600 text-sm bg-red-50 p-2.5 rounded-lg">
                     {error}
                   </div>
                 )}
@@ -156,7 +156,7 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-14 rounded-full text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="w-full h-11 rounded-full text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
                   style={{
                     backgroundColor: 'var(--tropical-secondary)',
                     color: 'white',
@@ -166,10 +166,6 @@ export default function LoginPage() {
                 </Button>
               </form>
             </div>
-          </div>
-
-          <div className="mt-6 text-center text-sm text-gray-600">
-            <p>Demo: admin / 12345@Admin</p>
           </div>
         </div>
       </div>
