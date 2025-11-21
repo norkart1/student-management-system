@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { clearAuthToken } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, GraduationCap, BookOpen, Layers, LogOut, Menu, X } from "lucide-react"
+import { LayoutDashboard, Users, GraduationCap, BookOpen, Layers, LogOut, Menu, X, Calendar } from "lucide-react"
 
 const menuItems = [
   { 
@@ -40,6 +40,14 @@ const menuItems = [
     color: "bg-pink-500",
     lightBg: "bg-pink-50",
     textColor: "text-pink-600"
+  },
+  { 
+    name: "Calendar", 
+    href: "/dashboard/calendar", 
+    icon: Calendar,
+    color: "bg-teal-500",
+    lightBg: "bg-teal-50",
+    textColor: "text-teal-600"
   },
 ]
 

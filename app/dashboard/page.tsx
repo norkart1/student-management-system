@@ -5,12 +5,66 @@ import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { Users, GraduationCap, BookOpen, Calendar, FileText, TrendingUp, Activity, Clock } from "lucide-react"
 import { ProfileDropdown } from "@/components/profile-dropdown"
+import { useEffect, useState } from "react"
 
 export default function DashboardPage() {
+  const [stats, setStats] = useState<{
+    students: number | null
+    teachers: number | null
+    books: number | null
+  }>({
+    students: null,
+    teachers: null,
+    books: null,
+  })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    fetchStats()
+  }, [])
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch("/api/stats")
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch stats: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (
+        typeof data.students !== 'number' ||
+        typeof data.teachers !== 'number' ||
+        typeof data.books !== 'number'
+      ) {
+        throw new Error('Invalid stats data format')
+      }
+
+      setStats({
+        students: data.students,
+        teachers: data.teachers,
+        books: data.books,
+      })
+      setError(false)
+    } catch (error) {
+      console.error("Error fetching stats:", error)
+      setStats({
+        students: null,
+        teachers: null,
+        books: null,
+      })
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const quickStats = [
     { 
       label: "Total Students", 
-      value: "1,240", 
+      value: loading ? "..." : (stats.students === null ? "N/A" : stats.students.toLocaleString()), 
       icon: Users, 
       color: "bg-blue-500",
       lightBg: "bg-blue-50",
@@ -18,7 +72,7 @@ export default function DashboardPage() {
     },
     { 
       label: "Active Teachers", 
-      value: "85", 
+      value: loading ? "..." : (stats.teachers === null ? "N/A" : stats.teachers.toLocaleString()), 
       icon: GraduationCap, 
       color: "bg-purple-500",
       lightBg: "bg-purple-50",
@@ -33,7 +87,7 @@ export default function DashboardPage() {
       icon: Users, 
       color: "bg-gradient-to-br from-blue-400 to-blue-600",
       desc: "Manage students",
-      count: "1,240"
+      count: loading ? "..." : (stats.students === null ? "N/A" : stats.students.toLocaleString())
     },
     { 
       name: "Teachers", 
@@ -41,7 +95,7 @@ export default function DashboardPage() {
       icon: GraduationCap, 
       color: "bg-gradient-to-br from-purple-400 to-purple-600",
       desc: "Manage teachers",
-      count: "85"
+      count: loading ? "..." : (stats.teachers === null ? "N/A" : stats.teachers.toLocaleString())
     },
     { 
       name: "Books", 
@@ -49,7 +103,7 @@ export default function DashboardPage() {
       icon: BookOpen, 
       color: "bg-gradient-to-br from-green-400 to-green-600",
       desc: "Library management",
-      count: "3,560"
+      count: loading ? "..." : (stats.books === null ? "N/A" : stats.books.toLocaleString())
     },
   ]
 
