@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, GraduationCap, BookOpen, Calendar, Home, Plus } from "lucide-react"
+import { LayoutDashboard, Users, GraduationCap, BookOpen, Home, Plus } from "lucide-react"
 
 const navItems = [
   { 
@@ -19,13 +19,6 @@ const navItems = [
     icon: GraduationCap,
     color: "text-blue-600",
     activeBg: "bg-blue-50"
-  },
-  { 
-    name: "Leaves",
-    href: "/dashboard/leaves",
-    icon: Calendar,
-    color: "text-pink-600",
-    activeBg: "bg-pink-50"
   },
   { 
     name: "Teachers", 

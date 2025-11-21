@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { clearAuthToken } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, GraduationCap, BookOpen, Calendar, Layers, LogOut, Menu, X } from "lucide-react"
+import { LayoutDashboard, Users, GraduationCap, BookOpen, Layers, LogOut, Menu, X } from "lucide-react"
 
 const menuItems = [
   { 
@@ -40,14 +40,6 @@ const menuItems = [
     color: "bg-pink-500",
     lightBg: "bg-pink-50",
     textColor: "text-pink-600"
-  },
-  { 
-    name: "Leave Records", 
-    href: "/dashboard/leaves", 
-    icon: Calendar,
-    color: "bg-red-500",
-    lightBg: "bg-red-50",
-    textColor: "text-red-600"
   },
 ]
 

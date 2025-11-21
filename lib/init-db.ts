@@ -26,12 +26,6 @@ export async function initializeDatabase() {
       console.log("[v0] Created books collection")
     }
 
-    if (!collectionNames.includes("leaves")) {
-      await db.createCollection("leaves")
-      await db.collection("leaves").createIndex({ studentId: 1 })
-      console.log("[v0] Created leaves collection")
-    }
-
     console.log("[v0] Database initialization complete")
   } catch (error) {
     console.error("[v0] Database initialization error:", error)

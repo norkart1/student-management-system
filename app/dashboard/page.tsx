@@ -51,14 +51,6 @@ export default function DashboardPage() {
       desc: "Library management",
       count: "3,560"
     },
-    { 
-      name: "Leave Records", 
-      href: "/dashboard/leaves", 
-      icon: Calendar, 
-      color: "bg-gradient-to-br from-pink-400 to-pink-600",
-      desc: "Track leaves",
-      count: "156"
-    },
   ]
 
   const todaysTasks = [
@@ -83,13 +75,6 @@ export default function DashboardPage() {
       color: "bg-green-100",
       iconColor: "text-green-600"
     },
-    {
-      title: "Process leave requests",
-      time: "5:30 PM",
-      icon: Calendar,
-      color: "bg-pink-100",
-      iconColor: "text-pink-600"
-    },
   ]
 
   return (
@@ -101,7 +86,7 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold mb-1">Hi! Admin</h1>
-                <p className="text-white/90 text-sm md:text-base">There are 4 important things today</p>
+                <p className="text-white/90 text-sm md:text-base">There are 3 important things today</p>
               </div>
               <ProfileDropdown />
             </div>

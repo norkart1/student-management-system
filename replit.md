@@ -2,7 +2,7 @@
 
 ## Overview
 
-A comprehensive web-based student management platform built with Next.js 14+ that enables educational institutions to manage students, teachers, books, and leave records. The application features a modern, responsive interface with role-based access control and real-time data management capabilities.
+A comprehensive web-based student management platform built with Next.js 14+ that enables educational institutions to manage students, teachers, and books. The application features a modern, responsive interface with role-based access control and real-time data management capabilities.
 
 ## User Preferences
 
@@ -35,7 +35,7 @@ Preferred communication style: Simple, everyday language.
 ### Backend Architecture
 
 **API Design**
-- **Next.js API Routes**: RESTful API endpoints following resource-based patterns (`/api/students`, `/api/teachers`, `/api/books`, `/api/leaves`).
+- **Next.js API Routes**: RESTful API endpoints following resource-based patterns (`/api/students`, `/api/teachers`, `/api/books`).
 - **Route Handlers**: Support for GET, POST, PUT, DELETE operations with proper HTTP status codes.
 - **Resource-based Routing**: Individual resource endpoints (`/api/students/[id]`) for granular operations.
 
@@ -46,9 +46,9 @@ Preferred communication style: Simple, everyday language.
 - **Client-side Guards**: `useAuth` hook prevents unauthorized access and redirects to login.
 
 **Data Layer**
-- **MongoDB Collections**: Four primary collections (students, teachers, books, leaves) with automatic timestamp tracking (createdAt, updatedAt).
+- **MongoDB Collections**: Three primary collections (students, teachers, books) with automatic timestamp tracking (createdAt, updatedAt).
 - **Connection Pooling**: Cached MongoDB client and database connections to optimize performance.
-- **Database Initialization**: Automatic collection creation with indexes on key fields (email for students/teachers, ISBN for books, studentId for leaves).
+- **Database Initialization**: Automatic collection creation with indexes on key fields (email for students/teachers, ISBN for books).
 
 **Error Handling**
 - Consistent error responses with appropriate HTTP status codes (401, 404, 500).
@@ -85,6 +85,15 @@ Preferred communication style: Simple, everyday language.
 - TypeScript path aliases (@/ maps to root) for clean imports.
 
 ## Recent Changes
+
+### Leave Functionality Removal (November 21, 2025)
+- **Feature Removal**: Completely removed leave management functionality from the application
+  - Deleted leave management page (`/dashboard/leaves`)
+  - Removed leave API routes (`/api/leaves` and `/api/leaves/[id]`)
+  - Removed leave navigation items from sidebar and bottom navigation
+  - Removed leave database initialization code
+  - Updated dashboard to show only 3 modules (Students, Teachers, Books)
+- **Status**: Application now focuses on core student, teacher, and book management features
 
 ### Replit Migration (November 21, 2025)
 - **Environment Setup**: Migrated project from Vercel to Replit environment
