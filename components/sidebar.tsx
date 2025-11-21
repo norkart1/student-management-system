@@ -63,32 +63,10 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 bg-white rounded-xl shadow-lg flex items-center justify-center"
-      >
-        {mobileMenuOpen ? (
-          <X className="w-5 h-5 text-gray-700" />
-        ) : (
-          <Menu className="w-5 h-5 text-gray-700" />
-        )}
-      </button>
-
-      {/* Mobile Overlay */}
-      {mobileMenuOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-30"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:relative h-screen bg-white border-r border-gray-200 transition-all duration-300 z-40",
-          "w-72",
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          "hidden lg:block h-screen bg-white border-r border-gray-200 w-72"
         )}
       >
         <div className="flex flex-col h-screen">

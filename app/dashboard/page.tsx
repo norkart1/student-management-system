@@ -3,7 +3,8 @@
 import { ProtectedLayout } from "@/components/protected-layout"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
-import { Users, GraduationCap, BookOpen, Calendar, FileText, TrendingUp, Activity, Clock, UserCircle } from "lucide-react"
+import { Users, GraduationCap, BookOpen, Calendar, FileText, TrendingUp, Activity, Clock } from "lucide-react"
+import { ProfileDropdown } from "@/components/profile-dropdown"
 
 export default function DashboardPage() {
   const quickStats = [
@@ -102,9 +103,7 @@ export default function DashboardPage() {
                 <h1 className="text-2xl md:text-3xl font-bold mb-1">Hi! Admin</h1>
                 <p className="text-white/90 text-sm md:text-base">There are 4 important things today</p>
               </div>
-              <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
-                <UserCircle className="w-8 h-8 md:w-10 md:h-10 text-white" strokeWidth={2} />
-              </div>
+              <ProfileDropdown />
             </div>
 
             {/* Quick Stats Cards inside header */}
