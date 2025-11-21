@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth"
 import { Sidebar } from "@/components/sidebar"
 import { Spinner } from "@/components/spinner"
 import { BottomNav } from "@/components/bottom-nav"
+import { Footer } from "@/components/footer"
 
 export function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, loading } = useAuth()
@@ -25,7 +26,12 @@ export function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
-      <main className="flex-1 overflow-auto pb-20 lg:pb-0">{children}</main>
+      <main className="flex-1 overflow-auto pb-20 lg:pb-0">
+        <div className="min-h-full flex flex-col">
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </div>
+      </main>
       <BottomNav />
     </div>
   )
