@@ -8,8 +8,7 @@ import { setAuthToken } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
-import { User, Lock, Eye, EyeOff, Leaf } from "lucide-react"
-import Image from "next/image"
+import { User, Lock, Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
   const [username, setUsername] = useState("")
@@ -47,126 +46,99 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      <div className="relative w-full md:w-[45%] min-h-[40vh] md:min-h-screen bg-gradient-to-br from-[var(--tropical-primary)] to-[var(--tropical-secondary)] overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="/tropical_monstera_le_32feda22.jpg"
-            alt="Tropical leaves background"
-            fill
-            className="object-cover opacity-90"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--tropical-primary)]/30 to-[var(--tropical-secondary)]/40" />
-        </div>
-        
-        <div className="relative z-10 h-full flex flex-col items-center justify-center p-8 text-white">
-          <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm mb-4">
-              <Leaf className="w-10 h-10 text-white" strokeWidth={1.5} />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[var(--tropical-primary)] to-[var(--tropical-secondary)] p-4">
+      <div className="w-full max-w-sm">
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div className="p-8">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
+              <p className="text-sm text-gray-600 mt-1">Login to your account</p>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-              Welcome Back
-            </h1>
-            <p className="text-lg text-white/90">Login to your account</p>
-          </div>
-        </div>
 
-        <div className="absolute top-4 left-4 md:top-8 md:left-8">
-          <div className="flex items-center gap-2 text-white">
-            <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <Leaf className="w-5 h-5" strokeWidth={2} />
-            </div>
-            <span className="font-semibold text-sm">Student Portal</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex-1 flex items-center justify-center p-4 md:p-8 bg-gradient-to-br from-gray-50 to-white">
-        <div className="w-full max-w-sm">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-            <div className="p-6 md:p-8">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Full Name</label>
-                  <div className="relative">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--tropical-secondary)]">
-                      <User className="w-4 h-4" strokeWidth={2} />
-                    </div>
-                    <Input
-                      type="text"
-                      placeholder="Enter your username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      disabled={loading}
-                      className="pl-10 h-11 rounded-xl border-0 bg-[var(--tropical-mint)] text-gray-800 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[var(--tropical-secondary)]"
-                    />
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Username</label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--tropical-secondary)]">
+                    <User className="w-4 h-4" strokeWidth={2} />
                   </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Password</label>
-                  <div className="relative">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--tropical-secondary)]">
-                      <Lock className="w-4 h-4" strokeWidth={2} />
-                    </div>
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={loading}
-                      className="pl-10 pr-10 h-11 rounded-xl border-0 bg-[var(--tropical-mint)] text-gray-800 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[var(--tropical-secondary)]"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--tropical-secondary)] hover:text-[var(--tropical-primary)] transition-colors"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-4 h-4" strokeWidth={2} />
-                      ) : (
-                        <Eye className="w-4 h-4" strokeWidth={2} />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="remember"
-                    checked={rememberMe}
-                    onCheckedChange={(checked: boolean | "indeterminate") => setRememberMe(checked === true)}
-                    className="border-[var(--tropical-secondary)] data-[state=checked]:bg-[var(--tropical-secondary)] data-[state=checked]:border-[var(--tropical-secondary)]"
+                  <Input
+                    type="text"
+                    placeholder="Enter your username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    disabled={loading}
+                    className="pl-10 h-11 rounded-xl border-gray-200 text-gray-800 placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-[var(--tropical-secondary)]"
                   />
-                  <label
-                    htmlFor="remember"
-                    className="text-sm font-medium text-gray-700 cursor-pointer select-none"
-                  >
-                    Remember Me
-                  </label>
                 </div>
+              </div>
 
-                {error && (
-                  <div className="text-red-600 text-sm bg-red-50 p-2.5 rounded-lg">
-                    {error}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Password</label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--tropical-secondary)]">
+                    <Lock className="w-4 h-4" strokeWidth={2} />
                   </div>
-                )}
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                    className="pl-10 pr-10 h-11 rounded-xl border-gray-200 text-gray-800 placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-[var(--tropical-secondary)]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--tropical-secondary)] hover:text-[var(--tropical-primary)] transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" strokeWidth={2} />
+                    ) : (
+                      <Eye className="w-4 h-4" strokeWidth={2} />
+                    )}
+                  </button>
+                </div>
+              </div>
 
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-11 rounded-full text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-                  style={{
-                    backgroundColor: 'var(--tropical-secondary)',
-                    color: 'white',
-                  }}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="remember"
+                  checked={rememberMe}
+                  onCheckedChange={(checked: boolean | "indeterminate") => setRememberMe(checked === true)}
+                  className="border-[var(--tropical-secondary)] data-[state=checked]:bg-[var(--tropical-secondary)] data-[state=checked]:border-[var(--tropical-secondary)]"
+                />
+                <label
+                  htmlFor="remember"
+                  className="text-sm font-medium text-gray-700 cursor-pointer select-none"
                 >
-                  {loading ? "Logging in..." : "Login"}
-                </Button>
-              </form>
-            </div>
+                  Remember Me
+                </label>
+              </div>
+
+              {error && (
+                <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
+                  {error}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-11 rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 mt-6"
+                style={{
+                  backgroundColor: 'var(--tropical-secondary)',
+                  color: 'white',
+                }}
+              >
+                {loading ? "Logging in..." : "Login"}
+              </Button>
+            </form>
           </div>
+        </div>
+
+        <div className="mt-4 text-center text-sm text-white/90">
+          <p>Username: <strong>admin</strong> • Password: <strong>12345@Admin</strong></p>
         </div>
       </div>
     </div>
