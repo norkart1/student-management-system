@@ -19,11 +19,14 @@ interface Event {
 
 export default function CalendarPage() {
   const router = useRouter()
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  const now = new Date()
+  const [selectedDate, setSelectedDate] = useState(now)
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddDialog, setShowAddDialog] = useState(false)
-  const [currentMonth, setCurrentMonth] = useState(new Date())
+  const [currentMonth, setCurrentMonth] = useState(
+    new Date(now.getFullYear(), now.getMonth(), 1)
+  )
 
   useEffect(() => {
     fetchEvents()
@@ -53,7 +56,7 @@ export default function CalendarPage() {
 
       if (response.ok) {
         toast.success("Event deleted successfully")
-        fetchEvents()
+        await fetchEvents()
       } else {
         toast.error("Failed to delete event")
       }
@@ -63,15 +66,16 @@ export default function CalendarPage() {
     }
   }
 
+  const formatDateString = (date: Date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   const getEventsForDate = (date: Date) => {
-    return events.filter(event => {
-      const eventDate = new Date(event.date)
-      return (
-        eventDate.getDate() === date.getDate() &&
-        eventDate.getMonth() === date.getMonth() &&
-        eventDate.getFullYear() === date.getFullYear()
-      )
-    })
+    const dateString = formatDateString(date)
+    return events.filter(event => event.date === dateString)
   }
 
   const selectedDateEvents = getEventsForDate(selectedDate)
@@ -133,9 +137,10 @@ export default function CalendarPage() {
           </div>
 
           <Calendar 
-            selectedDate={selectedDate} 
+            selectedDate={selectedDate}
+            currentMonth={currentMonth}
             onDateChange={setSelectedDate}
-            onMonthChange={(date) => setCurrentMonth(date)}
+            onMonthChange={setCurrentMonth}
             events={events}
           />
 

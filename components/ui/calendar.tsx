@@ -14,17 +14,15 @@ interface Event {
 
 interface CalendarProps {
   selectedDate?: Date
+  currentMonth: Date
   onDateChange?: (date: Date) => void
   onMonthChange?: (date: Date) => void
   events?: Event[]
   className?: string
 }
 
-export function Calendar({ selectedDate, onDateChange, onMonthChange, events = [], className = "" }: CalendarProps) {
-  const [currentMonth, setCurrentMonth] = React.useState(
-    selectedDate ? new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1) : new Date()
-  )
-  const [selected, setSelected] = React.useState(selectedDate || new Date())
+export function Calendar({ selectedDate, currentMonth, onDateChange, onMonthChange, events = [], className = "" }: CalendarProps) {
+  const selected = selectedDate || new Date()
 
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -43,19 +41,16 @@ export function Calendar({ selectedDate, onDateChange, onMonthChange, events = [
 
   const handlePrevMonth = () => {
     const newMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
-    setCurrentMonth(newMonth)
     onMonthChange?.(newMonth)
   }
 
   const handleNextMonth = () => {
     const newMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
-    setCurrentMonth(newMonth)
     onMonthChange?.(newMonth)
   }
 
   const handleDateClick = (day: number) => {
     const newDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
-    setSelected(newDate)
     onDateChange?.(newDate)
   }
 
@@ -71,32 +66,34 @@ export function Calendar({ selectedDate, onDateChange, onMonthChange, events = [
   const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7)
   const nextMonthDays = Array.from({ length: remainingCells }, (_, i) => i + 1)
 
-  const isSelectedDate = (day: number) => {
+  const isSameDay = (date1: Date, date2: Date) => {
     return (
-      selected.getDate() === day &&
-      selected.getMonth() === currentMonth.getMonth() &&
-      selected.getFullYear() === currentMonth.getFullYear()
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
     )
+  }
+
+  const isSelectedDate = (day: number) => {
+    const dayDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
+    return isSameDay(selected, dayDate)
   }
 
   const isToday = (day: number) => {
     const today = new Date()
-    return (
-      today.getDate() === day &&
-      today.getMonth() === currentMonth.getMonth() &&
-      today.getFullYear() === currentMonth.getFullYear()
-    )
+    const dayDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
+    return isSameDay(today, dayDate)
+  }
+
+  const formatDateString = (year: number, month: number, day: number) => {
+    const paddedMonth = String(month + 1).padStart(2, '0')
+    const paddedDay = String(day).padStart(2, '0')
+    return `${year}-${paddedMonth}-${paddedDay}`
   }
 
   const hasEvents = (day: number) => {
-    return events.some(event => {
-      const eventDate = new Date(event.date)
-      return (
-        eventDate.getDate() === day &&
-        eventDate.getMonth() === currentMonth.getMonth() &&
-        eventDate.getFullYear() === currentMonth.getFullYear()
-      )
-    })
+    const dayString = formatDateString(currentMonth.getFullYear(), currentMonth.getMonth(), day)
+    return events.some(event => event.date === dayString)
   }
 
   return (
