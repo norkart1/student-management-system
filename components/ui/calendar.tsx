@@ -4,13 +4,23 @@ import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
+interface Event {
+  _id: string
+  title: string
+  date: string
+  description?: string
+  type: string
+}
+
 interface CalendarProps {
   selectedDate?: Date
   onDateChange?: (date: Date) => void
+  onMonthChange?: (date: Date) => void
+  events?: Event[]
   className?: string
 }
 
-export function Calendar({ selectedDate, onDateChange, className = "" }: CalendarProps) {
+export function Calendar({ selectedDate, onDateChange, onMonthChange, events = [], className = "" }: CalendarProps) {
   const [currentMonth, setCurrentMonth] = React.useState(
     selectedDate ? new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1) : new Date()
   )
@@ -32,11 +42,15 @@ export function Calendar({ selectedDate, onDateChange, className = "" }: Calenda
   }
 
   const handlePrevMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))
+    const newMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
+    setCurrentMonth(newMonth)
+    onMonthChange?.(newMonth)
   }
 
   const handleNextMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))
+    const newMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
+    setCurrentMonth(newMonth)
+    onMonthChange?.(newMonth)
   }
 
   const handleDateClick = (day: number) => {
@@ -72,6 +86,17 @@ export function Calendar({ selectedDate, onDateChange, className = "" }: Calenda
       today.getMonth() === currentMonth.getMonth() &&
       today.getFullYear() === currentMonth.getFullYear()
     )
+  }
+
+  const hasEvents = (day: number) => {
+    return events.some(event => {
+      const eventDate = new Date(event.date)
+      return (
+        eventDate.getDate() === day &&
+        eventDate.getMonth() === currentMonth.getMonth() &&
+        eventDate.getFullYear() === currentMonth.getFullYear()
+      )
+    })
   }
 
   return (
@@ -121,7 +146,7 @@ export function Calendar({ selectedDate, onDateChange, className = "" }: Calenda
           <button
             key={day}
             onClick={() => handleDateClick(day)}
-            className={`aspect-square flex items-center justify-center text-sm rounded-full transition-all ${
+            className={`aspect-square flex flex-col items-center justify-center text-sm rounded-full transition-all relative ${
               isSelectedDate(day)
                 ? "bg-teal-500 text-white font-bold shadow-lg scale-110"
                 : isToday(day)
@@ -129,7 +154,10 @@ export function Calendar({ selectedDate, onDateChange, className = "" }: Calenda
                 : "text-teal-600 hover:bg-teal-50 font-medium"
             }`}
           >
-            {day}
+            <span>{day}</span>
+            {hasEvents(day) && (
+              <span className="absolute bottom-1 w-1 h-1 rounded-full bg-current opacity-70" />
+            )}
           </button>
         ))}
         {nextMonthDays.map((day, idx) => (
