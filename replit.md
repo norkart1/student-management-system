@@ -1,15 +1,15 @@
 # Student Management System
 
 ## Overview
-A Next.js-based student management application for tracking students, teachers, books, and events. Built with React, TypeScript, and MongoDB.
+A Next.js-based student management application for tracking students, teachers, books, and events. Built with React, TypeScript, and MongoDB for data storage, with environment variable-based authentication.
 
-**Project State**: Imported from GitHub and configured for Replit environment (November 27, 2025)
+**Project State**: Configured for Replit and Vercel deployment (November 27, 2025)
 
 ## Tech Stack
-- **Frontend**: Next.js 15.1.6, React 18.3, TypeScript 5.1
+- **Frontend**: Next.js 15.5.6, React 18.3, TypeScript 5.1
 - **UI Components**: Radix UI, Tailwind CSS
-- **Database**: MongoDB
-- **Authentication**: JWT-based admin auth with bcrypt password hashing
+- **Database**: MongoDB (for students, teachers, books, events data)
+- **Authentication**: JWT-based admin auth with bcrypt password hashing (credentials stored in environment variables)
 
 ## Project Structure
 ```
