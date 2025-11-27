@@ -25,9 +25,9 @@ A Next.js-based student management application for tracking students, teachers, 
 
 ## Database Schema
 MongoDB collections:
-- **students**: Student records with email index
-- **teachers**: Teacher records with email index
-- **books**: Book records with ISBN index
+- **students**: Student records (fullName, email, phone, image)
+- **teachers**: Teacher records (fullName, email, phone, image)
+- **books**: Book records (title, author)
 - **events**: Calendar events (created via API)
 - **admins**: Admin user accounts with hashed passwords
 
@@ -69,6 +69,13 @@ MongoDB collections:
 - Custom SVG favicon
 
 ## Recent Changes
+- **2025-11-27**: Simplified Registration Forms Update
+  - Updated student registration form: fullName, email, phone, image upload
+  - Updated teacher registration form: fullName, email, phone, image upload
+  - Updated book registration form: title and author only
+  - Added photo display in data tables with avatar fallbacks
+  - Modernized dialog styling with consistent slate/emerald theme
+
 - **2025-11-27**: Fresh GitHub Import to Replit - Setup Complete
   - Successfully imported from GitHub repository to fresh Replit environment
   - Installed all npm dependencies (510 packages including Next.js SWC)
