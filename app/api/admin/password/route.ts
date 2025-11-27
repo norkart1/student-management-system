@@ -1,39 +1,37 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getAdminById, updateAdminPassword, getAdminByUsername, initializeDefaultAdmin } from "@/lib/admin"
+import { getAdminById, updateAdminPassword, verifyAdminPassword } from "@/lib/admin"
+import { validateAuth, unauthorizedResponse } from "@/lib/auth-middleware"
 
 export async function PUT(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization")
-    if (!authHeader) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const auth = validateAuth(request)
+    
+    if (!auth.valid) {
+      return unauthorizedResponse(auth.error)
     }
-
-    const token = authHeader.replace("Bearer ", "")
-    const decoded = Buffer.from(token, "base64").toString()
-    const [adminId] = decoded.split(":")
 
     const body = await request.json()
     const { currentPassword, newPassword } = body
 
-    let admin = null
-    if (adminId) {
-      admin = await getAdminById(adminId)
-    }
-    
-    if (!admin) {
-      await initializeDefaultAdmin()
-      admin = await getAdminByUsername("admin")
+    if (!currentPassword || !newPassword) {
+      return NextResponse.json({ error: "Current and new passwords are required" }, { status: 400 })
     }
 
+    if (newPassword.length < 6) {
+      return NextResponse.json({ error: "New password must be at least 6 characters" }, { status: 400 })
+    }
+
+    const admin = await getAdminById(auth.payload!.adminId)
     if (!admin) {
       return NextResponse.json({ error: "Admin not found" }, { status: 404 })
     }
 
-    if (admin.password !== currentPassword) {
+    const isCurrentPasswordValid = await verifyAdminPassword(auth.payload!.adminId, currentPassword)
+    if (!isCurrentPasswordValid) {
       return NextResponse.json({ error: "Current password is incorrect" }, { status: 400 })
     }
 
-    await updateAdminPassword(admin._id!.toString(), newPassword)
+    await updateAdminPassword(auth.payload!.adminId, newPassword)
 
     return NextResponse.json({ success: true, message: "Password updated successfully" })
   } catch (error) {

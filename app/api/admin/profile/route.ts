@@ -1,42 +1,17 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getAdminById, updateAdminProfile, initializeDefaultAdmin, getAdminByUsername } from "@/lib/admin"
+import { getAdminById, updateAdminProfile } from "@/lib/admin"
+import { validateAuth, unauthorizedResponse } from "@/lib/auth-middleware"
 
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization")
-    if (!authHeader) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const auth = validateAuth(request)
+    
+    if (!auth.valid) {
+      return unauthorizedResponse(auth.error)
     }
 
-    const token = authHeader.replace("Bearer ", "")
-    const decoded = Buffer.from(token, "base64").toString()
-    const [adminId] = decoded.split(":")
-
-    if (!adminId) {
-      await initializeDefaultAdmin()
-      const admin = await getAdminByUsername("admin")
-      if (admin) {
-        return NextResponse.json({
-          id: admin._id?.toString(),
-          username: admin.username,
-          email: admin.email,
-          profileImage: admin.profileImage || ""
-        })
-      }
-    }
-
-    const admin = await getAdminById(adminId)
+    const admin = await getAdminById(auth.payload!.adminId)
     if (!admin) {
-      await initializeDefaultAdmin()
-      const defaultAdmin = await getAdminByUsername("admin")
-      if (defaultAdmin) {
-        return NextResponse.json({
-          id: defaultAdmin._id?.toString(),
-          username: defaultAdmin.username,
-          email: defaultAdmin.email,
-          profileImage: defaultAdmin.profileImage || ""
-        })
-      }
       return NextResponse.json({ error: "Admin not found" }, { status: 404 })
     }
 
@@ -54,27 +29,16 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization")
-    if (!authHeader) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const auth = validateAuth(request)
+    
+    if (!auth.valid) {
+      return unauthorizedResponse(auth.error)
     }
-
-    const token = authHeader.replace("Bearer ", "")
-    const decoded = Buffer.from(token, "base64").toString()
-    const [adminId] = decoded.split(":")
 
     const body = await request.json()
     const { username, email, profileImage } = body
 
-    let targetId = adminId
-    if (!adminId) {
-      const admin = await getAdminByUsername("admin")
-      if (admin) {
-        targetId = admin._id?.toString() || ""
-      }
-    }
-
-    await updateAdminProfile(targetId, {
+    await updateAdminProfile(auth.payload!.adminId, {
       username,
       email,
       profileImage

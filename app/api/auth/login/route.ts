@@ -1,4 +1,5 @@
 import { validateAdminCredentials, initializeDefaultAdmin } from "@/lib/admin"
+import { signToken } from "@/lib/jwt"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
@@ -10,7 +11,11 @@ export async function POST(request: NextRequest) {
     const admin = await validateAdminCredentials(username, password)
     
     if (admin) {
-      const token = Buffer.from(`${admin._id}:${Date.now()}`).toString("base64")
+      const token = signToken({
+        adminId: admin._id!.toString(),
+        username: admin.username
+      })
+      
       return NextResponse.json({ 
         token, 
         success: true,

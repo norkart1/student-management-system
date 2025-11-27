@@ -1,5 +1,6 @@
 import { getDatabase } from "./db"
 import { ObjectId } from "mongodb"
+import bcrypt from "bcryptjs"
 
 export interface AdminUser {
   _id?: ObjectId
@@ -10,6 +11,8 @@ export interface AdminUser {
   createdAt: Date
   updatedAt: Date
 }
+
+const SALT_ROUNDS = 10
 
 export async function getAdminCollection() {
   const db = await getDatabase()
@@ -29,7 +32,10 @@ export async function getAdminById(id: string) {
 export async function validateAdminCredentials(username: string, password: string) {
   const admin = await getAdminByUsername(username)
   if (!admin) return null
-  if (admin.password !== password) return null
+  
+  const isValid = await bcrypt.compare(password, admin.password)
+  if (!isValid) return null
+  
   return admin
 }
 
@@ -40,6 +46,7 @@ export async function updateAdminProfile(id: string, data: Partial<AdminUser>) {
     updatedAt: new Date()
   }
   delete (updateData as any)._id
+  delete (updateData as any).password
   return collection.updateOne(
     { _id: new ObjectId(id) },
     { $set: updateData }
@@ -48,10 +55,17 @@ export async function updateAdminProfile(id: string, data: Partial<AdminUser>) {
 
 export async function updateAdminPassword(id: string, newPassword: string) {
   const collection = await getAdminCollection()
+  const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS)
   return collection.updateOne(
     { _id: new ObjectId(id) },
-    { $set: { password: newPassword, updatedAt: new Date() } }
+    { $set: { password: hashedPassword, updatedAt: new Date() } }
   )
+}
+
+export async function verifyAdminPassword(id: string, password: string) {
+  const admin = await getAdminById(id)
+  if (!admin) return false
+  return bcrypt.compare(password, admin.password)
 }
 
 export async function initializeDefaultAdmin() {
@@ -59,15 +73,16 @@ export async function initializeDefaultAdmin() {
   const existingAdmin = await collection.findOne({ username: "admin" })
   
   if (!existingAdmin) {
+    const hashedPassword = await bcrypt.hash("12345@Admin", SALT_ROUNDS)
     await collection.insertOne({
       username: "admin",
       email: "admin@example.com",
-      password: "12345@Admin",
+      password: hashedPassword,
       profileImage: "",
       createdAt: new Date(),
       updatedAt: new Date()
     })
-    console.log("[Admin] Default admin user created")
+    console.log("[Admin] Default admin user created with hashed password")
   }
   
   return existingAdmin || await collection.findOne({ username: "admin" })
