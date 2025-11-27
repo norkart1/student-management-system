@@ -110,31 +110,32 @@ export default function DashboardPage() {
   return (
     <ProtectedLayout>
       <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
-          <div className="bg-gradient-to-br from-[#205072] via-[#329D9C] to-[#56C596] rounded-3xl p-6 md:p-8 text-white shadow-xl shadow-[#329D9C]/30">
+        <div className="p-6 md:p-8 lg:p-10 space-y-8">
+          <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 rounded-2xl p-6 md:p-8 text-white shadow-xl">
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold mb-1">Hi! Admin</h1>
-                <p className="text-white/90 text-sm md:text-base">Welcome to your management dashboard</p>
+                <p className="text-slate-400 text-sm mb-1">Welcome back</p>
+                <h1 className="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
+                <p className="text-slate-300 text-sm md:text-base mt-1">Manage your school system efficiently</p>
               </div>
               <ProfileDropdown />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 md:gap-4 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
               {quickStats.map((stat, idx) => (
-                <div key={idx} className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 md:p-5 shadow-lg">
-                  <div className="flex items-start justify-between mb-3">
+                <div key={idx} className="bg-white rounded-xl p-5 shadow-lg">
+                  <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                      <p className="text-[#205072]/70 text-xs md:text-sm">{stat.label}</p>
-                      <p className="text-[#205072] text-xl md:text-2xl font-bold mt-1">{stat.value}</p>
+                      <p className="text-slate-500 text-sm font-medium">{stat.label}</p>
+                      <p className="text-slate-800 text-2xl md:text-3xl font-bold mt-1">{stat.value}</p>
                     </div>
-                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-[#329D9C] to-[#56C596] rounded-xl flex items-center justify-center shadow-md">
-                      <stat.icon className="w-5 h-5 md:w-6 md:h-6 text-white" strokeWidth={2.5} />
+                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-md shadow-emerald-500/25">
+                      <stat.icon className="w-6 h-6 text-white" strokeWidth={2} />
                     </div>
                   </div>
-                  <div className="w-full bg-[#CFF4D2] rounded-full h-2">
+                  <div className="w-full bg-slate-100 rounded-full h-2">
                     <div 
-                      className="bg-gradient-to-r from-[#329D9C] to-[#56C596] h-2 rounded-full transition-all duration-500"
+                      className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${stat.progress}%` }}
                     />
                   </div>
@@ -144,20 +145,19 @@ export default function DashboardPage() {
           </div>
 
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-[#205072] mb-4 px-1">Quick Access</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <h2 className="text-xl md:text-2xl font-bold text-slate-800 mb-6">Quick Access</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {modules.map((module, idx) => (
                 <Link key={idx} href={module.href} prefetch={true}>
-                  <Card className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-[#CFF4D2] bg-white/80 backdrop-blur-sm overflow-hidden group">
+                  <Card className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-slate-200 bg-white overflow-hidden group h-full">
                     <CardContent className="p-6">
-                      <div className="w-14 h-14 bg-gradient-to-br from-[#329D9C] to-[#56C596] rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-[#329D9C]/30 group-hover:scale-110 transition-transform">
-                        <module.icon className="w-7 h-7 text-white" strokeWidth={2.5} />
+                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center mb-4 shadow-md shadow-emerald-500/25 group-hover:scale-110 transition-transform">
+                        <module.icon className="w-6 h-6 text-white" strokeWidth={2} />
                       </div>
-                      <h3 className="font-bold text-[#205072] text-lg mb-1">{module.name}</h3>
-                      <p className="text-sm text-[#329D9C] mb-2">{module.desc}</p>
-                      <div className="flex items-center gap-1">
-                        <TrendingUp className="w-4 h-4 text-[#56C596]" />
-                        <span className="text-sm font-semibold text-[#205072]">{module.count}</span>
+                      <h3 className="font-bold text-slate-800 text-lg mb-1">{module.name}</h3>
+                      <p className="text-sm text-slate-500 mb-3">{module.desc}</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-md">{module.count}</span>
                       </div>
                     </CardContent>
                   </Card>

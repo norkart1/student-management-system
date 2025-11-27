@@ -84,25 +84,36 @@ export default function StudentsPage() {
 
   return (
     <ProtectedLayout>
-      <div className="p-6 lg:p-8 space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-gradient-to-br from-[#329D9C] to-[#56C596] rounded-2xl flex items-center justify-center shadow-lg shadow-[#329D9C]/30">
-            <GraduationCap className="w-7 h-7 text-white" strokeWidth={2.5} />
+      <div className="p-6 md:p-8 lg:p-10 space-y-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/25">
+              <GraduationCap className="w-6 h-6 text-white" strokeWidth={2} />
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Students</h1>
+              <p className="text-slate-500 text-sm md:text-base">Manage student information and records</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-[#205072]">Students Management</h1>
-            <p className="text-[#329D9C]">Manage student information and records</p>
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg font-medium">
+              {students.length} Total Students
+            </span>
           </div>
         </div>
 
-        <Card className="border border-[#CFF4D2] bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-[#205072]">All Students</CardTitle>
-            <CardDescription className="text-[#329D9C]">Total: {students.length} students</CardDescription>
+        <Card className="border border-slate-200 bg-white shadow-sm rounded-2xl overflow-hidden">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-slate-800 text-lg">All Students</CardTitle>
+                <CardDescription className="text-slate-500">View and manage all student records</CardDescription>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             {loading ? (
-              <div className="flex justify-center py-12">
+              <div className="flex justify-center py-16">
                 <Spinner message="Loading students..." />
               </div>
             ) : (
