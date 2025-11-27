@@ -91,11 +91,11 @@ export default function CalendarPage() {
 
   const getEventTypeColor = (type: string) => {
     const colors: Record<string, string> = {
-      general: "bg-blue-100 text-blue-700",
-      holiday: "bg-red-100 text-red-700",
-      exam: "bg-purple-100 text-purple-700",
-      meeting: "bg-green-100 text-green-700",
-      sports: "bg-orange-100 text-orange-700"
+      general: "bg-[#CFF4D2] text-[#205072]",
+      holiday: "bg-[#205072] text-white",
+      exam: "bg-[#329D9C]/20 text-[#205072]",
+      meeting: "bg-[#7BE495]/30 text-[#205072]",
+      sports: "bg-[#56C596]/30 text-[#205072]"
     }
     return colors[type] || colors.general
   }
@@ -106,7 +106,7 @@ export default function CalendarPage() {
 
   return (
     <ProtectedLayout>
-      <div className="min-h-screen bg-gradient-to-br from-teal-400 to-emerald-500 p-4 md:p-6 pb-24">
+      <div className="min-h-screen bg-gradient-to-br from-[#205072] via-[#329D9C] to-[#56C596] p-4 md:p-6 pb-24">
         <div className="max-w-2xl mx-auto space-y-4">
           <div className="flex items-center justify-between">
             <Button
@@ -120,18 +120,18 @@ export default function CalendarPage() {
 
             <Button
               onClick={() => setShowAddDialog(true)}
-              className="bg-white text-teal-600 hover:bg-white/90 rounded-full px-4 gap-2"
+              className="bg-white text-[#205072] hover:bg-white/90 rounded-full px-4 gap-2"
             >
               <Plus className="h-5 w-5" />
               Add Event
             </Button>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 shadow-lg">
-            <h1 className="text-xl font-semibold text-gray-800 text-center">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
+            <h1 className="text-xl font-semibold text-[#205072] text-center">
               Calendar
             </h1>
-            <p className="text-sm text-gray-500 text-center mt-1">
+            <p className="text-sm text-[#329D9C] text-center mt-1">
               {formatDate(selectedDate)}
             </p>
           </div>
@@ -156,14 +156,14 @@ export default function CalendarPage() {
             </div>
             
             {loading ? (
-              <div className="bg-white rounded-2xl p-6 text-center text-gray-500">
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 text-center text-[#329D9C]">
                 Loading events...
               </div>
             ) : selectedDateEvents.length > 0 ? (
               selectedDateEvents.map((event) => (
                 <div
                   key={event._id}
-                  className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all"
+                  className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all border border-[#CFF4D2]"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -172,11 +172,11 @@ export default function CalendarPage() {
                           {getEventTypeIcon(event.type)}
                         </span>
                       </div>
-                      <h3 className="font-semibold text-gray-800 text-lg">
+                      <h3 className="font-semibold text-[#205072] text-lg">
                         {event.title}
                       </h3>
                       {event.description && (
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-[#329D9C] mt-1">
                           {event.description}
                         </p>
                       )}
@@ -193,10 +193,10 @@ export default function CalendarPage() {
                 </div>
               ))
             ) : (
-              <div className="bg-white rounded-2xl p-8 text-center">
-                <CalendarIcon className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500 font-medium">No events on this date</p>
-                <p className="text-sm text-gray-400 mt-1">
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-8 text-center border border-[#CFF4D2]">
+                <CalendarIcon className="h-12 w-12 text-[#CFF4D2] mx-auto mb-3" />
+                <p className="text-[#205072] font-medium">No events on this date</p>
+                <p className="text-sm text-[#329D9C] mt-1">
                   Click "Add Event" to create one
                 </p>
               </div>

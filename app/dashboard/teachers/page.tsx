@@ -9,6 +9,7 @@ import { DataTable } from "@/components/data-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Users } from "lucide-react"
 
 export default function TeachersPage() {
   const [teachers, setTeachers] = useState([])
@@ -89,19 +90,24 @@ export default function TeachersPage() {
   return (
     <ProtectedLayout>
       <div className="p-6 lg:p-8 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Teachers Management</h1>
-          <p className="text-muted-foreground">Manage teacher profiles and details</p>
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-gradient-to-br from-[#329D9C] to-[#56C596] rounded-2xl flex items-center justify-center shadow-lg shadow-[#329D9C]/30">
+            <Users className="w-7 h-7 text-white" strokeWidth={2.5} />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-[#205072]">Teachers Management</h1>
+            <p className="text-[#329D9C]">Manage teacher profiles and details</p>
+          </div>
         </div>
 
-        <Card>
+        <Card className="border border-[#CFF4D2] bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle>All Teachers</CardTitle>
-            <CardDescription>Total: {teachers.length} teachers</CardDescription>
+            <CardTitle className="text-[#205072]">All Teachers</CardTitle>
+            <CardDescription className="text-[#329D9C]">Total: {teachers.length} teachers</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="text-center py-8">Loading...</div>
+              <div className="text-center py-8 text-[#329D9C]">Loading...</div>
             ) : (
               <DataTable columns={columns} data={teachers} onDelete={handleDelete} onAdd={() => setDialogOpen(true)} />
             )}

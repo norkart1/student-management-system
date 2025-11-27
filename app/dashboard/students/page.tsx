@@ -5,6 +5,7 @@ import { ProtectedLayout } from "@/components/protected-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataTable } from "@/components/data-table"
 import { AddStudentDialog } from "@/components/add-student-dialog"
+import { GraduationCap } from "lucide-react"
 
 export default function StudentsPage() {
   const [students, setStudents] = useState([])
@@ -65,19 +66,24 @@ export default function StudentsPage() {
   return (
     <ProtectedLayout>
       <div className="p-6 lg:p-8 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Students Management</h1>
-          <p className="text-muted-foreground">Manage student information and records</p>
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-gradient-to-br from-[#329D9C] to-[#56C596] rounded-2xl flex items-center justify-center shadow-lg shadow-[#329D9C]/30">
+            <GraduationCap className="w-7 h-7 text-white" strokeWidth={2.5} />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-[#205072]">Students Management</h1>
+            <p className="text-[#329D9C]">Manage student information and records</p>
+          </div>
         </div>
 
-        <Card>
+        <Card className="border border-[#CFF4D2] bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle>All Students</CardTitle>
-            <CardDescription>Total: {students.length} students</CardDescription>
+            <CardTitle className="text-[#205072]">All Students</CardTitle>
+            <CardDescription className="text-[#329D9C]">Total: {students.length} students</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="text-center py-8">Loading...</div>
+              <div className="text-center py-8 text-[#329D9C]">Loading...</div>
             ) : (
               <DataTable
                 columns={columns}

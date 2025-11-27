@@ -6,14 +6,13 @@ import { useAuth } from "@/hooks/use-auth"
 import { Sidebar } from "@/components/sidebar"
 import { Spinner } from "@/components/spinner"
 import { BottomNav } from "@/components/bottom-nav"
-import { Footer } from "@/components/footer"
 
 export function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, loading } = useAuth()
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-[#CFF4D2] via-white to-[#CFF4D2]">
         <Spinner />
       </div>
     )
@@ -24,13 +23,10 @@ export function ProtectedLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gradient-to-br from-[#CFF4D2]/30 via-white to-[#7BE495]/20">
       <Sidebar />
       <main className="flex-1 overflow-auto pb-20 lg:pb-0">
-        <div className="min-h-full flex flex-col">
-          <div className="flex-1">{children}</div>
-          <Footer />
-        </div>
+        {children}
       </main>
       <BottomNav />
     </div>

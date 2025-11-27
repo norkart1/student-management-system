@@ -46,23 +46,23 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#CFF4D2] via-white to-[#7BE495]/30 p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl shadow-[#329D9C]/20 overflow-hidden border border-[#CFF4D2]">
           <div className="p-8 md:p-10">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[var(--tropical-primary)] to-[var(--tropical-secondary)] mb-4 shadow-lg">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#205072] to-[#329D9C] mb-4 shadow-lg shadow-[#329D9C]/30">
                 <GraduationCap className="w-10 h-10 text-white" strokeWidth={2} />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back!</h1>
-              <p className="text-sm text-gray-500">Login to access your student portal</p>
+              <h1 className="text-2xl font-bold text-[#205072] mb-2">Welcome Back!</h1>
+              <p className="text-sm text-[#329D9C]">Login to access your student portal</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Username</label>
+                <label className="text-sm font-medium text-[#205072]">Username</label>
                 <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#329D9C]">
                     <User className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <Input
@@ -71,15 +71,15 @@ export default function LoginPage() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     disabled={loading}
-                    className="pl-12 h-12 rounded-xl border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-[var(--tropical-secondary)] focus-visible:border-transparent transition-all"
+                    className="pl-12 h-12 rounded-xl border-[#CFF4D2] bg-[#CFF4D2]/30 text-[#205072] placeholder:text-[#329D9C]/60 focus-visible:ring-2 focus-visible:ring-[#329D9C] focus-visible:border-transparent transition-all"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Password</label>
+                <label className="text-sm font-medium text-[#205072]">Password</label>
                 <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#329D9C]">
                     <Lock className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <Input
@@ -88,12 +88,12 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={loading}
-                    className="pl-12 pr-12 h-12 rounded-xl border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-[var(--tropical-secondary)] focus-visible:border-transparent transition-all"
+                    className="pl-12 pr-12 h-12 rounded-xl border-[#CFF4D2] bg-[#CFF4D2]/30 text-[#205072] placeholder:text-[#329D9C]/60 focus-visible:ring-2 focus-visible:ring-[#329D9C] focus-visible:border-transparent transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#329D9C] hover:text-[#205072] transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="w-5 h-5" strokeWidth={2} />
@@ -110,11 +110,11 @@ export default function LoginPage() {
                     id="remember"
                     checked={rememberMe}
                     onCheckedChange={(checked: boolean | "indeterminate") => setRememberMe(checked === true)}
-                    className="border-gray-300 data-[state=checked]:bg-[var(--tropical-secondary)] data-[state=checked]:border-[var(--tropical-secondary)]"
+                    className="border-[#CFF4D2] data-[state=checked]:bg-[#329D9C] data-[state=checked]:border-[#329D9C]"
                   />
                   <label
                     htmlFor="remember"
-                    className="text-sm text-gray-600 cursor-pointer select-none"
+                    className="text-sm text-[#329D9C] cursor-pointer select-none"
                   >
                     Remember me
                   </label>
@@ -130,11 +130,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 mt-6"
-                style={{
-                  backgroundColor: 'var(--tropical-secondary)',
-                  color: 'white',
-                }}
+                className="w-full h-12 rounded-xl text-base font-semibold shadow-lg shadow-[#329D9C]/30 hover:shadow-xl transition-all duration-300 mt-6 bg-gradient-to-r from-[#329D9C] to-[#56C596] text-white hover:opacity-90"
               >
                 {loading ? "Logging in..." : "Get Started"}
               </Button>
