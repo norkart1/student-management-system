@@ -49,15 +49,24 @@ MongoDB collections:
 - **Start Application**: Runs `next dev -p 5000 -H 0.0.0.0`
 
 ## Key Features
-- Student management (add, view, edit)
+- Student management (add, view, delete)
 - Teacher management
 - Book library tracking
 - Event calendar
 - Dashboard with statistics
-- Responsive mobile-first design
+- Modern PC-optimized design with sidebar navigation
+- Responsive layout (sidebar on desktop, bottom nav on mobile)
 - Dark mode support
 
 ## Recent Changes
+- **2025-11-27**: PC-optimized UI redesign
+  - Updated sidebar to show on md+ screens with modern slate/emerald design
+  - Added menu item descriptions and Settings button to sidebar
+  - Hidden bottom navigation on desktop (md+ screens)
+  - Modernized data tables with search icon, improved empty states
+  - Updated all dashboard pages with consistent modern design
+  - Configured deployment settings for production (autoscale)
+
 - **2025-11-27**: Initial import and Replit environment setup
   - Configured for port 5000 with 0.0.0.0 host
   - Next.js config already includes Replit allowedDevOrigins
@@ -65,7 +74,7 @@ MongoDB collections:
   - Set up workflow for Next.js dev server
 
 ## User Preferences
-None documented yet.
+- PC-first design with sidebar navigation (requested 2025-11-27)
 
 ## Notes
 - MongoDB needs to be set up externally (MongoDB Atlas recommended)
