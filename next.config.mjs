@@ -6,11 +6,11 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  allowedDevOrigins: [
-    'https://*.replit.dev',
-    'https://*.repl.co',
-    'https://*.replit.app',
-  ],
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['*.replit.dev', '*.repl.co', '*.replit.app'],
+    },
+  },
   webpack: (config, { isServer }) => {
     config.watchOptions = {
       poll: 1000,
