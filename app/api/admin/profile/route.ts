@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getAdminById, updateAdminProfile } from "@/lib/admin"
+import { getAdminById } from "@/lib/admin"
 import { validateAuth, unauthorizedResponse } from "@/lib/auth-middleware"
 
 export async function GET(request: NextRequest) {
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      id: admin._id?.toString(),
+      id: admin.id,
       username: admin.username,
       email: admin.email,
       profileImage: admin.profileImage || ""
@@ -35,16 +35,10 @@ export async function PUT(request: NextRequest) {
       return unauthorizedResponse(auth.error)
     }
 
-    const body = await request.json()
-    const { username, email, profileImage } = body
-
-    await updateAdminProfile(auth.payload!.adminId, {
-      username,
-      email,
-      profileImage
-    })
-
-    return NextResponse.json({ success: true, message: "Profile updated successfully" })
+    return NextResponse.json({ 
+      success: false, 
+      error: "Profile updates are not available in environment variable mode. Please update environment variables directly." 
+    }, { status: 400 })
   } catch (error) {
     console.error("Update profile error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

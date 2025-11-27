@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { verifyToken } from "@/lib/jwt"
 
 export async function GET(request: NextRequest) {
   const token = request.headers.get("authorization")?.split(" ")[1]
@@ -8,11 +9,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const decoded = Buffer.from(token, "base64").toString("utf-8")
-    const [username] = decoded.split(":")
-
-    if (username === "admin") {
-      return NextResponse.json({ authenticated: true, username })
+    const payload = verifyToken(token)
+    
+    if (payload) {
+      return NextResponse.json({ 
+        authenticated: true, 
+        username: payload.username,
+        adminId: payload.adminId
+      })
     }
   } catch {
     return NextResponse.json({ authenticated: false }, { status: 401 })

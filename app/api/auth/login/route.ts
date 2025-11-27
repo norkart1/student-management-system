@@ -1,4 +1,4 @@
-import { validateAdminCredentials, initializeDefaultAdmin } from "@/lib/admin"
+import { validateAdminCredentials } from "@/lib/admin"
 import { signToken } from "@/lib/jwt"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -6,13 +6,11 @@ export async function POST(request: NextRequest) {
   try {
     const { username, password } = await request.json()
 
-    await initializeDefaultAdmin()
-
     const admin = await validateAdminCredentials(username, password)
     
     if (admin) {
       const token = signToken({
-        adminId: admin._id!.toString(),
+        adminId: admin.id,
         username: admin.username
       })
       
@@ -20,7 +18,7 @@ export async function POST(request: NextRequest) {
         token, 
         success: true,
         admin: {
-          id: admin._id?.toString(),
+          id: admin.id,
           username: admin.username,
           email: admin.email,
           profileImage: admin.profileImage
