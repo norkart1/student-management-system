@@ -9,7 +9,7 @@ A Next.js-based student management application for tracking students, teachers, 
 - **Frontend**: Next.js 15.1.6, React 18.3, TypeScript 5.1
 - **UI Components**: Radix UI, Tailwind CSS
 - **Database**: MongoDB
-- **Authentication**: Simple admin auth with token-based system
+- **Authentication**: JWT-based admin auth with bcrypt password hashing
 
 ## Project Structure
 ```
@@ -29,11 +29,13 @@ MongoDB collections:
 - **teachers**: Teacher records with email index
 - **books**: Book records with ISBN index
 - **events**: Calendar events (created via API)
+- **admins**: Admin user accounts with hashed passwords
 
 ## Configuration
 
 ### Environment Variables
 - `MONGODB_URI`: MongoDB connection string (required)
+- `JWT_SECRET`: Secret key for JWT token signing (optional, has default for development)
 
 ### Dev Server
 - Port: 5000
@@ -41,9 +43,11 @@ MongoDB collections:
 - Already configured for Replit proxy with allowedDevOrigins
 
 ### Authentication
-- Default admin credentials:
+- Secure JWT-based authentication with bcrypt password hashing
+- Default admin credentials (stored in MongoDB with hashed password):
   - Username: `admin`
   - Password: `12345@Admin`
+- Admin credentials can be changed via Settings page
 
 ## Workflow
 - **Start Application**: Runs `next dev -p 5000 -H 0.0.0.0`
@@ -54,11 +58,26 @@ MongoDB collections:
 - Book library tracking
 - Event calendar
 - Dashboard with statistics
+- **Admin Settings Page** with:
+  - Profile management (username, email, profile image)
+  - Password change with secure validation
+  - System status monitoring (API, database, site health)
 - Modern PC-optimized design with sidebar navigation
 - Responsive layout (sidebar on desktop, bottom nav on mobile)
-- Dark mode support
+- Custom SVG favicon
 
 ## Recent Changes
+- **2025-11-27**: Admin Settings & Security Update
+  - Added comprehensive admin settings page (/dashboard/settings)
+  - Implemented secure MongoDB-based authentication
+  - Passwords now hashed with bcrypt (10 rounds)
+  - JWT tokens for session management
+  - Profile image upload support
+  - System status monitoring (API, database, storage)
+  - Fixed transparent dialog backgrounds with solid white styling
+  - Fixed form input backgrounds for better visibility
+  - Added custom SVG favicon
+
 - **2025-11-27**: PC-optimized UI redesign
   - Updated sidebar to show on md+ screens with modern slate/emerald design
   - Added menu item descriptions and Settings button to sidebar
