@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
 import { Spinner } from "@/components/spinner"
-import { BookOpen } from "lucide-react"
+import { BookOpen, BookText, User } from "lucide-react"
 
 export default function BooksPage() {
   const [books, setBooks] = useState([])
@@ -24,10 +24,6 @@ export default function BooksPage() {
   const [formData, setFormData] = useState({
     title: "",
     author: "",
-    isbn: "",
-    category: "",
-    quantity: "",
-    location: "",
   })
 
   useEffect(() => {
@@ -59,10 +55,6 @@ export default function BooksPage() {
         setFormData({
           title: "",
           author: "",
-          isbn: "",
-          category: "",
-          quantity: "",
-          location: "",
         })
         setDialogOpen(false)
         fetchBooks()
@@ -102,10 +94,6 @@ export default function BooksPage() {
   const columns = [
     { key: "title", label: "Title" },
     { key: "author", label: "Author" },
-    { key: "isbn", label: "ISBN" },
-    { key: "category", label: "Category" },
-    { key: "quantity", label: "Quantity" },
-    { key: "location", label: "Location" },
   ]
 
   return (
@@ -149,88 +137,55 @@ export default function BooksPage() {
         </Card>
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="border-[#CFF4D2]">
+          <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-[#205072]">Add New Book</DialogTitle>
-              <DialogDescription className="text-[#329D9C]">Fill in the book details</DialogDescription>
+              <DialogTitle className="text-slate-800 text-xl font-bold">Add New Book</DialogTitle>
+              <DialogDescription className="text-slate-500">Fill in the book details</DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="title" className="text-[#205072]">Title</Label>
+                <Label htmlFor="title" className="text-slate-700 flex items-center gap-2">
+                  <BookText className="w-4 h-4 text-emerald-600" />
+                  Title
+                </Label>
                 <Input
                   id="title"
                   placeholder="Enter book title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   required
-                  className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
+                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
                 />
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="author" className="text-[#205072]">Author</Label>
+                <Label htmlFor="author" className="text-slate-700 flex items-center gap-2">
+                  <User className="w-4 h-4 text-emerald-600" />
+                  Author
+                </Label>
                 <Input
                   id="author"
                   placeholder="Enter author name"
                   value={formData.author}
                   onChange={(e) => setFormData({ ...formData, author: e.target.value })}
                   required
-                  className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
+                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="isbn" className="text-[#205072]">ISBN</Label>
-                <Input
-                  id="isbn"
-                  placeholder="Enter ISBN"
-                  value={formData.isbn}
-                  onChange={(e) => setFormData({ ...formData, isbn: e.target.value })}
-                  className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="category" className="text-[#205072]">Category</Label>
-                <Input
-                  id="category"
-                  placeholder="Enter category"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="quantity" className="text-[#205072]">Quantity</Label>
-                <Input
-                  id="quantity"
-                  type="number"
-                  placeholder="Enter quantity"
-                  value={formData.quantity}
-                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                  className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="location" className="text-[#205072]">Location</Label>
-                <Input
-                  id="location"
-                  placeholder="Enter shelf location"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
-                />
-              </div>
-              <div className="flex gap-2 justify-end pt-4">
+
+              <div className="flex gap-3 justify-end pt-4">
                 <Button 
                   type="button" 
                   variant="outline" 
                   onClick={() => setDialogOpen(false)}
-                  className="border-[#CFF4D2] text-[#205072] hover:bg-[#CFF4D2]/30"
+                  className="border-slate-200 text-slate-600 hover:bg-slate-50"
                 >
                   Cancel
                 </Button>
                 <Button 
                   type="submit" 
                   disabled={saving}
-                  className="bg-gradient-to-r from-[#329D9C] to-[#56C596] hover:from-[#205072] hover:to-[#329D9C] text-white"
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md"
                 >
                   {saving ? "Saving..." : "Save Book"}
                 </Button>

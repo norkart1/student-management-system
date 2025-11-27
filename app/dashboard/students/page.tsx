@@ -74,12 +74,10 @@ export default function StudentsPage() {
   }
 
   const columns = [
-    { key: "firstName", label: "First Name" },
-    { key: "lastName", label: "Last Name" },
+    { key: "image", label: "Photo", type: "image" as const },
+    { key: "fullName", label: "Full Name" },
     { key: "email", label: "Email" },
-    { key: "rollNumber", label: "Roll Number" },
-    { key: "className", label: "Class" },
-    { key: "section", label: "Section" },
+    { key: "phone", label: "Phone" },
   ]
 
   return (
@@ -134,7 +132,7 @@ export default function StudentsPage() {
           onOpenChange={setDeleteDialogOpen}
           onConfirm={handleDeleteConfirm}
           title="Delete Student"
-          itemName={studentToDelete ? `${studentToDelete.firstName} ${studentToDelete.lastName}` : undefined}
+          itemName={studentToDelete?.fullName}
           loading={deleting}
         />
       </div>

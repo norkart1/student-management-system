@@ -4,10 +4,16 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Pencil, Trash2, FileText } from "lucide-react"
+import { Plus, Search, Pencil, Trash2, FileText, User } from "lucide-react"
+
+interface Column {
+  key: string
+  label: string
+  type?: "text" | "image"
+}
 
 interface DataTableProps {
-  columns: { key: string; label: string }[]
+  columns: Column[]
   data: any[]
   onEdit?: (item: any) => void
   onDelete?: (item: any) => void
@@ -18,6 +24,29 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd }: DataTableP
   const [search, setSearch] = useState("")
 
   const filteredData = data.filter((item) => JSON.stringify(item).toLowerCase().includes(search.toLowerCase()))
+
+  const renderCell = (item: any, column: Column) => {
+    if (column.type === "image") {
+      const imageUrl = item[column.key]
+      if (imageUrl) {
+        return (
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+            <img 
+              src={imageUrl} 
+              alt="Photo" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )
+      }
+      return (
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+          <User className="w-5 h-5 text-white" />
+        </div>
+      )
+    }
+    return String(item[column.key] || "-")
+  }
 
   return (
     <div className="space-y-6">
@@ -60,7 +89,7 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd }: DataTableP
                 <TableRow key={idx} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0">
                   {columns.map((col) => (
                     <TableCell key={col.key} className="text-sm text-slate-600 py-4">
-                      {String(item[col.key] || "-")}
+                      {renderCell(item, col)}
                     </TableCell>
                   ))}
                   {(onEdit || onDelete) && (

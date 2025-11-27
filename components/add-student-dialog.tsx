@@ -1,11 +1,12 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { User, Mail, Phone, Camera } from "lucide-react"
 
 interface AddStudentDialogProps {
   open: boolean
@@ -16,16 +17,13 @@ interface AddStudentDialogProps {
 
 export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: AddStudentDialogProps) {
   const [formData, setFormData] = useState({
-    firstName: initialData?.firstName || "",
-    lastName: initialData?.lastName || "",
+    fullName: initialData?.fullName || "",
     email: initialData?.email || "",
     phone: initialData?.phone || "",
-    rollNumber: initialData?.rollNumber || "",
-    className: initialData?.className || "",
-    section: initialData?.section || "",
-    dateOfBirth: initialData?.dateOfBirth || "",
+    image: initialData?.image || "",
   })
   const [loading, setLoading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,14 +31,10 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
     try {
       await onSubmit(formData)
       setFormData({
-        firstName: "",
-        lastName: "",
+        fullName: "",
         email: "",
         phone: "",
-        rollNumber: "",
-        className: "",
-        section: "",
-        dateOfBirth: "",
+        image: "",
       })
       onOpenChange(false)
     } catch (error) {
@@ -50,44 +44,80 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
     }
   }
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setFormData({ ...formData, image: reader.result as string })
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-[#CFF4D2]">
+      <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-[#205072]">
+          <DialogTitle className="text-slate-800 text-xl font-bold">
             {initialData ? "Edit Student" : "Add New Student"}
           </DialogTitle>
-          <DialogDescription className="text-[#329D9C]">
+          <DialogDescription className="text-slate-500">
             Fill in the student details below
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName" className="text-[#205072]">First Name</Label>
-              <Input
-                id="firstName"
-                placeholder="Enter first name"
-                value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                required
-                className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="flex flex-col items-center gap-3">
+            <div className="relative">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
+                {formData.image ? (
+                  <img 
+                    src={formData.image} 
+                    alt="Student" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-8 h-8 text-white" />
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-0 right-0 w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-emerald-600 transition-colors"
+              >
+                <Camera className="w-3.5 h-3.5" />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName" className="text-[#205072]">Last Name</Label>
-              <Input
-                id="lastName"
-                placeholder="Enter last name"
-                value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                required
-                className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
-              />
-            </div>
+            <p className="text-xs text-slate-400">Click to upload photo</p>
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-[#205072]">Email</Label>
+            <Label htmlFor="fullName" className="text-slate-700 flex items-center gap-2">
+              <User className="w-4 h-4 text-emerald-600" />
+              Full Name
+            </Label>
+            <Input
+              id="fullName"
+              placeholder="Enter full name"
+              value={formData.fullName}
+              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+              required
+              className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-slate-700 flex items-center gap-2">
+              <Mail className="w-4 h-4 text-emerald-600" />
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
@@ -95,74 +125,38 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
-              className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+              className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
             />
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="phone" className="text-[#205072]">Phone</Label>
+            <Label htmlFor="phone" className="text-slate-700 flex items-center gap-2">
+              <Phone className="w-4 h-4 text-emerald-600" />
+              Phone Number
+            </Label>
             <Input
               id="phone"
               placeholder="Enter phone number"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+              required
+              className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="rollNumber" className="text-[#205072]">Roll Number</Label>
-            <Input
-              id="rollNumber"
-              placeholder="Enter roll number"
-              value={formData.rollNumber}
-              onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
-              className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="className" className="text-[#205072]">Class</Label>
-              <Input
-                id="className"
-                placeholder="Enter class"
-                value={formData.className}
-                onChange={(e) => setFormData({ ...formData, className: e.target.value })}
-                className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="section" className="text-[#205072]">Section</Label>
-              <Input
-                id="section"
-                placeholder="Enter section"
-                value={formData.section}
-                onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="dateOfBirth" className="text-[#205072]">Date of Birth</Label>
-            <Input
-              id="dateOfBirth"
-              type="date"
-              value={formData.dateOfBirth}
-              onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-              className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
-            />
-          </div>
-          <div className="flex gap-2 justify-end pt-4">
+
+          <div className="flex gap-3 justify-end pt-4">
             <Button 
               type="button" 
               variant="outline" 
               onClick={() => onOpenChange(false)}
-              className="border-[#CFF4D2] text-[#205072] hover:bg-[#CFF4D2]/30"
+              className="border-slate-200 text-slate-600 hover:bg-slate-50"
             >
               Cancel
             </Button>
             <Button 
               type="submit" 
               disabled={loading}
-              className="bg-gradient-to-r from-[#329D9C] to-[#56C596] hover:from-[#205072] hover:to-[#329D9C] text-white"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md"
             >
               {loading ? "Saving..." : "Save Student"}
             </Button>
