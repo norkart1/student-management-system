@@ -1,10 +1,10 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface AddStudentDialogProps {
@@ -52,66 +52,119 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="border-[#CFF4D2]">
         <DialogHeader>
-          <DialogTitle>{initialData ? "Edit Student" : "Add New Student"}</DialogTitle>
-          <DialogDescription>Fill in the student details below</DialogDescription>
+          <DialogTitle className="text-[#205072]">
+            {initialData ? "Edit Student" : "Add New Student"}
+          </DialogTitle>
+          <DialogDescription className="text-[#329D9C]">
+            Fill in the student details below
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="firstName" className="text-[#205072]">First Name</Label>
+              <Input
+                id="firstName"
+                placeholder="Enter first name"
+                value={formData.firstName}
+                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                required
+                className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="lastName" className="text-[#205072]">Last Name</Label>
+              <Input
+                id="lastName"
+                placeholder="Enter last name"
+                value={formData.lastName}
+                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                required
+                className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-[#205072]">Email</Label>
             <Input
-              placeholder="First Name"
-              value={formData.firstName}
-              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              id="email"
+              type="email"
+              placeholder="Enter email address"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
-            />
-            <Input
-              placeholder="Last Name"
-              value={formData.lastName}
-              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-              required
+              className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
             />
           </div>
-          <Input
-            type="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            required
-          />
-          <Input
-            placeholder="Phone"
-            value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          />
-          <Input
-            placeholder="Roll Number"
-            value={formData.rollNumber}
-            onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
-          />
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-[#205072]">Phone</Label>
+            <Input
+              id="phone"
+              placeholder="Enter phone number"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="rollNumber" className="text-[#205072]">Roll Number</Label>
+            <Input
+              id="rollNumber"
+              placeholder="Enter roll number"
+              value={formData.rollNumber}
+              onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
+              className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+            />
+          </div>
           <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="className" className="text-[#205072]">Class</Label>
+              <Input
+                id="className"
+                placeholder="Enter class"
+                value={formData.className}
+                onChange={(e) => setFormData({ ...formData, className: e.target.value })}
+                className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="section" className="text-[#205072]">Section</Label>
+              <Input
+                id="section"
+                placeholder="Enter section"
+                value={formData.section}
+                onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="dateOfBirth" className="text-[#205072]">Date of Birth</Label>
             <Input
-              placeholder="Class"
-              value={formData.className}
-              onChange={(e) => setFormData({ ...formData, className: e.target.value })}
-            />
-            <Input
-              placeholder="Section"
-              value={formData.section}
-              onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+              id="dateOfBirth"
+              type="date"
+              value={formData.dateOfBirth}
+              onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+              className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
             />
           </div>
-          <Input
-            type="date"
-            value={formData.dateOfBirth}
-            onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-          />
-          <div className="flex gap-2 justify-end">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <div className="flex gap-2 justify-end pt-4">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+              className="border-[#CFF4D2] text-[#205072] hover:bg-[#CFF4D2]/30"
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Saving..." : "Save"}
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="bg-gradient-to-r from-[#329D9C] to-[#56C596] hover:from-[#205072] hover:to-[#329D9C] text-white"
+            >
+              {loading ? "Saving..." : "Save Student"}
             </Button>
           </div>
         </form>

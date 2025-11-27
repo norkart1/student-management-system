@@ -3,6 +3,8 @@
 import { ProtectedLayout } from "@/components/protected-layout"
 import { Calendar } from "@/components/ui/calendar"
 import { AddEventDialog } from "@/components/add-event-dialog"
+import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
+import { Spinner } from "@/components/spinner"
 import { useState, useEffect } from "react"
 import { ArrowLeft, Plus, Trash2, Calendar as CalendarIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -24,6 +26,9 @@ export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddDialog, setShowAddDialog] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [eventToDelete, setEventToDelete] = useState<Event | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(
     new Date(now.getFullYear(), now.getMonth(), 1)
   )
@@ -48,13 +53,23 @@ export default function CalendarPage() {
     }
   }
 
-  const handleDeleteEvent = async (eventId: string) => {
+  const handleDeleteClick = (event: Event) => {
+    setEventToDelete(event)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!eventToDelete) return
+
+    setDeleting(true)
     try {
-      const response = await fetch(`/api/events/${eventId}`, {
+      const response = await fetch(`/api/events/${eventToDelete._id}`, {
         method: "DELETE"
       })
 
       if (response.ok) {
+        setDeleteDialogOpen(false)
+        setEventToDelete(null)
         toast.success("Event deleted successfully")
         await fetchEvents()
       } else {
@@ -63,6 +78,8 @@ export default function CalendarPage() {
     } catch (error) {
       console.error("Error deleting event:", error)
       toast.error("Failed to delete event")
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -156,8 +173,8 @@ export default function CalendarPage() {
             </div>
             
             {loading ? (
-              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 text-center text-[#329D9C]">
-                Loading events...
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-8 flex justify-center">
+                <Spinner message="Loading events..." />
               </div>
             ) : selectedDateEvents.length > 0 ? (
               selectedDateEvents.map((event) => (
@@ -184,7 +201,7 @@ export default function CalendarPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDeleteEvent(event._id)}
+                      onClick={() => handleDeleteClick(event)}
                       className="text-red-500 hover:text-red-700 hover:bg-red-50"
                     >
                       <Trash2 className="h-5 w-5" />
@@ -210,6 +227,15 @@ export default function CalendarPage() {
         onOpenChange={setShowAddDialog}
         selectedDate={selectedDate}
         onEventAdded={fetchEvents}
+      />
+
+      <DeleteConfirmationDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Event"
+        itemName={eventToDelete?.title}
+        loading={deleting}
       />
     </ProtectedLayout>
   )

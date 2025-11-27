@@ -74,31 +74,31 @@ export function AddEventDialog({ open, onOpenChange, selectedDate, onEventAdded 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md border-[#CFF4D2]">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-semibold text-gray-800">
+            <DialogTitle className="text-xl font-semibold text-[#205072]">
               Add Event
             </DialogTitle>
             <button
               onClick={() => onOpenChange(false)}
-              className="rounded-full p-1 hover:bg-gray-100"
+              className="rounded-full p-1 hover:bg-[#CFF4D2]/30"
             >
-              <X className="h-5 w-5 text-gray-500" />
+              <X className="h-5 w-5 text-[#329D9C]" />
             </button>
           </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          <div className="bg-teal-50 rounded-lg p-3 flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-teal-600" />
-            <span className="text-sm font-medium text-teal-700">
+          <div className="bg-[#CFF4D2]/30 rounded-lg p-3 flex items-center gap-2">
+            <Calendar className="h-5 w-5 text-[#329D9C]" />
+            <span className="text-sm font-medium text-[#205072]">
               {formatDate(selectedDate)}
             </span>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-gray-700">
+            <Label htmlFor="title" className="text-[#205072]">
               Event Title
             </Label>
             <Input
@@ -107,12 +107,12 @@ export function AddEventDialog({ open, onOpenChange, selectedDate, onEventAdded 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              className="border-gray-200"
+              className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-gray-700">
+            <Label htmlFor="description" className="text-[#205072]">
               Description (Optional)
             </Label>
             <Input
@@ -120,19 +120,19 @@ export function AddEventDialog({ open, onOpenChange, selectedDate, onEventAdded 
               placeholder="Enter event description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="border-gray-200"
+              className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="type" className="text-gray-700">
+            <Label htmlFor="type" className="text-[#205072]">
               Event Type
             </Label>
             <select
               id="type"
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="w-full rounded-md border border-gray-200 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full rounded-md border border-[#CFF4D2] p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#329D9C] text-[#205072]"
             >
               <option value="general">General</option>
               <option value="holiday">Holiday</option>
@@ -142,19 +142,19 @@ export function AddEventDialog({ open, onOpenChange, selectedDate, onEventAdded 
             </select>
           </div>
 
-          <div className="flex gap-2 pt-2">
+          <div className="flex gap-2 pt-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="flex-1"
+              className="flex-1 border-[#CFF4D2] text-[#205072] hover:bg-[#CFF4D2]/30"
               disabled={loading}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-teal-600 hover:bg-teal-700 text-white"
+              className="flex-1 bg-gradient-to-r from-[#329D9C] to-[#56C596] hover:from-[#205072] hover:to-[#329D9C] text-white"
               disabled={loading}
             >
               {loading ? "Adding..." : "Add Event"}

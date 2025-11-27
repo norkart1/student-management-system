@@ -5,12 +5,17 @@ import { ProtectedLayout } from "@/components/protected-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataTable } from "@/components/data-table"
 import { AddStudentDialog } from "@/components/add-student-dialog"
+import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
+import { Spinner } from "@/components/spinner"
 import { GraduationCap } from "lucide-react"
 
 export default function StudentsPage() {
   const [students, setStudents] = useState([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [studentToDelete, setStudentToDelete] = useState<any>(null)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     fetchStudents()
@@ -43,14 +48,28 @@ export default function StudentsPage() {
     }
   }
 
-  const handleDeleteStudent = async (student: any) => {
-    if (confirm("Are you sure you want to delete this student?")) {
-      try {
-        await fetch(`/api/students/${student._id}`, { method: "DELETE" })
+  const handleDeleteClick = (student: any) => {
+    setStudentToDelete(student)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!studentToDelete) return
+    
+    setDeleting(true)
+    try {
+      const response = await fetch(`/api/students/${studentToDelete._id}`, { method: "DELETE" })
+      if (response.ok) {
+        setDeleteDialogOpen(false)
+        setStudentToDelete(null)
         fetchStudents()
-      } catch (error) {
-        console.error("Error deleting student:", error)
+      } else {
+        console.error("Failed to delete student")
       }
+    } catch (error) {
+      console.error("Error deleting student:", error)
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -83,12 +102,14 @@ export default function StudentsPage() {
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="text-center py-8 text-[#329D9C]">Loading...</div>
+              <div className="flex justify-center py-12">
+                <Spinner message="Loading students..." />
+              </div>
             ) : (
               <DataTable
                 columns={columns}
                 data={students}
-                onDelete={handleDeleteStudent}
+                onDelete={handleDeleteClick}
                 onAdd={() => setDialogOpen(true)}
               />
             )}
@@ -96,6 +117,15 @@ export default function StudentsPage() {
         </Card>
 
         <AddStudentDialog open={dialogOpen} onOpenChange={setDialogOpen} onSubmit={handleAddStudent} />
+        
+        <DeleteConfirmationDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Student"
+          itemName={studentToDelete ? `${studentToDelete.firstName} ${studentToDelete.lastName}` : undefined}
+          loading={deleting}
+        />
       </div>
     </ProtectedLayout>
   )

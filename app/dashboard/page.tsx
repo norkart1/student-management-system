@@ -3,7 +3,7 @@
 import { ProtectedLayout } from "@/components/protected-layout"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
-import { Users, GraduationCap, BookOpen, Calendar, FileText, TrendingUp, Activity, Clock } from "lucide-react"
+import { Users, GraduationCap, BookOpen, Calendar, TrendingUp } from "lucide-react"
 import { ProfileDropdown } from "@/components/profile-dropdown"
 import { useEffect, useState } from "react"
 
@@ -107,24 +107,6 @@ export default function DashboardPage() {
     },
   ]
 
-  const todaysTasks = [
-    {
-      title: "Review new student applications",
-      time: "10:00 AM",
-      icon: FileText,
-    },
-    {
-      title: "Staff meeting scheduled",
-      time: "2:30 PM",
-      icon: Users,
-    },
-    {
-      title: "Update library database",
-      time: "4:00 PM",
-      icon: BookOpen,
-    },
-  ]
-
   return (
     <ProtectedLayout>
       <div className="min-h-screen">
@@ -133,7 +115,7 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold mb-1">Hi! Admin</h1>
-                <p className="text-white/90 text-sm md:text-base">There are 3 important things today</p>
+                <p className="text-white/90 text-sm md:text-base">Welcome to your management dashboard</p>
               </div>
               <ProfileDropdown />
             </div>
@@ -155,33 +137,6 @@ export default function DashboardPage() {
                       className="bg-gradient-to-r from-[#329D9C] to-[#56C596] h-2 rounded-full transition-all duration-500"
                       style={{ width: `${stat.progress}%` }}
                     />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-[#CFF4D2]">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xl md:text-2xl font-bold text-[#205072]">Today's Plan</h2>
-              <Activity className="w-6 h-6 text-[#329D9C]" />
-            </div>
-            
-            <div className="space-y-3">
-              {todaysTasks.map((task, idx) => (
-                <div 
-                  key={idx} 
-                  className="flex items-center gap-4 p-4 rounded-2xl hover:bg-[#CFF4D2]/30 transition-all cursor-pointer group"
-                >
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#7BE495] to-[#CFF4D2] rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <task.icon className="w-6 h-6 text-[#205072]" strokeWidth={2} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-[#205072] text-sm md:text-base">{task.title}</p>
-                    <div className="flex items-center gap-1 mt-1">
-                      <Clock className="w-3 h-3 text-[#329D9C]" />
-                      <p className="text-xs text-[#56C596]">{task.time}</p>
-                    </div>
                   </div>
                 </div>
               ))}
