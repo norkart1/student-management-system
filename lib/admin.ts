@@ -1,5 +1,3 @@
-import bcrypt from "bcryptjs"
-
 export interface AdminUser {
   id: string
   username: string
@@ -9,10 +7,10 @@ export interface AdminUser {
 
 export async function validateAdminCredentials(username: string, password: string): Promise<AdminUser | null> {
   const adminUsername = process.env.ADMIN_USERNAME
-  const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH
+  const adminPassword = process.env.ADMIN_PASSWORD
   
-  if (!adminUsername || !adminPasswordHash) {
-    console.error("[Admin] Missing ADMIN_USERNAME or ADMIN_PASSWORD_HASH environment variables")
+  if (!adminUsername || !adminPassword) {
+    console.error("[Admin] Missing ADMIN_USERNAME or ADMIN_PASSWORD secrets")
     return null
   }
   
@@ -20,15 +18,14 @@ export async function validateAdminCredentials(username: string, password: strin
     return null
   }
   
-  const isValid = await bcrypt.compare(password, adminPasswordHash)
-  if (!isValid) {
+  if (password !== adminPassword) {
     return null
   }
   
   return {
     id: "admin",
     username: adminUsername,
-    email: process.env.ADMIN_EMAIL || "admin@example.com",
+    email: "admin@example.com",
     profileImage: ""
   }
 }
@@ -56,10 +53,10 @@ export async function verifyAdminPassword(id: string, password: string): Promise
     return false
   }
   
-  const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH
-  if (!adminPasswordHash) {
+  const adminPassword = process.env.ADMIN_PASSWORD
+  if (!adminPassword) {
     return false
   }
   
-  return bcrypt.compare(password, adminPasswordHash)
+  return password === adminPassword
 }
