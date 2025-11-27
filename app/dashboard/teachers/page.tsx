@@ -155,7 +155,7 @@ export default function TeachersPage() {
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     required
-                    className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+                    className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
                   />
                 </div>
                 <div className="space-y-2">
@@ -166,7 +166,7 @@ export default function TeachersPage() {
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     required
-                    className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+                    className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
                   />
                 </div>
               </div>

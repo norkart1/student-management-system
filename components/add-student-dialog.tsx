@@ -71,7 +71,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 required
-                className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+                className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
               />
             </div>
             <div className="space-y-2">
@@ -82,7 +82,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 required
-                className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+                className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
               />
             </div>
           </div>
@@ -126,7 +126,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
                 placeholder="Enter class"
                 value={formData.className}
                 onChange={(e) => setFormData({ ...formData, className: e.target.value })}
-                className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+                className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
               />
             </div>
             <div className="space-y-2">
@@ -136,7 +136,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
                 placeholder="Enter section"
                 value={formData.section}
                 onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+                className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
               />
             </div>
           </div>

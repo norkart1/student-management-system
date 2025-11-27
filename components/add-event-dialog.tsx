@@ -107,7 +107,7 @@ export function AddEventDialog({ open, onOpenChange, selectedDate, onEventAdded 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+              className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
             />
           </div>
 
@@ -120,7 +120,7 @@ export function AddEventDialog({ open, onOpenChange, selectedDate, onEventAdded 
               placeholder="Enter event description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+              className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
             />
           </div>
 

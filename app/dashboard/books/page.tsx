@@ -152,7 +152,7 @@ export default function BooksPage() {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   required
-                  className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+                  className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
                 />
               </div>
               <div className="space-y-2">
@@ -163,7 +163,7 @@ export default function BooksPage() {
                   value={formData.author}
                   onChange={(e) => setFormData({ ...formData, author: e.target.value })}
                   required
-                  className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+                  className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
                 />
               </div>
               <div className="space-y-2">
@@ -173,7 +173,7 @@ export default function BooksPage() {
                   placeholder="Enter ISBN"
                   value={formData.isbn}
                   onChange={(e) => setFormData({ ...formData, isbn: e.target.value })}
-                  className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+                  className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
                 />
               </div>
               <div className="space-y-2">
@@ -183,7 +183,7 @@ export default function BooksPage() {
                   placeholder="Enter category"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+                  className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
                 />
               </div>
               <div className="space-y-2">
@@ -194,7 +194,7 @@ export default function BooksPage() {
                   placeholder="Enter quantity"
                   value={formData.quantity}
                   onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                  className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+                  className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
                 />
               </div>
               <div className="space-y-2">
@@ -204,7 +204,7 @@ export default function BooksPage() {
                   placeholder="Enter shelf location"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="border-[#CFF4D2] focus:border-[#329D9C] focus:ring-[#329D9C]"
+                  className="!border-[#CFF4D2] focus-visible:!border-[#329D9C] focus-visible:!ring-[#329D9C]"
                 />
               </div>
               <div className="flex gap-2 justify-end pt-4">
