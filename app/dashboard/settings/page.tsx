@@ -18,12 +18,15 @@ import {
   CheckCircle2, 
   XCircle, 
   Database, 
-  Globe, 
-  Server,
   Activity,
   Shield,
   Eye,
-  EyeOff
+  EyeOff,
+  Smartphone,
+  Monitor,
+  Tablet,
+  Clock,
+  Trash2
 } from "lucide-react"
 
 interface AdminProfile {
@@ -40,6 +43,16 @@ interface SystemStatus {
   health: { status: string; uptime: string }
 }
 
+interface Device {
+  _id: string
+  deviceName: string
+  deviceType: string
+  browser: string
+  lastActive: string
+  firstLogin: string
+  loginCount: number
+}
+
 export default function SettingsPage() {
   const [profile, setProfile] = useState<AdminProfile | null>(null)
   const [loading, setLoading] = useState(true)
@@ -47,6 +60,8 @@ export default function SettingsPage() {
   const [savingPassword, setSavingPassword] = useState(false)
   const [status, setStatus] = useState<SystemStatus | null>(null)
   const [statusLoading, setStatusLoading] = useState(true)
+  const [devices, setDevices] = useState<Device[]>([])
+  const [devicesLoading, setDevicesLoading] = useState(true)
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
   
   const [formData, setFormData] = useState({
@@ -68,6 +83,7 @@ export default function SettingsPage() {
   useEffect(() => {
     fetchProfile()
     fetchStatus()
+    fetchDevices()
   }, [])
 
   const fetchProfile = async () => {
@@ -105,6 +121,25 @@ export default function SettingsPage() {
       console.error("Error fetching status:", error)
     } finally {
       setStatusLoading(false)
+    }
+  }
+
+  const fetchDevices = async () => {
+    try {
+      const token = getAuthToken()
+      const response = await fetch("/api/admin/devices", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setDevices(data)
+      }
+    } catch (error) {
+      console.error("Error fetching devices:", error)
+    } finally {
+      setDevicesLoading(false)
     }
   }
 
@@ -190,6 +225,28 @@ export default function SettingsPage() {
         setFormData({ ...formData, profileImage: reader.result as string })
       }
       reader.readAsDataURL(file)
+    }
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    })
+  }
+
+  const getDeviceIcon = (deviceType: string) => {
+    switch (deviceType) {
+      case "mobile":
+        return Smartphone
+      case "tablet":
+        return Tablet
+      default:
+        return Monitor
     }
   }
 
@@ -422,6 +479,75 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </div>
+
+        <Card className="border border-slate-200 bg-white shadow-sm rounded-2xl overflow-hidden">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Smartphone className="w-5 h-5 text-emerald-600" />
+                <div>
+                  <CardTitle className="text-slate-800 text-lg">Logged In Devices</CardTitle>
+                  <CardDescription className="text-slate-500">Devices that have accessed your account</CardDescription>
+                </div>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  setDevicesLoading(true)
+                  fetchDevices()
+                }}
+                disabled={devicesLoading}
+                className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+              >
+                Refresh
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6">
+            {devicesLoading ? (
+              <div className="flex justify-center py-8">
+                <Spinner message="Loading devices..." />
+              </div>
+            ) : devices.length > 0 ? (
+              <div className="space-y-4">
+                {devices.map((device) => {
+                  const DeviceIcon = getDeviceIcon(device.deviceType)
+                  return (
+                    <div key={device._id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center">
+                          <DeviceIcon className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-slate-800">{device.deviceName}</p>
+                          <p className="text-sm text-slate-500">{device.browser}</p>
+                          <div className="flex items-center gap-1 text-xs text-slate-400 mt-1">
+                            <Clock className="w-3 h-3" />
+                            <span>Last active: {formatDate(device.lastActive)}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full">
+                          {device.loginCount} login{device.loginCount > 1 ? "s" : ""}
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Smartphone className="w-8 h-8 text-slate-400" />
+                </div>
+                <p className="text-slate-500 font-medium">No devices found</p>
+                <p className="text-sm text-slate-400 mt-1">Devices will appear here after you log in</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         <Card className="border border-slate-200 bg-white shadow-sm rounded-2xl overflow-hidden">
           <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-5">
