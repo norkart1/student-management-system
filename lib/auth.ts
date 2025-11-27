@@ -1,12 +1,3 @@
-export const ADMIN_CREDENTIALS = {
-  username: "admin",
-  password: "12345@Admin",
-}
-
-export function validateAdminLogin(username: string, password: string): boolean {
-  return username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password
-}
-
 export function setAuthToken(token: string) {
   if (typeof window !== "undefined") {
     localStorage.setItem("auth_token", token)
@@ -28,4 +19,24 @@ export function clearAuthToken() {
 
 export function isAuthenticated(): boolean {
   return !!getAuthToken()
+}
+
+export function setAdminData(data: { id: string; username: string; email: string; profileImage?: string }) {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("admin_data", JSON.stringify(data))
+  }
+}
+
+export function getAdminData() {
+  if (typeof window !== "undefined") {
+    const data = localStorage.getItem("admin_data")
+    return data ? JSON.parse(data) : null
+  }
+  return null
+}
+
+export function clearAdminData() {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("admin_data")
+  }
 }

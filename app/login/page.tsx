@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { setAuthToken } from "@/lib/auth"
+import { setAuthToken, setAdminData } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -34,6 +34,9 @@ export default function LoginPage() {
       if (response.ok) {
         const data = await response.json()
         setAuthToken(data.token)
+        if (data.admin) {
+          setAdminData(data.admin)
+        }
         router.push("/dashboard")
       } else {
         setError("Invalid username or password")
