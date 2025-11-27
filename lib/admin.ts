@@ -87,3 +87,21 @@ export async function initializeDefaultAdmin() {
   
   return existingAdmin || await collection.findOne({ username: "admin" })
 }
+
+export async function resetDefaultAdminPassword() {
+  const collection = await getAdminCollection()
+  const hashedPassword = await bcrypt.hash("12345@Admin", SALT_ROUNDS)
+  
+  const result = await collection.updateOne(
+    { username: "admin" },
+    { 
+      $set: { 
+        password: hashedPassword,
+        updatedAt: new Date()
+      }
+    }
+  )
+  
+  console.log("[Admin] Admin password reset to default")
+  return result.modifiedCount > 0
+}
