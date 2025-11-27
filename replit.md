@@ -34,20 +34,22 @@ MongoDB collections:
 ## Configuration
 
 ### Environment Variables
-- `MONGODB_URI`: MongoDB connection string (required)
+- `MONGODB_URI`: MongoDB connection string (required for data storage)
 - `JWT_SECRET`: Secret key for JWT token signing (optional, has default for development)
+
+### Secrets (Encrypted)
+- `ADMIN_USERNAME`: Admin login username (stored securely, no one can see it)
+- `ADMIN_PASSWORD`: Admin login password (stored securely, no one can see it)
 
 ### Dev Server
 - Port: 5000
 - Host: 0.0.0.0
-- Already configured for Replit proxy with allowedDevOrigins
+- Configured for Replit proxy and Vercel deployment
 
 ### Authentication
-- Secure JWT-based authentication with bcrypt password hashing
-- Default admin credentials (stored in MongoDB with hashed password):
-  - Username: `admin`
-  - Password: `12345@Admin`
-- Admin credentials can be changed via Settings page
+- JWT-based authentication with credentials stored in encrypted secrets
+- No database required for authentication - works with Vercel and any hosting platform
+- Admin credentials are stored securely in environment secrets
 
 ## Workflow
 - **Start Application**: Runs `next dev -p 5000 -H 0.0.0.0`

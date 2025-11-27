@@ -11,7 +11,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ 
       success: false, 
-      error: "Password changes are not available in environment variable mode. Please update ADMIN_PASSWORD_HASH environment variable directly." 
+      error: "Password changes are not available in environment variable mode. Please update ADMIN_PASSWORD secret directly." 
     }, { status: 400 })
   } catch (error) {
     console.error("Update password error:", error)
