@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
 import { Spinner } from "@/components/spinner"
+import { CloudinaryUpload } from "@/components/cloudinary-upload"
 import { BookOpen, BookText, User } from "lucide-react"
 
 export default function BooksPage() {
@@ -24,6 +25,7 @@ export default function BooksPage() {
   const [formData, setFormData] = useState({
     title: "",
     author: "",
+    image: "",
   })
 
   useEffect(() => {
@@ -55,6 +57,7 @@ export default function BooksPage() {
         setFormData({
           title: "",
           author: "",
+          image: "",
         })
         setDialogOpen(false)
         fetchBooks()
@@ -92,6 +95,7 @@ export default function BooksPage() {
   }
 
   const columns = [
+    { key: "image", label: "Cover", type: "image" as const },
     { key: "title", label: "Title" },
     { key: "author", label: "Author" },
   ]
@@ -143,6 +147,13 @@ export default function BooksPage() {
               <DialogDescription className="text-slate-500">Fill in the book details</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-5">
+              <CloudinaryUpload
+                currentImage={formData.image}
+                onUpload={(url) => setFormData({ ...formData, image: url })}
+                onRemove={() => setFormData({ ...formData, image: "" })}
+                type="book"
+              />
+
               <div className="space-y-2">
                 <Label htmlFor="title" className="text-slate-700 flex items-center gap-2">
                   <BookText className="w-4 h-4 text-emerald-600" />

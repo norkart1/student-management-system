@@ -10,6 +10,7 @@ interface Column {
   key: string
   label: string
   type?: "text" | "image"
+  imageStyle?: "avatar" | "book"
 }
 
 interface DataTableProps {
@@ -28,6 +29,27 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd }: DataTableP
   const renderCell = (item: any, column: Column) => {
     if (column.type === "image") {
       const imageUrl = item[column.key]
+      const isBookCover = column.label.toLowerCase().includes("cover") || column.imageStyle === "book"
+      
+      if (isBookCover) {
+        if (imageUrl) {
+          return (
+            <div className="w-10 h-14 rounded-md overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <img 
+                src={imageUrl} 
+                alt="Cover" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )
+        }
+        return (
+          <div className="w-10 h-14 rounded-md bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <BookOpen className="w-5 h-5 text-white" />
+          </div>
+        )
+      }
+      
       if (imageUrl) {
         return (
           <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">

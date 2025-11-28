@@ -1,12 +1,13 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { User, Mail, Phone, Camera } from "lucide-react"
+import { User, Mail, Phone } from "lucide-react"
+import { CloudinaryUpload } from "@/components/cloudinary-upload"
 
 interface AddStudentDialogProps {
   open: boolean
@@ -23,7 +24,24 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
     image: initialData?.image || "",
   })
   const [loading, setLoading] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        fullName: initialData.fullName || "",
+        email: initialData.email || "",
+        phone: initialData.phone || "",
+        image: initialData.image || "",
+      })
+    } else {
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        image: "",
+      })
+    }
+  }, [initialData, open])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -44,17 +62,6 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
     }
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result as string })
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-md">
@@ -67,36 +74,12 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="flex flex-col items-center gap-3">
-            <div className="relative">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
-                {formData.image ? (
-                  <img 
-                    src={formData.image} 
-                    alt="Student" 
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="w-8 h-8 text-white" />
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute bottom-0 right-0 w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-emerald-600 transition-colors"
-              >
-                <Camera className="w-3.5 h-3.5" />
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-            </div>
-            <p className="text-xs text-slate-400">Click to upload photo</p>
-          </div>
+          <CloudinaryUpload
+            currentImage={formData.image}
+            onUpload={(url) => setFormData({ ...formData, image: url })}
+            onRemove={() => setFormData({ ...formData, image: "" })}
+            type="avatar"
+          />
 
           <div className="space-y-2">
             <Label htmlFor="fullName" className="text-slate-700 flex items-center gap-2">
