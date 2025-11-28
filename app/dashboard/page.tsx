@@ -6,37 +6,39 @@ import Link from "next/link"
 import { Users, GraduationCap, BookOpen, Calendar, TrendingUp, ChevronRight } from "lucide-react"
 import { ProfileDropdown } from "@/components/profile-dropdown"
 import { useEffect, useState } from "react"
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, Tooltip, Legend, Area, AreaChart } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Area, AreaChart } from "recharts"
 
-const weeklyData = [
-  { day: "Sat", students: 4, teachers: 2 },
-  { day: "Sun", students: 6, teachers: 3 },
-  { day: "Mon", students: 8, teachers: 4 },
-  { day: "Tue", students: 5, teachers: 3 },
-  { day: "Wed", students: 7, teachers: 5 },
-  { day: "Thu", students: 9, teachers: 4 },
-  { day: "Fri", students: 6, teachers: 3 },
-]
+interface WeeklyDataPoint {
+  day: string
+  date: string
+  students: number
+  teachers: number
+  books: number
+}
 
-const activityData = [
-  { day: "Sat", activity: 45 },
-  { day: "Sun", activity: 52 },
-  { day: "Mon", activity: 38 },
-  { day: "Tue", activity: 65 },
-  { day: "Wed", activity: 48 },
-  { day: "Thu", activity: 72 },
-  { day: "Fri", activity: 58 },
-]
+interface ActivityDataPoint {
+  day: string
+  date: string
+  activity: number
+}
+
+interface StatsData {
+  students: number | null
+  teachers: number | null
+  books: number | null
+  weekly: WeeklyDataPoint[]
+  activity: ActivityDataPoint[]
+  avgActivity: number
+}
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState<{
-    students: number | null
-    teachers: number | null
-    books: number | null
-  }>({
+  const [stats, setStats] = useState<StatsData>({
     students: null,
     teachers: null,
     books: null,
+    weekly: [],
+    activity: [],
+    avgActivity: 0
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -67,6 +69,9 @@ export default function DashboardPage() {
         students: data.students,
         teachers: data.teachers,
         books: data.books,
+        weekly: data.weekly || [],
+        activity: data.activity || [],
+        avgActivity: data.avgActivity || 0
       })
       setError(false)
     } catch (error) {
@@ -75,6 +80,9 @@ export default function DashboardPage() {
         students: null,
         teachers: null,
         books: null,
+        weekly: [],
+        activity: [],
+        avgActivity: 0
       })
       setError(true)
     } finally {
@@ -182,7 +190,7 @@ export default function DashboardPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg font-semibold text-slate-800">Weekly Overview</CardTitle>
-                  <span className="text-xs text-slate-400">This Week</span>
+                  <span className="text-xs text-slate-400">Last 7 Days</span>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
@@ -197,37 +205,55 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="h-[200px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={weeklyData} barGap={4}>
-                      <XAxis 
-                        dataKey="day" 
-                        axisLine={false} 
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: '#94a3b8' }}
-                      />
-                      <YAxis hide />
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: 'white',
-                          border: 'none',
-                          borderRadius: '12px',
-                          boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-                        }}
-                      />
-                      <Bar 
-                        dataKey="students" 
-                        fill="#a855f7" 
-                        radius={[6, 6, 0, 0]}
-                        maxBarSize={24}
-                      />
-                      <Bar 
-                        dataKey="teachers" 
-                        fill="#fb923c" 
-                        radius={[6, 6, 0, 0]}
-                        maxBarSize={24}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  {loading ? (
+                    <div className="h-full flex items-center justify-center text-slate-400">
+                      Loading chart data...
+                    </div>
+                  ) : stats.weekly.length === 0 ? (
+                    <div className="h-full flex items-center justify-center text-slate-400">
+                      No data available
+                    </div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={stats.weekly} barGap={4}>
+                        <XAxis 
+                          dataKey="day" 
+                          axisLine={false} 
+                          tickLine={false}
+                          tick={{ fontSize: 12, fill: '#94a3b8' }}
+                        />
+                        <YAxis hide />
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: 'white',
+                            border: 'none',
+                            borderRadius: '12px',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+                          }}
+                          labelFormatter={(label, payload) => {
+                            if (payload && payload.length > 0) {
+                              return payload[0]?.payload?.date || label
+                            }
+                            return label
+                          }}
+                        />
+                        <Bar 
+                          dataKey="students" 
+                          fill="#a855f7" 
+                          radius={[6, 6, 0, 0]}
+                          maxBarSize={24}
+                          name="Students Added"
+                        />
+                        <Bar 
+                          dataKey="teachers" 
+                          fill="#fb923c" 
+                          radius={[6, 6, 0, 0]}
+                          maxBarSize={24}
+                          name="Teachers Added"
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -236,44 +262,64 @@ export default function DashboardPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg font-semibold text-slate-800">Activity Overview</CardTitle>
-                  <span className="text-xs text-slate-400">Avg activity: 54</span>
+                  <span className="text-xs text-slate-400">
+                    Avg activity: {loading ? "..." : stats.avgActivity}
+                  </span>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="h-[220px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={activityData}>
-                      <defs>
-                        <linearGradient id="colorActivity" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <XAxis 
-                        dataKey="day" 
-                        axisLine={false} 
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: '#94a3b8' }}
-                      />
-                      <YAxis hide />
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: 'white',
-                          border: 'none',
-                          borderRadius: '12px',
-                          boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-                        }}
-                      />
-                      <Area 
-                        type="monotone" 
-                        dataKey="activity" 
-                        stroke="#f97316" 
-                        strokeWidth={2.5}
-                        fillOpacity={1}
-                        fill="url(#colorActivity)"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                  {loading ? (
+                    <div className="h-full flex items-center justify-center text-slate-400">
+                      Loading chart data...
+                    </div>
+                  ) : stats.activity.length === 0 ? (
+                    <div className="h-full flex items-center justify-center text-slate-400">
+                      No activity data available
+                    </div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={stats.activity}>
+                        <defs>
+                          <linearGradient id="colorActivity" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <XAxis 
+                          dataKey="day" 
+                          axisLine={false} 
+                          tickLine={false}
+                          tick={{ fontSize: 12, fill: '#94a3b8' }}
+                        />
+                        <YAxis hide />
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: 'white',
+                            border: 'none',
+                            borderRadius: '12px',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+                          }}
+                          labelFormatter={(label, payload) => {
+                            if (payload && payload.length > 0) {
+                              return payload[0]?.payload?.date || label
+                            }
+                            return label
+                          }}
+                          formatter={(value: number) => [`${value} items`, 'Total Activity']}
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="activity" 
+                          stroke="#f97316" 
+                          strokeWidth={2.5}
+                          fillOpacity={1}
+                          fill="url(#colorActivity)"
+                          name="Activity"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  )}
                 </div>
               </CardContent>
             </Card>
