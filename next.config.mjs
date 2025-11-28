@@ -8,10 +8,10 @@ const nextConfig = {
   },
   experimental: {
     serverActions: {
-      allowedOrigins: ['*.replit.dev', '*.repl.co', '*.replit.app'],
+      allowedOrigins: ['localhost:5000', process.env.REPLIT_DEV_DOMAIN, process.env.REPLIT_DOMAINS?.split(',')[0]].filter(Boolean),
     },
   },
-  allowedDevOrigins: ['*.replit.dev', '*.repl.co', '*.replit.app'],
+  allowedDevOrigins: ['localhost:5000', process.env.REPLIT_DEV_DOMAIN, process.env.REPLIT_DOMAINS?.split(',')[0]].filter(Boolean),
   webpack: (config, { isServer }) => {
     config.watchOptions = {
       poll: 1000,
