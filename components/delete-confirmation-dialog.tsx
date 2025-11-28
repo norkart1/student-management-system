@@ -32,28 +32,32 @@ export function DeleteConfirmationDialog({
 }: DeleteConfirmationDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader className="items-center text-center pt-4">
-          <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mb-4">
-            <AlertCircle className="w-8 h-8 text-red-500" />
-          </div>
-          <DialogTitle className="text-xl font-semibold text-gray-900">
-            {title}
-          </DialogTitle>
-          <DialogDescription className="text-gray-500 text-center mt-2">
-            {itemName ? (
-              <>Are you sure you want to delete <span className="font-medium text-gray-700">"{itemName}"</span>? This action cannot be undone.</>
-            ) : (
-              description
-            )}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="flex flex-row gap-3 mt-6 sm:justify-center">
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden rounded-2xl border-0 shadow-2xl">
+        <div className="p-8 pb-6">
+          <DialogHeader className="items-center text-center space-y-4">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center shadow-lg shadow-red-100">
+              <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-inner">
+                <AlertCircle className="w-8 h-8 text-red-500" strokeWidth={2} />
+              </div>
+            </div>
+            <DialogTitle className="text-2xl font-bold text-gray-900 pt-2">
+              {title}
+            </DialogTitle>
+            <DialogDescription className="text-gray-500 text-center text-base leading-relaxed max-w-sm">
+              {itemName ? (
+                <>Are you sure you want to delete <span className="font-semibold text-gray-800">"{itemName}"</span>? This action cannot be undone.</>
+              ) : (
+                description
+              )}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+        <DialogFooter className="flex flex-row gap-4 p-6 pt-4 bg-gray-50/50 border-t border-gray-100">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={loading}
-            className="flex-1 sm:flex-none sm:min-w-[120px]"
+            className="flex-1 h-12 text-base font-medium rounded-xl border-2 border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all"
           >
             Cancel
           </Button>
@@ -61,7 +65,7 @@ export function DeleteConfirmationDialog({
             variant="destructive"
             onClick={onConfirm}
             disabled={loading}
-            className="flex-1 sm:flex-none sm:min-w-[120px] bg-red-500 hover:bg-red-600"
+            className="flex-1 h-12 text-base font-medium rounded-xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/25 transition-all"
           >
             {loading ? "Deleting..." : "Delete"}
           </Button>

@@ -11,6 +11,7 @@ const nextConfig = {
       allowedOrigins: ['*.replit.dev', '*.repl.co', '*.replit.app'],
     },
   },
+  allowedDevOrigins: ['*.replit.dev', '*.repl.co', '*.replit.app'],
   webpack: (config, { isServer }) => {
     config.watchOptions = {
       poll: 1000,
