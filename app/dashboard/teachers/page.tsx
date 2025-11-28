@@ -28,6 +28,7 @@ export default function TeachersPage() {
     phone: "",
     image: "",
   })
+  const [teacherToEdit, setTeacherToEdit] = useState<any>(null)
 
   useEffect(() => {
     fetchTeachers()
@@ -49,25 +50,61 @@ export default function TeachersPage() {
     e.preventDefault()
     setSaving(true)
     try {
-      const response = await fetch("/api/teachers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
-      if (response.ok) {
-        setFormData({
-          fullName: "",
-          email: "",
-          phone: "",
-          image: "",
+      if (teacherToEdit) {
+        const response = await fetch(`/api/teachers/${teacherToEdit._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
         })
-        setDialogOpen(false)
-        fetchTeachers()
+        if (response.ok) {
+          resetForm()
+          setDialogOpen(false)
+          fetchTeachers()
+        }
+      } else {
+        const response = await fetch("/api/teachers", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        })
+        if (response.ok) {
+          resetForm()
+          setDialogOpen(false)
+          fetchTeachers()
+        }
       }
     } catch (error) {
-      console.error("Error adding teacher:", error)
+      console.error("Error saving teacher:", error)
     } finally {
       setSaving(false)
+    }
+  }
+
+  const resetForm = () => {
+    setFormData({
+      fullName: "",
+      email: "",
+      phone: "",
+      image: "",
+    })
+    setTeacherToEdit(null)
+  }
+
+  const handleEditClick = (teacher: any) => {
+    setTeacherToEdit(teacher)
+    setFormData({
+      fullName: teacher.fullName || "",
+      email: teacher.email || "",
+      phone: teacher.phone || "",
+      image: teacher.image || "",
+    })
+    setDialogOpen(true)
+  }
+
+  const handleDialogClose = (open: boolean) => {
+    setDialogOpen(open)
+    if (!open) {
+      resetForm()
     }
   }
 
@@ -139,15 +176,17 @@ export default function TeachersPage() {
                 <Spinner message="Loading teachers..." />
               </div>
             ) : (
-              <DataTable columns={columns} data={teachers} onDelete={handleDeleteClick} onAdd={() => setDialogOpen(true)} />
+              <DataTable columns={columns} data={teachers} onEdit={handleEditClick} onDelete={handleDeleteClick} onAdd={() => setDialogOpen(true)} />
             )}
           </CardContent>
         </Card>
 
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
           <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-slate-800 text-xl font-bold">Add New Teacher</DialogTitle>
+              <DialogTitle className="text-slate-800 text-xl font-bold">
+                {teacherToEdit ? "Edit Teacher" : "Add New Teacher"}
+              </DialogTitle>
               <DialogDescription className="text-slate-500">Fill in the teacher details</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-5">
@@ -218,7 +257,7 @@ export default function TeachersPage() {
                   disabled={saving}
                   className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md"
                 >
-                  {saving ? "Saving..." : "Save Teacher"}
+                  {saving ? "Saving..." : (teacherToEdit ? "Update Teacher" : "Save Teacher")}
                 </Button>
               </div>
             </form>

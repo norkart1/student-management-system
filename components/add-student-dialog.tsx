@@ -26,20 +26,22 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (initialData) {
-      setFormData({
-        fullName: initialData.fullName || "",
-        email: initialData.email || "",
-        phone: initialData.phone || "",
-        image: initialData.image || "",
-      })
-    } else {
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        image: "",
-      })
+    if (open) {
+      if (initialData) {
+        setFormData({
+          fullName: initialData.fullName || "",
+          email: initialData.email || "",
+          phone: initialData.phone || "",
+          image: initialData.image || "",
+        })
+      } else {
+        setFormData({
+          fullName: "",
+          email: "",
+          phone: "",
+          image: "",
+        })
+      }
     }
   }, [initialData, open])
 
@@ -141,7 +143,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
               disabled={loading}
               className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md"
             >
-              {loading ? "Saving..." : "Save Student"}
+              {loading ? "Saving..." : (initialData ? "Update Student" : "Save Student")}
             </Button>
           </div>
         </form>

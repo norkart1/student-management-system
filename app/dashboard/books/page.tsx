@@ -27,6 +27,7 @@ export default function BooksPage() {
     author: "",
     image: "",
   })
+  const [bookToEdit, setBookToEdit] = useState<any>(null)
 
   useEffect(() => {
     fetchBooks()
@@ -48,24 +49,59 @@ export default function BooksPage() {
     e.preventDefault()
     setSaving(true)
     try {
-      const response = await fetch("/api/books", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
-      if (response.ok) {
-        setFormData({
-          title: "",
-          author: "",
-          image: "",
+      if (bookToEdit) {
+        const response = await fetch(`/api/books/${bookToEdit._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
         })
-        setDialogOpen(false)
-        fetchBooks()
+        if (response.ok) {
+          resetForm()
+          setDialogOpen(false)
+          fetchBooks()
+        }
+      } else {
+        const response = await fetch("/api/books", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        })
+        if (response.ok) {
+          resetForm()
+          setDialogOpen(false)
+          fetchBooks()
+        }
       }
     } catch (error) {
-      console.error("Error adding book:", error)
+      console.error("Error saving book:", error)
     } finally {
       setSaving(false)
+    }
+  }
+
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      author: "",
+      image: "",
+    })
+    setBookToEdit(null)
+  }
+
+  const handleEditClick = (book: any) => {
+    setBookToEdit(book)
+    setFormData({
+      title: book.title || "",
+      author: book.author || "",
+      image: book.image || "",
+    })
+    setDialogOpen(true)
+  }
+
+  const handleDialogClose = (open: boolean) => {
+    setDialogOpen(open)
+    if (!open) {
+      resetForm()
     }
   }
 
@@ -135,15 +171,17 @@ export default function BooksPage() {
                 <Spinner message="Loading books..." />
               </div>
             ) : (
-              <DataTable columns={columns} data={books} onDelete={handleDeleteClick} onAdd={() => setDialogOpen(true)} />
+              <DataTable columns={columns} data={books} onEdit={handleEditClick} onDelete={handleDeleteClick} onAdd={() => setDialogOpen(true)} />
             )}
           </CardContent>
         </Card>
 
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
           <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-slate-800 text-xl font-bold">Add New Book</DialogTitle>
+              <DialogTitle className="text-slate-800 text-xl font-bold">
+                {bookToEdit ? "Edit Book" : "Add New Book"}
+              </DialogTitle>
               <DialogDescription className="text-slate-500">Fill in the book details</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-5">
@@ -198,7 +236,7 @@ export default function BooksPage() {
                   disabled={saving}
                   className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md"
                 >
-                  {saving ? "Saving..." : "Save Book"}
+                  {saving ? "Saving..." : (bookToEdit ? "Update Book" : "Save Book")}
                 </Button>
               </div>
             </form>

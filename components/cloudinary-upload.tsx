@@ -21,6 +21,10 @@ export function CloudinaryUpload({ onUpload, currentImage, type = "avatar", onRe
     }
   }
 
+  const handleUploadStart = () => {
+    setIsUploading(true)
+  }
+
   const isAvatar = type === "avatar"
   const Icon = isAvatar ? User : BookOpen
 
@@ -62,7 +66,8 @@ export function CloudinaryUpload({ onUpload, currentImage, type = "avatar", onRe
             croppingShowDimensions: true,
           }}
           onSuccess={handleSuccess}
-          onOpen={() => setIsUploading(false)}
+          onQueuesStart={handleUploadStart}
+          onError={() => setIsUploading(false)}
         >
           {({ open }) => (
             <button

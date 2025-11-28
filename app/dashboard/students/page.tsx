@@ -15,6 +15,7 @@ export default function StudentsPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [studentToDelete, setStudentToDelete] = useState<any>(null)
+  const [studentToEdit, setStudentToEdit] = useState<any>(null)
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
@@ -35,16 +36,40 @@ export default function StudentsPage() {
 
   const handleAddStudent = async (formData: any) => {
     try {
-      const response = await fetch("/api/students", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
-      if (response.ok) {
-        fetchStudents()
+      if (studentToEdit) {
+        const response = await fetch(`/api/students/${studentToEdit._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        })
+        if (response.ok) {
+          setStudentToEdit(null)
+          fetchStudents()
+        }
+      } else {
+        const response = await fetch("/api/students", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        })
+        if (response.ok) {
+          fetchStudents()
+        }
       }
     } catch (error) {
-      console.error("Error adding student:", error)
+      console.error("Error saving student:", error)
+    }
+  }
+
+  const handleEditClick = (student: any) => {
+    setStudentToEdit(student)
+    setDialogOpen(true)
+  }
+
+  const handleDialogClose = (open: boolean) => {
+    setDialogOpen(open)
+    if (!open) {
+      setStudentToEdit(null)
     }
   }
 
@@ -118,6 +143,7 @@ export default function StudentsPage() {
               <DataTable
                 columns={columns}
                 data={students}
+                onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
                 onAdd={() => setDialogOpen(true)}
               />
@@ -125,7 +151,12 @@ export default function StudentsPage() {
           </CardContent>
         </Card>
 
-        <AddStudentDialog open={dialogOpen} onOpenChange={setDialogOpen} onSubmit={handleAddStudent} />
+        <AddStudentDialog 
+          open={dialogOpen} 
+          onOpenChange={handleDialogClose} 
+          onSubmit={handleAddStudent}
+          initialData={studentToEdit}
+        />
         
         <DeleteConfirmationDialog
           open={deleteDialogOpen}
