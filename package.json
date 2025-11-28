@@ -57,6 +57,7 @@
     "mongodb": "latest",
     "mongodb-client-encryption": "latest",
     "next": "^15.1.6",
+    "next-cloudinary": "^6.17.5",
     "next-themes": "latest",
     "react": "^18.3.1",
     "react-day-picker": "9.8.0",
