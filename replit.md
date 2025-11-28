@@ -71,6 +71,13 @@ A comprehensive student management system built with Next.js 15, React, TypeScri
    - Activity chart aggregates total additions per day
    - Loading and empty states for charts handled gracefully
 
+5. **Mobile Responsive Data Tables**
+   - DataTable component now uses card-based layout on mobile devices
+   - Desktop view retains traditional table layout (md breakpoint and above)
+   - Mobile cards show avatar/icon, primary field as title, secondary fields with icons
+   - Text truncation enabled for long email/phone values
+   - Edit/delete action buttons accessible on all screen sizes
+
 ## Running the Application
 
 ### Development

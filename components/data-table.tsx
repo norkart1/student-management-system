@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Pencil, Trash2, FileText, User, Mail, Phone, ChevronRight } from "lucide-react"
+import { Plus, Search, Pencil, Trash2, FileText, User, Mail, Phone, BookOpen, Hash } from "lucide-react"
 
 interface Column {
   key: string
@@ -50,6 +50,22 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd }: DataTableP
 
   const getImageColumn = () => columns.find(col => col.type === "image")
   const getTextColumns = () => columns.filter(col => col.type !== "image")
+
+  const getFieldIcon = (key: string) => {
+    switch (key.toLowerCase()) {
+      case "email":
+        return <Mail className="w-3.5 h-3.5 flex-shrink-0 text-slate-400" />
+      case "phone":
+        return <Phone className="w-3.5 h-3.5 flex-shrink-0 text-slate-400" />
+      case "isbn":
+        return <Hash className="w-3.5 h-3.5 flex-shrink-0 text-slate-400" />
+      case "subject":
+      case "department":
+        return <BookOpen className="w-3.5 h-3.5 flex-shrink-0 text-slate-400" />
+      default:
+        return null
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -163,18 +179,25 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd }: DataTableP
                     </div>
                   )}
                   
-                  <div className="flex-1 min-w-0 space-y-1">
+                  {!imageColumn && (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
+                      <FileText className="w-5 h-5 text-white" />
+                    </div>
+                  )}
+                  
+                  <div className="flex-1 min-w-0 space-y-1.5">
                     {textColumns.map((col, colIdx) => (
-                      <div key={col.key} className="flex items-center gap-2">
+                      <div key={col.key} className="min-w-0">
                         {colIdx === 0 ? (
                           <p className="font-semibold text-slate-800 truncate">
                             {item[col.key] || "-"}
                           </p>
                         ) : (
-                          <div className="flex items-center gap-1.5 text-slate-500 text-sm">
-                            {col.key === "email" && <Mail className="w-3.5 h-3.5 flex-shrink-0" />}
-                            {col.key === "phone" && <Phone className="w-3.5 h-3.5 flex-shrink-0" />}
-                            <span className="truncate">{item[col.key] || "-"}</span>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            {getFieldIcon(col.key)}
+                            <span className="text-slate-500 text-sm truncate block">
+                              {item[col.key] || "-"}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -182,7 +205,7 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd }: DataTableP
                   </div>
 
                   {(onEdit || onDelete) && (
-                    <div className="flex items-center gap-1 flex-shrink-0">
+                    <div className="flex items-center gap-1 flex-shrink-0 ml-2">
                       {onEdit && (
                         <Button 
                           size="sm" 
