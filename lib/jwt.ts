@@ -1,6 +1,13 @@
 import jwt from "jsonwebtoken"
 
-const JWT_SECRET = process.env.JWT_SECRET || "student-management-secret-key-change-in-production"
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET
+  if (!secret) {
+    throw new Error("JWT_SECRET environment variable is not defined")
+  }
+  return secret
+}
+
 const JWT_EXPIRES_IN = "7d"
 
 export interface TokenPayload {
@@ -11,12 +18,12 @@ export interface TokenPayload {
 }
 
 export function signToken(payload: { adminId: string; username: string }): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
+  return jwt.sign(payload, getJwtSecret(), { expiresIn: JWT_EXPIRES_IN })
 }
 
 export function verifyToken(token: string): TokenPayload | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload
+    const decoded = jwt.verify(token, getJwtSecret()) as TokenPayload
     return decoded
   } catch (error) {
     return null

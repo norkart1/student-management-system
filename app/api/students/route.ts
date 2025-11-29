@@ -1,5 +1,13 @@
 import { connectToDatabase } from "@/lib/db"
+import { validateAuth, unauthorizedResponse } from "@/lib/auth-middleware"
 import { type NextRequest, NextResponse } from "next/server"
+
+interface StudentInput {
+  fullName: string
+  email: string
+  phone: string
+  imageUrl?: string
+}
 
 export async function GET() {
   try {
@@ -7,17 +15,30 @@ export async function GET() {
     const students = await db.collection("students").find({}).sort({ createdAt: -1 }).toArray()
     return NextResponse.json(students)
   } catch (error) {
+    console.error("Failed to fetch students:", error)
     return NextResponse.json({ error: "Failed to fetch students" }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
+  const auth = validateAuth(request)
+  if (!auth.valid) {
+    return unauthorizedResponse(auth.error)
+  }
+
   try {
     const { db } = await connectToDatabase()
-    const data = await request.json()
+    const data: StudentInput = await request.json()
+
+    if (!data.fullName || !data.email || !data.phone) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
 
     const student = {
-      ...data,
+      fullName: data.fullName.trim(),
+      email: data.email.trim().toLowerCase(),
+      phone: data.phone.trim(),
+      imageUrl: data.imageUrl || null,
       createdAt: new Date(),
       updatedAt: new Date(),
     }
@@ -25,6 +46,7 @@ export async function POST(request: NextRequest) {
     const result = await db.collection("students").insertOne(student)
     return NextResponse.json({ ...student, _id: result.insertedId }, { status: 201 })
   } catch (error) {
+    console.error("Failed to create student:", error)
     return NextResponse.json({ error: "Failed to create student" }, { status: 500 })
   }
 }
