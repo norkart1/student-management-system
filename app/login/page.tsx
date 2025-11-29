@@ -1,3 +1,5 @@
+"use client"
+
 import dynamic from "next/dynamic"
 import { GraduationCap } from "lucide-react"
 
@@ -17,14 +19,14 @@ const LoginForm = dynamic(() => import("@/components/login-form"), {
             </div>
             <div className="space-y-5">
               <div className="space-y-2">
-                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-12 bg-gray-200 rounded-xl animate-pulse"></div>
+                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
+                <div className="h-12 bg-gray-200 rounded-xl animate-pulse" />
               </div>
               <div className="space-y-2">
-                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-12 bg-gray-200 rounded-xl animate-pulse"></div>
+                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
+                <div className="h-12 bg-gray-200 rounded-xl animate-pulse" />
               </div>
-              <div className="h-12 bg-gradient-to-r from-[#329D9C] to-[#56C596] rounded-xl mt-6"></div>
+              <div className="h-12 bg-gradient-to-r from-[#329D9C] to-[#56C596] rounded-xl mt-6 animate-pulse" />
             </div>
           </div>
         </div>
