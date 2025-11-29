@@ -48,11 +48,13 @@ export function generateReportHTML(report: ReportData, isSingle: boolean = false
   }
 
   const generateTableReport = () => {
+    const isBook = type === "books"
     return `
       <table class="data-table">
         <thead>
           <tr>
             <th>#</th>
+            <th>Photo</th>
             ${columns.filter(c => c.key !== 'imageUrl').map(col => `<th>${col.label}</th>`).join('')}
           </tr>
         </thead>
@@ -60,6 +62,15 @@ export function generateReportHTML(report: ReportData, isSingle: boolean = false
           ${data.map((item, idx) => `
             <tr>
               <td>${idx + 1}</td>
+              <td class="image-cell">
+                ${item.imageUrl ? `
+                  <img src="${item.imageUrl}" alt="Photo" class="table-image ${isBook ? 'book-thumb' : 'avatar-thumb'}" />
+                ` : `
+                  <div class="table-image-placeholder ${isBook ? 'book-thumb' : 'avatar-thumb'}">
+                    <span>${isBook ? '📚' : '👤'}</span>
+                  </div>
+                `}
+              </td>
               ${columns.filter(c => c.key !== 'imageUrl').map(col => `<td>${getFieldValue(item, col.key)}</td>`).join('')}
             </tr>
           `).join('')}
@@ -212,6 +223,49 @@ export function generateReportHTML(report: ReportData, isSingle: boolean = false
         
         .data-table tr:hover {
           background: #f1f5f9;
+        }
+        
+        .image-cell {
+          text-align: center;
+          padding: 6px !important;
+        }
+        
+        .table-image {
+          object-fit: cover;
+          border: 2px solid #e2e8f0;
+        }
+        
+        .table-image.avatar-thumb {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+        }
+        
+        .table-image.book-thumb {
+          width: 35px;
+          height: 50px;
+          border-radius: 4px;
+        }
+        
+        .table-image-placeholder {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #10b981, #14b8a6);
+          color: white;
+          font-size: 14px;
+        }
+        
+        .table-image-placeholder.avatar-thumb {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+        }
+        
+        .table-image-placeholder.book-thumb {
+          width: 35px;
+          height: 50px;
+          border-radius: 4px;
         }
         
         .summary {

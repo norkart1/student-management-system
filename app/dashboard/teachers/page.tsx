@@ -14,6 +14,7 @@ import { ReportDropdown } from "@/components/report-dropdown"
 import { Spinner } from "@/components/spinner"
 import { ImageUpload } from "@/components/image-upload"
 import { Users, User, Mail, Phone } from "lucide-react"
+import { toTitleCase } from "@/lib/text-utils"
 
 export default function TeachersPage() {
   const [teachers, setTeachers] = useState([])
@@ -212,7 +213,7 @@ export default function TeachersPage() {
                   id="fullName"
                   placeholder="Enter full name"
                   value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, fullName: toTitleCase(e.target.value) })}
                   required
                   className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
                 />

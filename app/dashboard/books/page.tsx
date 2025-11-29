@@ -14,6 +14,7 @@ import { ReportDropdown } from "@/components/report-dropdown"
 import { Spinner } from "@/components/spinner"
 import { ImageUpload } from "@/components/image-upload"
 import { BookOpen, BookText, User } from "lucide-react"
+import { toTitleCase } from "@/lib/text-utils"
 
 export default function BooksPage() {
   const [books, setBooks] = useState([])
@@ -207,7 +208,7 @@ export default function BooksPage() {
                   id="title"
                   placeholder="Enter book title"
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, title: toTitleCase(e.target.value) })}
                   required
                   className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
                 />
@@ -222,7 +223,7 @@ export default function BooksPage() {
                   id="author"
                   placeholder="Enter author name"
                   value={formData.author}
-                  onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, author: toTitleCase(e.target.value) })}
                   required
                   className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
                 />

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ImageUpload } from "@/components/image-upload"
 import { User, Mail, Phone } from "lucide-react"
+import { toTitleCase } from "@/lib/text-utils"
 
 interface AddStudentDialogProps {
   open: boolean
@@ -91,7 +92,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
               id="fullName"
               placeholder="Enter full name"
               value={formData.fullName}
-              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, fullName: toTitleCase(e.target.value) })}
               required
               className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
             />
