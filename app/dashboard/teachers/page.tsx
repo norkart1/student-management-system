@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { ProtectedLayout } from "@/components/protected-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataTable } from "@/components/data-table"
@@ -17,6 +18,7 @@ import { Users, User, Mail, Phone } from "lucide-react"
 import { toTitleCase } from "@/lib/text-utils"
 
 export default function TeachersPage() {
+  const router = useRouter()
   const [teachers, setTeachers] = useState([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -103,6 +105,10 @@ export default function TeachersPage() {
     setDialogOpen(true)
   }
 
+  const handleViewClick = (teacher: any) => {
+    router.push(`/profile/teachers/${teacher._id}`)
+  }
+
   const handleDialogClose = (open: boolean) => {
     setDialogOpen(open)
     if (!open) {
@@ -184,7 +190,7 @@ export default function TeachersPage() {
                 <Spinner message="Loading teachers..." />
               </div>
             ) : (
-              <DataTable columns={columns} data={teachers} onEdit={handleEditClick} onDelete={handleDeleteClick} onAdd={() => setDialogOpen(true)} reportType="teachers" />
+              <DataTable columns={columns} data={teachers} onEdit={handleEditClick} onDelete={handleDeleteClick} onAdd={() => setDialogOpen(true)} onView={handleViewClick} reportType="teachers" />
             )}
           </CardContent>
         </Card>

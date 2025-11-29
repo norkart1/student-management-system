@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { ProtectedLayout } from "@/components/protected-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataTable } from "@/components/data-table"
@@ -11,6 +12,7 @@ import { Spinner } from "@/components/spinner"
 import { GraduationCap } from "lucide-react"
 
 export default function StudentsPage() {
+  const router = useRouter()
   const [students, setStudents] = useState([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -65,6 +67,10 @@ export default function StudentsPage() {
   const handleEditClick = (student: any) => {
     setStudentToEdit(student)
     setDialogOpen(true)
+  }
+
+  const handleViewClick = (student: any) => {
+    router.push(`/profile/students/${student._id}`)
   }
 
   const handleDialogClose = (open: boolean) => {
@@ -153,6 +159,7 @@ export default function StudentsPage() {
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
                 onAdd={() => setDialogOpen(true)}
+                onView={handleViewClick}
                 reportType="students"
               />
             )}

@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Plus, Search, Pencil, Trash2, FileText, User, Mail, Phone, BookOpen, Hash, Printer, FileDown } from "lucide-react"
+import { Plus, Search, Pencil, Trash2, FileText, User, Mail, Phone, BookOpen, Hash, Printer, FileDown, Eye } from "lucide-react"
 import { downloadPDF, printReport, type ReportData } from "@/lib/report-utils"
 
 interface Column {
@@ -26,10 +26,11 @@ interface DataTableProps {
   onEdit?: (item: any) => void
   onDelete?: (item: any) => void
   onAdd?: () => void
+  onView?: (item: any) => void
   reportType?: "students" | "teachers" | "books"
 }
 
-export function DataTable({ columns, data, onEdit, onDelete, onAdd, reportType = "students" }: DataTableProps) {
+export function DataTable({ columns, data, onEdit, onDelete, onAdd, onView, reportType = "students" }: DataTableProps) {
   const [search, setSearch] = useState("")
   const [downloading, setDownloading] = useState<string | null>(null)
 
@@ -171,7 +172,7 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd, reportType =
                   {col.label}
                 </TableHead>
               ))}
-              {(onEdit || onDelete) && <TableHead className="font-semibold text-slate-700 py-4 text-sm w-32">Actions</TableHead>}
+              {(onEdit || onDelete || onView) && <TableHead className="font-semibold text-slate-700 py-4 text-sm w-40">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -183,9 +184,20 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd, reportType =
                       {renderCell(item, col)}
                     </TableCell>
                   ))}
-                  {(onEdit || onDelete) && (
+                  {(onEdit || onDelete || onView) && (
                     <TableCell className="py-4">
                       <div className="flex items-center gap-2">
+                        {onView && (
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            onClick={() => onView(item)} 
+                            title="View Profile"
+                            className="h-8 w-8 p-0 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg"
+                          >
+                            <Eye className="w-4 h-4 text-emerald-500" />
+                          </Button>
+                        )}
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button 
@@ -280,17 +292,17 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd, reportType =
                     </div>
                   )}
                   
-                  <div className="flex-1 min-w-0 space-y-1.5">
+                  <div className="flex-1 min-w-0">
                     {textColumns.map((col, colIdx) => (
                       <div key={col.key} className="min-w-0">
                         {colIdx === 0 ? (
-                          <p className="font-semibold text-slate-800 truncate">
+                          <p className="font-semibold text-slate-800 text-base leading-tight mb-1">
                             {item[col.key] || "-"}
                           </p>
                         ) : (
-                          <div className="flex items-center gap-1.5 min-w-0">
+                          <div className="flex items-center gap-1.5 min-w-0 mb-0.5">
                             {getFieldIcon(col.key)}
-                            <span className="text-slate-500 text-sm truncate block">
+                            <span className="text-slate-500 text-sm">
                               {item[col.key] || "-"}
                             </span>
                           </div>
@@ -298,54 +310,67 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd, reportType =
                       </div>
                     ))}
                   </div>
-
-                  {(onEdit || onDelete) && (
-                    <div className="flex items-center gap-1 flex-shrink-0 ml-2">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="h-8 w-8 p-0 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg"
-                            disabled={downloading === (item._id || item.id)}
-                          >
-                            <Printer className="w-4 h-4 text-slate-500" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuItem onClick={() => handlePrintSingle(item)} className="gap-2 cursor-pointer">
-                            <Printer className="w-4 h-4" />
-                            Print
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDownloadSingle(item)} className="gap-2 cursor-pointer">
-                            <FileDown className="w-4 h-4" />
-                            Download PDF
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                      {onEdit && (
-                        <Button 
-                          size="sm" 
-                          variant="ghost" 
-                          onClick={() => onEdit(item)} 
-                          className="h-8 w-8 p-0 hover:bg-slate-100 rounded-lg"
-                        >
-                          <Pencil className="w-4 h-4 text-slate-500" />
-                        </Button>
-                      )}
-                      {onDelete && (
-                        <Button 
-                          size="sm" 
-                          variant="ghost" 
-                          onClick={() => onDelete(item)} 
-                          className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600 rounded-lg"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </div>
-                  )}
                 </div>
+
+                {(onEdit || onDelete || onView) && (
+                  <div className="flex items-center justify-end gap-2 mt-3 pt-3 border-t border-slate-100">
+                    {onView && (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => onView(item)} 
+                        className="h-8 px-3 text-xs gap-1.5 border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        View
+                      </Button>
+                    )}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="h-8 px-3 text-xs gap-1.5 border-slate-200 text-slate-600 hover:bg-slate-50"
+                          disabled={downloading === (item._id || item.id)}
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                          Print
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem onClick={() => handlePrintSingle(item)} className="gap-2 cursor-pointer">
+                          <Printer className="w-4 h-4" />
+                          Print
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDownloadSingle(item)} className="gap-2 cursor-pointer">
+                          <FileDown className="w-4 h-4" />
+                          Download PDF
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    {onEdit && (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => onEdit(item)} 
+                        className="h-8 px-3 text-xs gap-1.5 border-slate-200 text-slate-600 hover:bg-slate-50"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        Edit
+                      </Button>
+                    )}
+                    {onDelete && (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => onDelete(item)} 
+                        className="h-8 px-3 text-xs gap-1.5 border-red-200 text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             )
           })

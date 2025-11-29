@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { ProtectedLayout } from "@/components/protected-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataTable } from "@/components/data-table"
@@ -17,6 +18,7 @@ import { BookOpen, BookText, User } from "lucide-react"
 import { toTitleCase } from "@/lib/text-utils"
 
 export default function BooksPage() {
+  const router = useRouter()
   const [books, setBooks] = useState([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -100,6 +102,10 @@ export default function BooksPage() {
     setDialogOpen(true)
   }
 
+  const handleViewClick = (book: any) => {
+    router.push(`/profile/books/${book._id}`)
+  }
+
   const handleDialogClose = (open: boolean) => {
     setDialogOpen(open)
     if (!open) {
@@ -179,7 +185,7 @@ export default function BooksPage() {
                 <Spinner message="Loading books..." />
               </div>
             ) : (
-              <DataTable columns={columns} data={books} onEdit={handleEditClick} onDelete={handleDeleteClick} onAdd={() => setDialogOpen(true)} reportType="books" />
+              <DataTable columns={columns} data={books} onEdit={handleEditClick} onDelete={handleDeleteClick} onAdd={() => setDialogOpen(true)} onView={handleViewClick} reportType="books" />
             )}
           </CardContent>
         </Card>
