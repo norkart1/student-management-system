@@ -131,6 +131,7 @@ export default function BooksPage() {
   }
 
   const columns = [
+    { key: "imageUrl", label: "Cover", type: "image" as const, imageStyle: "book" as const },
     { key: "title", label: "Title" },
     { key: "author", label: "Author" },
   ]

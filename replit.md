@@ -49,6 +49,18 @@ Note: Image upload feature requires Cloudinary credentials. If not configured, t
 
 ## Recent Changes
 
+### November 29, 2025 - Image Display Fix & Mobile UI Improvements
+1. **Fixed Image Display in Data Tables**
+   - Added imageUrl column to Students page columns with type="image"
+   - Added imageUrl column to Teachers page columns with type="image"
+   - Added imageUrl column to Books page columns with type="image" and imageStyle="book"
+   - Images now properly display in both desktop table and mobile card views
+
+2. **Improved Mobile Delete Dialog**
+   - Made delete confirmation dialog wider on mobile
+   - Improved responsive padding and spacing
+   - Better text sizing for mobile readability
+
 ### November 29, 2025 - Image Upload Feature
 1. **Cloudinary Integration**
    - Installed next-cloudinary and cloudinary packages

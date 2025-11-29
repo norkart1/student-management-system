@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server"
 export async function GET() {
   try {
     const { db } = await connectToDatabase()
-    const students = await db.collection("students").find({}).toArray()
+    const students = await db.collection("students").find({}).sort({ createdAt: -1 }).toArray()
     return NextResponse.json(students)
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch students" }, { status: 500 })
