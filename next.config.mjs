@@ -1,4 +1,27 @@
 /** @type {import('next').NextConfig} */
+
+const getAllowedOrigins = () => {
+  const origins = ['localhost:5000', 'localhost:3000']
+  
+  if (process.env.VERCEL_URL) {
+    origins.push(process.env.VERCEL_URL)
+  }
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    try {
+      const url = new URL(process.env.NEXT_PUBLIC_APP_URL)
+      origins.push(url.host)
+    } catch {}
+  }
+  if (process.env.REPLIT_DEV_DOMAIN) {
+    origins.push(process.env.REPLIT_DEV_DOMAIN)
+  }
+  if (process.env.REPLIT_DOMAINS) {
+    origins.push(process.env.REPLIT_DOMAINS.split(',')[0])
+  }
+  
+  return origins.filter(Boolean)
+}
+
 const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
@@ -14,14 +37,16 @@ const nextConfig = {
   },
   experimental: {
     serverActions: {
-      allowedOrigins: ['localhost:5000', process.env.REPLIT_DEV_DOMAIN, process.env.REPLIT_DOMAINS?.split(',')[0]].filter(Boolean),
+      allowedOrigins: getAllowedOrigins(),
     },
   },
-  allowedDevOrigins: ['localhost:5000', '127.0.0.1:5000', '127.0.0.1', 'localhost', process.env.REPLIT_DEV_DOMAIN, process.env.REPLIT_DOMAINS?.split(',')[0]].filter(Boolean),
+  allowedDevOrigins: getAllowedOrigins(),
   webpack: (config, { isServer }) => {
-    config.watchOptions = {
-      poll: 1000,
-      aggregateTimeout: 300,
+    if (process.env.REPLIT_DEV_DOMAIN) {
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+      }
     }
     if (isServer) {
       config.externals.push({
