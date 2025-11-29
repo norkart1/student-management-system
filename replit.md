@@ -58,8 +58,23 @@ To enable image uploads, you need to create an **unsigned upload preset** in you
 
 This allows the app to upload profile photos for students/teachers and book cover images.
 
-## Recent Changes (November 28, 2025)
+## Recent Changes
 
+### November 29, 2025 - Fresh Replit Environment Setup
+1. **Project Import and Configuration**
+   - Fresh clone from GitHub repository
+   - Installed npm dependencies (517 packages)
+   - Set up JWT_SECRET environment variable in shared environment
+   - Configured workflow for Next.js dev server on port 5000 with webview output
+   - Configured autoscale deployment settings (build + start commands)
+
+2. **Verified Configuration**
+   - Next.js config properly configured with REPLIT_DEV_DOMAIN and REPLIT_DOMAINS for proxy support
+   - Package.json dev script already set to run on 0.0.0.0:5000
+   - Workflow running successfully - application compiling and serving routes
+   - All environment secrets pre-configured (MongoDB, Cloudinary, Admin credentials)
+
+### November 28, 2025 - Previous Setup
 1. **Fresh Replit Setup from GitHub Import**
    - Installed npm dependencies (509 packages)
    - Configured workflow for Next.js dev server on port 5000
