@@ -1,13 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import type { ReactNode } from "react"
-import { Inter } from "next/font/google"
 import "./globals.css"
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-})
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -38,13 +31,13 @@ export default function RootLayout({
   children: ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=Anek+Malayalam:wght@100..800&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-sans antialiased" style={{ fontFamily: "'Anek Latin', 'Anek Malayalam', system-ui, sans-serif" }}>
+      <body className="font-sans antialiased">
         {children}
       </body>
     </html>

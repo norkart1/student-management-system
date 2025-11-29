@@ -1,24 +1,22 @@
 import { connectToDatabase } from "@/lib/db"
-import { verifyToken } from "@/lib/jwt"
+import { validateAuth, unauthorizedResponse } from "@/lib/auth-middleware"
 import { type NextRequest, NextResponse } from "next/server"
+import { ObjectId } from "mongodb"
+
+interface DeleteDeviceInput {
+  deviceId: string
+}
 
 export async function GET(request: NextRequest) {
+  const auth = validateAuth(request)
+  if (!auth.valid) {
+    return unauthorizedResponse(auth.error)
+  }
+
   try {
-    const authHeader = request.headers.get("authorization")
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    const token = authHeader.split(" ")[1]
-    const payload = verifyToken(token)
-    
-    if (!payload) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 })
-    }
-
     const { db } = await connectToDatabase()
     const devices = await db.collection("devices")
-      .find({ adminId: payload.adminId })
+      .find({ adminId: auth.payload!.adminId })
       .sort({ lastActive: -1 })
       .limit(10)
       .toArray()
@@ -31,26 +29,31 @@ export async function GET(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const auth = validateAuth(request)
+  if (!auth.valid) {
+    return unauthorizedResponse(auth.error)
+  }
+
   try {
-    const authHeader = request.headers.get("authorization")
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const { deviceId }: DeleteDeviceInput = await request.json()
+
+    if (!deviceId) {
+      return NextResponse.json({ error: "Device ID is required" }, { status: 400 })
     }
 
-    const token = authHeader.split(" ")[1]
-    const payload = verifyToken(token)
-    
-    if (!payload) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 })
+    if (!ObjectId.isValid(deviceId)) {
+      return NextResponse.json({ error: "Invalid device ID format" }, { status: 400 })
     }
-
-    const { deviceId } = await request.json()
     
     const { db } = await connectToDatabase()
-    await db.collection("devices").deleteOne({ 
-      _id: deviceId,
-      adminId: payload.adminId 
+    const result = await db.collection("devices").deleteOne({ 
+      _id: new ObjectId(deviceId),
+      adminId: auth.payload!.adminId 
     })
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: "Device not found" }, { status: 404 })
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

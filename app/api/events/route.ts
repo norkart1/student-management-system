@@ -1,7 +1,15 @@
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 import { getDatabase } from "@/lib/db"
+import { validateAuth, unauthorizedResponse } from "@/lib/auth-middleware"
 
-export async function GET(request: Request) {
+interface EventInput {
+  title: string
+  date: string
+  description?: string
+  type?: string
+}
+
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const monthParam = searchParams.get('month')
@@ -49,9 +57,14 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const auth = validateAuth(request)
+  if (!auth.valid) {
+    return unauthorizedResponse(auth.error)
+  }
+
   try {
-    const body = await request.json()
+    const body: EventInput = await request.json()
     const { title, date, description, type } = body
 
     if (!title || !date) {
@@ -73,9 +86,9 @@ export async function POST(request: Request) {
     const eventsCollection = db.collection("events")
 
     const newEvent = {
-      title,
+      title: title.trim(),
       date,
-      description: description || "",
+      description: description?.trim() || "",
       type: type || "general",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()

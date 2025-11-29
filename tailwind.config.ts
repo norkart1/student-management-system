@@ -19,7 +19,7 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ["'Anek Latin'", "'Anek Malayalam'", "var(--font-inter)", "system-ui", "sans-serif"],
+        sans: ["'Anek Latin'", "'Anek Malayalam'", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
