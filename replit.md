@@ -49,6 +49,20 @@ Note: Image upload feature requires Cloudinary credentials. If not configured, t
 
 ## Recent Changes
 
+### November 29, 2025 - Auto-Capitalization & Bulk Reports with Images
+1. **Auto-Capitalization for Names**
+   - Created `lib/text-utils.ts` with `toTitleCase` utility function
+   - Student names automatically capitalize each word as you type
+   - Teacher names automatically capitalize each word as you type
+   - Book titles and author names automatically capitalize each word as you type
+
+2. **Bulk Reports with Profile Images**
+   - Updated `lib/report-utils.ts` to include photos in bulk report tables
+   - Students/Teachers: Circular profile thumbnails (40x40px)
+   - Books: Rectangular cover thumbnails (35x50px)
+   - Placeholder icons shown for records without images
+   - Works for both Print and PDF Download options
+
 ### November 29, 2025 - Image Display Fix & Mobile UI Improvements
 1. **Fixed Image Display in Data Tables**
    - Added imageUrl column to Students page columns with type="image"
