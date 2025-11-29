@@ -49,6 +49,26 @@ Note: Image upload feature requires Cloudinary credentials. If not configured, t
 
 ## Recent Changes
 
+### November 29, 2025 - Dashboard UI Improvements
+1. **Admin Profile Button Dark Mode Support**
+   - Added 'variant' prop to ProfileDropdown component ('light' or 'dark')
+   - Light variant shows emerald gradient background for visibility on light backgrounds
+   - Dark variant maintains original styling for dark backgrounds
+
+2. **Removed Upcoming Events Card**
+   - Removed the 4th stat card (Upcoming Events) from dashboard
+   - Changed grid from 4 columns to 3 columns with responsive breakpoints
+
+3. **Added Live Date/Time Display**
+   - Added clock icon and real-time date/time in the dashboard header
+   - Date format: "Saturday, November 29, 2025"
+   - Time format: "01:22:15 PM" with seconds, updates every second
+
+4. **Fixed Quick Access Boxes Alignment**
+   - Added auto-rows-fr for equal height rows
+   - Used flex layout for consistent card content alignment
+   - Responsive grid: 1 column on mobile, 2 on tablet, 4 on desktop
+
 ### November 29, 2025 - Vercel to Replit Migration
 1. **Project Migration from Vercel**
    - Successfully migrated Next.js application from Vercel to Replit
