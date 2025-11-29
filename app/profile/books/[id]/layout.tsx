@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import { getBaseUrl } from "@/lib/url-utils"
 
 type Props = {
   params: Promise<{ id: string }>
@@ -6,8 +7,7 @@ type Props = {
 
 async function getBook(id: string) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
-      (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'http://localhost:5000')
+    const baseUrl = getBaseUrl()
     const response = await fetch(`${baseUrl}/api/books/${id}`, { cache: 'no-store' })
     if (response.ok) {
       return response.json()
@@ -29,8 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
-    (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'http://localhost:5000')
+  const baseUrl = getBaseUrl()
 
   return {
     title: `${book.title} - Book`,

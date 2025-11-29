@@ -1,4 +1,5 @@
 import QRCode from 'qrcode'
+import { getBaseUrl } from '@/lib/url-utils'
 
 export async function generateQRCode(url: string): Promise<string> {
   try {
@@ -21,9 +22,7 @@ export async function generateQRCode(url: string): Promise<string> {
 export function getProfileUrl(type: 'students' | 'teachers' | 'books', id: string): string {
   const baseUrl = typeof window !== 'undefined' 
     ? window.location.origin 
-    : process.env.REPLIT_DOMAINS 
-      ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`
-      : 'http://localhost:5000'
+    : getBaseUrl()
   
   return `${baseUrl}/profile/${type}/${id}`
 }
