@@ -1,8 +1,10 @@
 export function toTitleCase(str: string): string {
   if (!str) return str
   return str
-    .toLowerCase()
     .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .map(word => {
+      if (word.length === 0) return word
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    })
     .join(' ')
 }
