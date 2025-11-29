@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ArrowLeft, Mail, Phone, User, Download, Share2 } from "lucide-react"
 import { generateQRCode, getProfileUrl } from "@/lib/qr-utils"
+import Head from "next/head"
 
 interface Student {
   _id: string
@@ -41,6 +42,31 @@ export default function StudentProfilePage() {
     }
     fetchStudent()
   }, [params.id])
+
+  useEffect(() => {
+    if (student) {
+      document.title = `${student.fullName} - Student Profile`
+      
+      const updateMetaTag = (property: string, content: string) => {
+        let meta = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement
+        if (!meta) {
+          meta = document.createElement('meta')
+          meta.setAttribute('property', property)
+          document.head.appendChild(meta)
+        }
+        meta.content = content
+      }
+      
+      const profileUrl = getProfileUrl('students', params.id as string)
+      updateMetaTag('og:title', `${student.fullName} - Student Profile`)
+      updateMetaTag('og:description', `View ${student.fullName}'s student profile`)
+      updateMetaTag('og:type', 'profile')
+      updateMetaTag('og:url', profileUrl)
+      if (student.imageUrl) {
+        updateMetaTag('og:image', student.imageUrl)
+      }
+    }
+  }, [student, params.id])
 
   const handleShare = async () => {
     const profileUrl = getProfileUrl('students', params.id as string)

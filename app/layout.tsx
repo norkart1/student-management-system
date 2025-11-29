@@ -11,6 +11,11 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-icon.png",
   },
+  openGraph: {
+    title: "Student Management System",
+    description: "Comprehensive student, teacher, and academic management platform",
+    type: "website",
+  },
 }
 
 export default function RootLayout({
@@ -20,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased">
+      <body className="font-['Anek_Latin','Anek_Malayalam',sans-serif] antialiased">
         {children}
       </body>
     </html>

@@ -42,6 +42,31 @@ export default function TeacherProfilePage() {
     fetchTeacher()
   }, [params.id])
 
+  useEffect(() => {
+    if (teacher) {
+      document.title = `${teacher.fullName} - Teacher Profile`
+      
+      const updateMetaTag = (property: string, content: string) => {
+        let meta = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement
+        if (!meta) {
+          meta = document.createElement('meta')
+          meta.setAttribute('property', property)
+          document.head.appendChild(meta)
+        }
+        meta.content = content
+      }
+      
+      const profileUrl = getProfileUrl('teachers', params.id as string)
+      updateMetaTag('og:title', `${teacher.fullName} - Teacher Profile`)
+      updateMetaTag('og:description', `View ${teacher.fullName}'s teacher profile`)
+      updateMetaTag('og:type', 'profile')
+      updateMetaTag('og:url', profileUrl)
+      if (teacher.imageUrl) {
+        updateMetaTag('og:image', teacher.imageUrl)
+      }
+    }
+  }, [teacher, params.id])
+
   const handleShare = async () => {
     const profileUrl = getProfileUrl('teachers', params.id as string)
     if (navigator.share) {

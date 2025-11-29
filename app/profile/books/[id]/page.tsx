@@ -41,6 +41,31 @@ export default function BookProfilePage() {
     fetchBook()
   }, [params.id])
 
+  useEffect(() => {
+    if (book) {
+      document.title = `${book.title} - Book Profile`
+      
+      const updateMetaTag = (property: string, content: string) => {
+        let meta = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement
+        if (!meta) {
+          meta = document.createElement('meta')
+          meta.setAttribute('property', property)
+          document.head.appendChild(meta)
+        }
+        meta.content = content
+      }
+      
+      const profileUrl = getProfileUrl('books', params.id as string)
+      updateMetaTag('og:title', `${book.title} by ${book.author}`)
+      updateMetaTag('og:description', `View "${book.title}" by ${book.author}`)
+      updateMetaTag('og:type', 'book')
+      updateMetaTag('og:url', profileUrl)
+      if (book.imageUrl) {
+        updateMetaTag('og:image', book.imageUrl)
+      }
+    }
+  }, [book, params.id])
+
   const handleShare = async () => {
     const profileUrl = getProfileUrl('books', params.id as string)
     if (navigator.share) {

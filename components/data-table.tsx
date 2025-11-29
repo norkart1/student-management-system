@@ -315,16 +315,16 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd, onView, repo
                 </div>
 
                 {(onEdit || onDelete || onView) && (
-                  <div className="flex items-center justify-end gap-2 mt-3 pt-3 border-t border-slate-100">
+                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100 flex-wrap">
                     {onView && (
                       <Button 
                         size="sm" 
                         variant="outline" 
                         onClick={() => onView(item)} 
-                        className="h-8 px-3 text-xs gap-1.5 border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+                        className="h-8 px-3 text-xs gap-1.5 border-emerald-200 text-emerald-600 hover:bg-emerald-50 inline-flex items-center"
                       >
-                        <Eye className="w-3.5 h-3.5" />
-                        View
+                        <Eye className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>View</span>
                       </Button>
                     )}
                     <DropdownMenu>
