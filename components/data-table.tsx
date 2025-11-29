@@ -296,13 +296,15 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd, onView, repo
                     {textColumns.map((col, colIdx) => (
                       <div key={col.key} className="min-w-0">
                         {colIdx === 0 ? (
-                          <p className="font-semibold text-slate-800 text-base leading-tight mb-1">
+                          <p className="font-semibold text-slate-800 text-base leading-tight mb-1.5">
                             {item[col.key] || "-"}
                           </p>
                         ) : (
-                          <div className="flex items-center gap-1.5 min-w-0 mb-0.5">
-                            {getFieldIcon(col.key)}
-                            <span className="text-slate-500 text-sm">
+                          <div className="flex items-center gap-2 min-w-0 mb-1">
+                            <div className="flex-shrink-0 w-4 h-4 flex items-center justify-center">
+                              {getFieldIcon(col.key)}
+                            </div>
+                            <span className="text-slate-500 text-sm truncate">
                               {item[col.key] || "-"}
                             </span>
                           </div>
