@@ -66,18 +66,18 @@ export default function StudentProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/40 flex items-center justify-center">
-        <div className="animate-pulse text-emerald-600">Loading...</div>
+      <div className="min-h-screen bg-gradient-to-br from-teal-800 via-teal-900 to-slate-900 flex items-center justify-center">
+        <div className="animate-pulse text-white">Loading...</div>
       </div>
     )
   }
 
   if (!student) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/40 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-teal-800 via-teal-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-slate-600 mb-4">Student not found</p>
-          <Button onClick={() => router.back()} variant="outline">
+          <p className="text-white mb-4">Student not found</p>
+          <Button onClick={() => router.back()} variant="outline" className="text-white border-white hover:bg-white/10">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Go Back
           </Button>
@@ -87,102 +87,91 @@ export default function StudentProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/40">
-      <div className="relative">
-        <div className="absolute top-4 left-4 z-10">
-          <Button 
-            onClick={() => router.back()} 
-            variant="ghost" 
-            size="icon"
-            className="bg-white/80 backdrop-blur-sm hover:bg-white rounded-full shadow-md"
-          >
-            <ArrowLeft className="w-5 h-5 text-slate-700" />
-          </Button>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-teal-800 via-teal-900 to-slate-900 p-4 sm:p-6">
+      <div className="max-w-lg mx-auto">
+        <Button 
+          onClick={() => router.back()} 
+          variant="ghost" 
+          size="icon"
+          className="text-white hover:bg-white/10 mb-6"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </Button>
 
-        <div className="h-[45vh] relative overflow-hidden">
-          {student.imageUrl ? (
-            <img 
-              src={student.imageUrl} 
-              alt={student.fullName}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-              <User className="w-32 h-32 text-white/80" />
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-        </div>
-
-        <div className="relative -mt-24 px-4 pb-8">
-          <Card className="max-w-md mx-auto bg-white rounded-3xl shadow-xl overflow-visible">
-            <div className="p-6 pt-16 text-center">
-              <div className="absolute left-1/2 -translate-x-1/2 -top-12">
-                {student.imageUrl ? (
+        <Card className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          <div className="p-6">
+            <div className="flex items-start gap-5">
+              {student.imageUrl ? (
+                <div className="w-28 h-28 flex-shrink-0 rounded-xl overflow-hidden shadow-lg border-2 border-slate-100">
                   <img 
                     src={student.imageUrl} 
                     alt={student.fullName}
-                    className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg bg-white"
+                    className="w-full h-full object-cover"
                   />
-                ) : (
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 border-4 border-white shadow-lg flex items-center justify-center">
-                    <User className="w-12 h-12 text-white" />
-                  </div>
-                )}
-              </div>
-
-              <h1 className="text-2xl font-bold text-slate-800 mb-1">{student.fullName}</h1>
-              <p className="text-emerald-600 font-medium mb-6">Student</p>
-
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center justify-center gap-3 text-slate-600">
-                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                    <Mail className="w-4 h-4 text-emerald-600" />
-                  </div>
-                  <span className="text-sm">{student.email}</span>
                 </div>
-                <div className="flex items-center justify-center gap-3 text-slate-600">
-                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                    <Phone className="w-4 h-4 text-emerald-600" />
-                  </div>
-                  <span className="text-sm">{student.phone}</span>
-                </div>
-              </div>
-
-              {qrCode && (
-                <div className="bg-gradient-to-br from-slate-50 to-emerald-50/30 rounded-2xl p-5 mb-6 border border-slate-100">
-                  <p className="text-sm font-medium text-slate-600 mb-3">Scan QR Code</p>
-                  <div className="bg-white p-3 rounded-xl inline-block shadow-sm">
-                    <img 
-                      src={qrCode} 
-                      alt="QR Code" 
-                      className="w-36 h-36"
-                    />
-                  </div>
+              ) : (
+                <div className="w-28 h-28 flex-shrink-0 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg flex items-center justify-center">
+                  <User className="w-12 h-12 text-white" />
                 </div>
               )}
 
-              <div className="flex gap-3">
+              <div className="flex-1 min-w-0 pt-1">
+                <h1 className="text-xl font-bold text-slate-800 leading-tight mb-1">{student.fullName}</h1>
+                <p className="text-slate-500 text-sm mb-3">@{student.fullName.toLowerCase().replace(/\s+/g, '_')}</p>
+                <p className="text-emerald-600 text-sm font-medium">Student</p>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-5 border-t border-slate-100">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <Mail className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                    <span className="text-sm truncate">{student.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <Phone className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                    <span className="text-sm">{student.phone}</span>
+                  </div>
+                </div>
                 <Button 
                   onClick={handleShare}
-                  className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-xl h-11"
+                  className="bg-teal-800 hover:bg-teal-900 text-white rounded-xl px-6 h-10"
                 >
-                  <Share2 className="w-4 h-4 mr-2" />
                   Share
-                </Button>
-                <Button 
-                  onClick={handleDownloadQR}
-                  variant="outline"
-                  className="flex-1 border-emerald-200 text-emerald-700 hover:bg-emerald-50 rounded-xl h-11"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Save QR
                 </Button>
               </div>
             </div>
-          </Card>
-        </div>
+          </div>
+
+          {qrCode && (
+            <div className="bg-gradient-to-br from-slate-50 to-emerald-50/30 p-6 border-t border-slate-100">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-700 mb-1">QR Code</p>
+                  <p className="text-xs text-slate-500">Scan to view profile</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="bg-white p-2 rounded-xl shadow-sm">
+                    <img 
+                      src={qrCode} 
+                      alt="QR Code" 
+                      className="w-20 h-20"
+                    />
+                  </div>
+                  <Button 
+                    onClick={handleDownloadQR}
+                    variant="outline"
+                    size="sm"
+                    className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 rounded-xl"
+                  >
+                    <Download className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </Card>
       </div>
     </div>
   )
