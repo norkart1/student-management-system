@@ -35,35 +35,25 @@ A comprehensive student management system built with Next.js 15, React, TypeScri
 - `ADMIN_USERNAME` - Admin login username
 - `ADMIN_PASSWORD` - Admin login password
 - `SESSION_SECRET` - Session encryption secret
-- `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` - Cloudinary cloud name
-- `CLOUDINARY_API_KEY` - Cloudinary API key
-- `CLOUDINARY_API_SECRET` - Cloudinary API secret
 
 ### Application Variables
 - `JWT_SECRET` - JWT signing secret (set)
 - `NEXT_TELEMETRY_DISABLED` - Disable Next.js telemetry
 - `NEXT_PUBLIC_APP_URL` - Public application URL
 
-## Cloudinary Setup
-
-To enable image uploads, you need to create an **unsigned upload preset** in your Cloudinary dashboard:
-
-1. Go to cloudinary.com and log in
-2. Navigate to Settings > Upload
-3. Scroll to "Upload presets" section
-4. Click "Add upload preset"
-5. Set the preset name to: `student_management`
-6. Set "Signing Mode" to: `Unsigned`
-7. Save the preset
-
-This allows the app to upload profile photos for students/teachers and book cover images.
-
 ## Recent Changes
+
+### November 29, 2025 - Cloudinary Removal
+1. **Removed Cloudinary Integration**
+   - Removed next-cloudinary package
+   - Deleted cloudinary-upload.tsx component
+   - Updated add-student-dialog.tsx, teachers/page.tsx, and books/page.tsx to remove image upload functionality
+   - Removed CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, and NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME environment variables
 
 ### November 29, 2025 - Fresh Replit Environment Setup
 1. **Project Import and Configuration**
    - Fresh clone from GitHub repository
-   - Installed npm dependencies (517 packages)
+   - Installed npm dependencies
    - Set up JWT_SECRET environment variable in shared environment
    - Configured workflow for Next.js dev server on port 5000 with webview output
    - Configured autoscale deployment settings (build + start commands)
@@ -72,24 +62,6 @@ This allows the app to upload profile photos for students/teachers and book cove
    - Next.js config properly configured with REPLIT_DEV_DOMAIN and REPLIT_DOMAINS for proxy support
    - Package.json dev script already set to run on 0.0.0.0:5000
    - Workflow running successfully - application compiling and serving routes
-   - All environment secrets pre-configured (MongoDB, Cloudinary, Admin credentials)
-
-### November 28, 2025 - Previous Setup
-1. **Fresh Replit Setup from GitHub Import**
-   - Installed npm dependencies (509 packages)
-   - Configured workflow for Next.js dev server on port 5000
-   - Set up JWT_SECRET environment variable
-   - Updated next.config.mjs with dynamic allowedDevOrigins using REPLIT_DEV_DOMAIN/REPLIT_DOMAINS
-   - Configured autoscale deployment settings
-   - Loaded 25 mock entries each for students, teachers, and books
-
-2. **Cloudinary Integration for Image Uploads**
-   - Installed next-cloudinary package
-   - Created CloudinaryUpload component (components/cloudinary-upload.tsx)
-   - Updated AddStudentDialog to use Cloudinary uploads
-   - Updated Teachers page to use Cloudinary uploads
-   - Added book cover image support to Books page
-   - Updated DataTable to display both avatar (circular) and book cover (rectangular) images
 
 ## Running the Application
 

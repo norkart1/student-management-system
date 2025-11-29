@@ -99,7 +99,6 @@ export default function StudentsPage() {
   }
 
   const columns = [
-    { key: "image", label: "Photo", type: "image" as const },
     { key: "fullName", label: "Full Name" },
     { key: "email", label: "Email" },
     { key: "phone", label: "Phone" },
