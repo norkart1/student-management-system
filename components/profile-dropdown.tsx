@@ -12,7 +12,11 @@ interface AdminProfile {
   profileImage?: string
 }
 
-export function ProfileDropdown() {
+interface ProfileDropdownProps {
+  variant?: 'light' | 'dark'
+}
+
+export function ProfileDropdown({ variant = 'dark' }: ProfileDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [profile, setProfile] = useState<AdminProfile | null>(null)
   const router = useRouter()
@@ -71,13 +75,23 @@ export function ProfileDropdown() {
     router.push("/login")
   }
 
+  const isLight = variant === 'light'
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-white/10 transition-all"
+        className={cn(
+          "flex items-center gap-2 px-2 py-1.5 rounded-xl transition-all",
+          isLight ? "hover:bg-slate-100" : "hover:bg-white/10"
+        )}
       >
-        <div className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30 hover:scale-105 transition-transform overflow-hidden">
+        <div className={cn(
+          "w-10 h-10 md:w-11 md:h-11 rounded-full backdrop-blur-sm flex items-center justify-center border-2 hover:scale-105 transition-transform overflow-hidden",
+          isLight 
+            ? "bg-gradient-to-br from-emerald-500 to-teal-500 border-emerald-300 shadow-lg shadow-emerald-500/20" 
+            : "bg-white/20 border-white/30"
+        )}>
           {profile?.profileImage ? (
             <img src={profile.profileImage} alt="Profile" className="w-full h-full object-cover" />
           ) : (
@@ -85,7 +99,8 @@ export function ProfileDropdown() {
           )}
         </div>
         <ChevronDown className={cn(
-          "w-4 h-4 text-white transition-transform hidden md:block",
+          "w-4 h-4 transition-transform hidden md:block",
+          isLight ? "text-slate-500" : "text-white",
           isOpen && "rotate-180"
         )} />
       </button>

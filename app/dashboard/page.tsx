@@ -3,7 +3,7 @@
 import { ProtectedLayout } from "@/components/protected-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
-import { Users, GraduationCap, BookOpen, Calendar, TrendingUp, ChevronRight } from "lucide-react"
+import { Users, GraduationCap, BookOpen, Calendar, TrendingUp, ChevronRight, Clock } from "lucide-react"
 import { ProfileDropdown } from "@/components/profile-dropdown"
 import { useEffect, useState } from "react"
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Area, AreaChart } from "recharts"
@@ -42,9 +42,14 @@ export default function DashboardPage() {
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date())
 
   useEffect(() => {
     fetchStats()
+    const timer = setInterval(() => {
+      setCurrentDateTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
   }, [])
 
   const fetchStats = async () => {
@@ -121,6 +126,24 @@ export default function DashboardPage() {
     },
   ]
 
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    })
+  }
+
   return (
     <ProtectedLayout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
@@ -129,11 +152,16 @@ export default function DashboardPage() {
             <div>
               <p className="text-slate-500 text-sm">Welcome back</p>
               <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Dashboard Overview</h1>
+              <div className="flex items-center gap-2 mt-2 text-sm text-slate-600">
+                <Clock className="w-4 h-4 text-emerald-500" />
+                <span>{formatDate(currentDateTime)}</span>
+                <span className="text-emerald-500 font-medium">{formatTime(currentDateTime)}</span>
+              </div>
             </div>
-            <ProfileDropdown />
+            <ProfileDropdown variant="light" />
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-400 via-purple-500 to-purple-600 p-5 shadow-lg shadow-purple-500/20">
               <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10" />
               <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full -ml-8 -mb-8" />
@@ -170,17 +198,6 @@ export default function DashboardPage() {
               <div className="mt-3 flex items-center gap-1 text-white/80 text-xs">
                 <BookOpen className="w-3 h-3" />
                 <span>Available titles</span>
-              </div>
-            </div>
-
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-400 via-pink-500 to-rose-500 p-5 shadow-lg shadow-rose-500/20">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10" />
-              <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full -ml-8 -mb-8" />
-              <p className="text-3xl md:text-4xl font-bold text-white">5</p>
-              <p className="text-rose-100 text-sm mt-1">Upcoming Events</p>
-              <div className="mt-3 flex items-center gap-1 text-white/80 text-xs">
-                <Calendar className="w-3 h-3" />
-                <span>This month</span>
               </div>
             </div>
           </div>
@@ -330,20 +347,22 @@ export default function DashboardPage() {
               <h2 className="text-lg font-semibold text-slate-800">Quick Access</h2>
               <span className="text-xs text-slate-400">Manage your system</span>
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
               {modules.map((module, idx) => (
-                <Link key={idx} href={module.href} prefetch={true}>
-                  <Card className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer border-0 shadow-md shadow-slate-200/50 bg-white overflow-hidden group h-full rounded-2xl">
-                    <CardContent className="p-5">
+                <Link key={idx} href={module.href} prefetch={true} className="block h-full">
+                  <Card className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer border-0 shadow-md shadow-slate-200/50 bg-white overflow-hidden group h-full rounded-2xl flex flex-col">
+                    <CardContent className="p-5 flex flex-col h-full">
                       <div className="flex items-center justify-between mb-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:scale-110 transition-transform">
                           <module.icon className="w-6 h-6 text-white" strokeWidth={2} />
                         </div>
                         <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
                       </div>
-                      <h3 className="font-semibold text-slate-800 text-base mb-1">{module.name}</h3>
-                      <p className="text-xs text-slate-400 mb-2">{module.desc}</p>
-                      <span className="inline-flex px-2.5 py-1 bg-emerald-50 text-emerald-600 text-xs font-medium rounded-lg">{module.count}</span>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-slate-800 text-base mb-1">{module.name}</h3>
+                        <p className="text-xs text-slate-400 mb-2">{module.desc}</p>
+                      </div>
+                      <span className="inline-flex px-2.5 py-1 bg-emerald-50 text-emerald-600 text-xs font-medium rounded-lg self-start">{module.count}</span>
                     </CardContent>
                   </Card>
                 </Link>
