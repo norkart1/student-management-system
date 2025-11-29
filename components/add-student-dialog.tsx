@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -24,6 +24,12 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
     image: initialData?.image || "",
   })
   const [loading, setLoading] = useState(false)
+  const [dialogHidden, setDialogHidden] = useState(false)
+  const formDataRef = useRef(formData)
+
+  useEffect(() => {
+    formDataRef.current = formData
+  }, [formData])
 
   useEffect(() => {
     if (open) {
@@ -45,6 +51,14 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
     }
   }, [initialData, open])
 
+  const handleWidgetOpen = () => {
+    setDialogHidden(true)
+  }
+
+  const handleWidgetClose = () => {
+    setDialogHidden(false)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -65,7 +79,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open && !dialogHidden} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-md">
         <DialogHeader>
           <DialogTitle className="text-slate-800 text-xl font-bold">
@@ -81,6 +95,8 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
             onUpload={(url) => setFormData({ ...formData, image: url })}
             onRemove={() => setFormData({ ...formData, image: "" })}
             type="avatar"
+            onWidgetOpen={handleWidgetOpen}
+            onWidgetClose={handleWidgetClose}
           />
 
           <div className="space-y-2">

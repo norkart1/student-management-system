@@ -2,17 +2,20 @@
 
 import { CldUploadWidget } from "next-cloudinary"
 import { Camera, User, BookOpen, X, Loader2 } from "lucide-react"
-import { useState } from "react"
+import { useState, useRef } from "react"
 
 interface CloudinaryUploadProps {
   onUpload: (url: string) => void
   currentImage?: string
   type?: "avatar" | "book"
   onRemove?: () => void
+  onWidgetOpen?: () => void
+  onWidgetClose?: () => void
 }
 
-export function CloudinaryUpload({ onUpload, currentImage, type = "avatar", onRemove }: CloudinaryUploadProps) {
+export function CloudinaryUpload({ onUpload, currentImage, type = "avatar", onRemove, onWidgetOpen, onWidgetClose }: CloudinaryUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
+  const openRef = useRef<(() => void) | null>(null)
 
   const handleSuccess = (result: any) => {
     setIsUploading(false)
@@ -68,18 +71,23 @@ export function CloudinaryUpload({ onUpload, currentImage, type = "avatar", onRe
           onSuccess={handleSuccess}
           onQueuesStart={handleUploadStart}
           onError={() => setIsUploading(false)}
+          onOpen={() => onWidgetOpen?.()}
+          onClose={() => onWidgetClose?.()}
         >
-          {({ open }) => (
-            <button
-              type="button"
-              onClick={() => {
-                open()
-              }}
-              className={`absolute ${isAvatar ? "bottom-0 right-0 w-7 h-7" : "bottom-1 right-1 w-8 h-8"} bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-emerald-600 transition-colors`}
-            >
-              <Camera className={isAvatar ? "w-3.5 h-3.5" : "w-4 h-4"} />
-            </button>
-          )}
+          {({ open }) => {
+            openRef.current = open
+            return (
+              <button
+                type="button"
+                onClick={() => {
+                  open()
+                }}
+                className={`absolute ${isAvatar ? "bottom-0 right-0 w-7 h-7" : "bottom-1 right-1 w-8 h-8"} bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-emerald-600 transition-colors`}
+              >
+                <Camera className={isAvatar ? "w-3.5 h-3.5" : "w-4 h-4"} />
+              </button>
+            )
+          }}
         </CldUploadWidget>
       </div>
       <p className="text-xs text-slate-400">Click to upload photo</p>
