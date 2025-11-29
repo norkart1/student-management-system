@@ -18,7 +18,6 @@ export default function BooksPage() {
   const [books, setBooks] = useState([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [dialogHidden, setDialogHidden] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [bookToDelete, setBookToDelete] = useState<any>(null)
   const [deleting, setDeleting] = useState(false)
@@ -177,7 +176,7 @@ export default function BooksPage() {
           </CardContent>
         </Card>
 
-        <Dialog open={dialogOpen && !dialogHidden} onOpenChange={handleDialogClose}>
+        <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
           <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-md">
             <DialogHeader>
               <DialogTitle className="text-slate-800 text-xl font-bold">
@@ -191,8 +190,6 @@ export default function BooksPage() {
                 onUpload={(url) => setFormData({ ...formData, image: url })}
                 onRemove={() => setFormData({ ...formData, image: "" })}
                 type="book"
-                onWidgetOpen={() => setDialogHidden(true)}
-                onWidgetClose={() => setDialogHidden(false)}
               />
 
               <div className="space-y-2">

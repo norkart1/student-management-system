@@ -9,11 +9,9 @@ interface CloudinaryUploadProps {
   currentImage?: string
   type?: "avatar" | "book"
   onRemove?: () => void
-  onWidgetOpen?: () => void
-  onWidgetClose?: () => void
 }
 
-export function CloudinaryUpload({ onUpload, currentImage, type = "avatar", onRemove, onWidgetOpen, onWidgetClose }: CloudinaryUploadProps) {
+export function CloudinaryUpload({ onUpload, currentImage, type = "avatar", onRemove }: CloudinaryUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
 
   const handleSuccess = (result: any) => {
@@ -70,8 +68,6 @@ export function CloudinaryUpload({ onUpload, currentImage, type = "avatar", onRe
           onSuccess={handleSuccess}
           onQueuesStart={handleUploadStart}
           onError={() => setIsUploading(false)}
-          onOpen={() => onWidgetOpen?.()}
-          onClose={() => onWidgetClose?.()}
         >
           {({ open, isLoading }) => (
             <button
