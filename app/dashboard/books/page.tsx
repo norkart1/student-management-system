@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
+import { ReportDropdown } from "@/components/report-dropdown"
 import { Spinner } from "@/components/spinner"
 import { ImageUpload } from "@/components/image-upload"
 import { BookOpen, BookText, User } from "lucide-react"
@@ -149,8 +150,14 @@ export default function BooksPage() {
               <p className="text-slate-500 text-sm md:text-base">Manage library books and inventory</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg font-medium">
+          <div className="flex items-center gap-3">
+            <ReportDropdown
+              data={books}
+              columns={columns}
+              type="books"
+              title="Books"
+            />
+            <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg font-medium text-sm">
               {books.length} Total Books
             </span>
           </div>
@@ -171,7 +178,7 @@ export default function BooksPage() {
                 <Spinner message="Loading books..." />
               </div>
             ) : (
-              <DataTable columns={columns} data={books} onEdit={handleEditClick} onDelete={handleDeleteClick} onAdd={() => setDialogOpen(true)} />
+              <DataTable columns={columns} data={books} onEdit={handleEditClick} onDelete={handleDeleteClick} onAdd={() => setDialogOpen(true)} reportType="books" />
             )}
           </CardContent>
         </Card>

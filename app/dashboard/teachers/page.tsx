@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
+import { ReportDropdown } from "@/components/report-dropdown"
 import { Spinner } from "@/components/spinner"
 import { ImageUpload } from "@/components/image-upload"
 import { Users, User, Mail, Phone } from "lucide-react"
@@ -154,8 +155,14 @@ export default function TeachersPage() {
               <p className="text-slate-500 text-sm md:text-base">Manage teacher profiles and details</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg font-medium">
+          <div className="flex items-center gap-3">
+            <ReportDropdown
+              data={teachers}
+              columns={columns}
+              type="teachers"
+              title="Teachers"
+            />
+            <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg font-medium text-sm">
               {teachers.length} Total Teachers
             </span>
           </div>
@@ -176,7 +183,7 @@ export default function TeachersPage() {
                 <Spinner message="Loading teachers..." />
               </div>
             ) : (
-              <DataTable columns={columns} data={teachers} onEdit={handleEditClick} onDelete={handleDeleteClick} onAdd={() => setDialogOpen(true)} />
+              <DataTable columns={columns} data={teachers} onEdit={handleEditClick} onDelete={handleDeleteClick} onAdd={() => setDialogOpen(true)} reportType="teachers" />
             )}
           </CardContent>
         </Card>

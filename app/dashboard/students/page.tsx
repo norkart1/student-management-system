@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { DataTable } from "@/components/data-table"
 import { AddStudentDialog } from "@/components/add-student-dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
+import { ReportDropdown } from "@/components/report-dropdown"
 import { Spinner } from "@/components/spinner"
 import { GraduationCap } from "lucide-react"
 
@@ -118,8 +119,14 @@ export default function StudentsPage() {
               <p className="text-slate-500 text-sm md:text-base">Manage student information and records</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg font-medium">
+          <div className="flex items-center gap-3">
+            <ReportDropdown
+              data={students}
+              columns={columns}
+              type="students"
+              title="Students"
+            />
+            <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg font-medium text-sm">
               {students.length} Total Students
             </span>
           </div>
@@ -146,6 +153,7 @@ export default function StudentsPage() {
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
                 onAdd={() => setDialogOpen(true)}
+                reportType="students"
               />
             )}
           </CardContent>

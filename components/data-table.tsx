@@ -4,7 +4,14 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Pencil, Trash2, FileText, User, Mail, Phone, BookOpen, Hash } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Plus, Search, Pencil, Trash2, FileText, User, Mail, Phone, BookOpen, Hash, Printer, FileDown } from "lucide-react"
+import { downloadPDF, printReport, type ReportData } from "@/lib/report-utils"
 
 interface Column {
   key: string
@@ -19,10 +26,53 @@ interface DataTableProps {
   onEdit?: (item: any) => void
   onDelete?: (item: any) => void
   onAdd?: () => void
+  reportType?: "students" | "teachers" | "books"
 }
 
-export function DataTable({ columns, data, onEdit, onDelete, onAdd }: DataTableProps) {
+export function DataTable({ columns, data, onEdit, onDelete, onAdd, reportType = "students" }: DataTableProps) {
   const [search, setSearch] = useState("")
+  const [downloading, setDownloading] = useState<string | null>(null)
+
+  const getDate = () => {
+    return new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  const handlePrintSingle = (item: any) => {
+    const report: ReportData = {
+      title: `${reportType === 'books' ? 'Book' : reportType === 'teachers' ? 'Teacher' : 'Student'} Profile`,
+      subtitle: item.fullName || item.title,
+      date: getDate(),
+      columns,
+      data: [item],
+      type: reportType
+    }
+    printReport(report, true)
+  }
+
+  const handleDownloadSingle = async (item: any) => {
+    const itemId = item._id || item.id || Math.random().toString()
+    setDownloading(itemId)
+    try {
+      const report: ReportData = {
+        title: `${reportType === 'books' ? 'Book' : reportType === 'teachers' ? 'Teacher' : 'Student'} Profile`,
+        subtitle: item.fullName || item.title,
+        date: getDate(),
+        columns,
+        data: [item],
+        type: reportType
+      }
+      const name = (item.fullName || item.title || 'record').toLowerCase().replace(/\s+/g, '-')
+      await downloadPDF(report, `${reportType}-${name}`, true)
+    } finally {
+      setDownloading(null)
+    }
+  }
 
   const filteredData = data.filter((item) => JSON.stringify(item).toLowerCase().includes(search.toLowerCase()))
 
@@ -136,6 +186,29 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd }: DataTableP
                   {(onEdit || onDelete) && (
                     <TableCell className="py-4">
                       <div className="flex items-center gap-2">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              title="Print/Download"
+                              className="h-8 w-8 p-0 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg"
+                              disabled={downloading === (item._id || item.id)}
+                            >
+                              <Printer className="w-4 h-4 text-slate-500" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem onClick={() => handlePrintSingle(item)} className="gap-2 cursor-pointer">
+                              <Printer className="w-4 h-4" />
+                              Print
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDownloadSingle(item)} className="gap-2 cursor-pointer">
+                              <FileDown className="w-4 h-4" />
+                              Download PDF
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                         {onEdit && (
                           <Button 
                             size="sm" 
@@ -228,6 +301,28 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd }: DataTableP
 
                   {(onEdit || onDelete) && (
                     <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="h-8 w-8 p-0 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg"
+                            disabled={downloading === (item._id || item.id)}
+                          >
+                            <Printer className="w-4 h-4 text-slate-500" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-40">
+                          <DropdownMenuItem onClick={() => handlePrintSingle(item)} className="gap-2 cursor-pointer">
+                            <Printer className="w-4 h-4" />
+                            Print
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDownloadSingle(item)} className="gap-2 cursor-pointer">
+                            <FileDown className="w-4 h-4" />
+                            Download PDF
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                       {onEdit && (
                         <Button 
                           size="sm" 
