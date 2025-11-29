@@ -15,7 +15,6 @@ interface CloudinaryUploadProps {
 
 export function CloudinaryUpload({ onUpload, currentImage, type = "avatar", onRemove, onWidgetOpen, onWidgetClose }: CloudinaryUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
-  const [isWidgetReady, setIsWidgetReady] = useState(false)
 
   const handleSuccess = (result: any) => {
     setIsUploading(false)
@@ -74,31 +73,24 @@ export function CloudinaryUpload({ onUpload, currentImage, type = "avatar", onRe
           onOpen={() => onWidgetOpen?.()}
           onClose={() => onWidgetClose?.()}
         >
-          {({ open, isLoading }) => {
-            if (!isLoading && !isWidgetReady) {
-              setIsWidgetReady(true)
-            }
-            return (
-              <button
-                type="button"
-                onClick={() => {
-                  if (open && typeof open === 'function') {
-                    open()
-                  } else {
-                    console.warn("Cloudinary widget not ready yet")
-                  }
-                }}
-                disabled={isLoading}
-                className={`absolute ${isAvatar ? "bottom-0 right-0 w-7 h-7" : "bottom-1 right-1 w-8 h-8"} bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-emerald-600 transition-colors disabled:opacity-50`}
-              >
-                {isLoading ? (
-                  <Loader2 className={isAvatar ? "w-3.5 h-3.5 animate-spin" : "w-4 h-4 animate-spin"} />
-                ) : (
-                  <Camera className={isAvatar ? "w-3.5 h-3.5" : "w-4 h-4"} />
-                )}
-              </button>
-            )
-          }}
+          {({ open, isLoading }) => (
+            <button
+              type="button"
+              onClick={() => {
+                if (open && typeof open === 'function') {
+                  open()
+                }
+              }}
+              disabled={isLoading}
+              className={`absolute ${isAvatar ? "bottom-0 right-0 w-7 h-7" : "bottom-1 right-1 w-8 h-8"} bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-emerald-600 transition-colors disabled:opacity-50`}
+            >
+              {isLoading ? (
+                <Loader2 className={isAvatar ? "w-3.5 h-3.5 animate-spin" : "w-4 h-4 animate-spin"} />
+              ) : (
+                <Camera className={isAvatar ? "w-3.5 h-3.5" : "w-4 h-4"} />
+              )}
+            </button>
+          )}
         </CldUploadWidget>
       </div>
       <p className="text-xs text-slate-400">Click to upload photo</p>
