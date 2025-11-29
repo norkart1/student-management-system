@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
 import { Spinner } from "@/components/spinner"
+import { ImageUpload } from "@/components/image-upload"
 import { Users, User, Mail, Phone } from "lucide-react"
 
 export default function TeachersPage() {
@@ -25,6 +26,7 @@ export default function TeachersPage() {
     fullName: "",
     email: "",
     phone: "",
+    imageUrl: "",
   })
   const [teacherToEdit, setTeacherToEdit] = useState<any>(null)
 
@@ -83,6 +85,7 @@ export default function TeachersPage() {
       fullName: "",
       email: "",
       phone: "",
+      imageUrl: "",
     })
     setTeacherToEdit(null)
   }
@@ -93,6 +96,7 @@ export default function TeachersPage() {
       fullName: teacher.fullName || "",
       email: teacher.email || "",
       phone: teacher.phone || "",
+      imageUrl: teacher.imageUrl || "",
     })
     setDialogOpen(true)
   }
@@ -185,11 +189,11 @@ export default function TeachersPage() {
               <DialogDescription className="text-slate-500">Fill in the teacher details</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="flex justify-center">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center border-4 border-white shadow-lg">
-                  <User className="w-8 h-8 text-white" />
-                </div>
-              </div>
+              <ImageUpload
+                value={formData.imageUrl}
+                onChange={(url) => setFormData({ ...formData, imageUrl: url })}
+                type="profile"
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="fullName" className="text-slate-700 flex items-center gap-2">

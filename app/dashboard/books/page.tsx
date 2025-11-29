@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
 import { Spinner } from "@/components/spinner"
+import { ImageUpload } from "@/components/image-upload"
 import { BookOpen, BookText, User } from "lucide-react"
 
 export default function BooksPage() {
@@ -24,6 +25,7 @@ export default function BooksPage() {
   const [formData, setFormData] = useState({
     title: "",
     author: "",
+    imageUrl: "",
   })
   const [bookToEdit, setBookToEdit] = useState<any>(null)
 
@@ -81,6 +83,7 @@ export default function BooksPage() {
     setFormData({
       title: "",
       author: "",
+      imageUrl: "",
     })
     setBookToEdit(null)
   }
@@ -90,6 +93,7 @@ export default function BooksPage() {
     setFormData({
       title: book.title || "",
       author: book.author || "",
+      imageUrl: book.imageUrl || "",
     })
     setDialogOpen(true)
   }
@@ -180,11 +184,11 @@ export default function BooksPage() {
               <DialogDescription className="text-slate-500">Fill in the book details</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="flex justify-center">
-                <div className="w-16 h-24 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center border-4 border-white shadow-lg">
-                  <BookOpen className="w-8 h-8 text-white" />
-                </div>
-              </div>
+              <ImageUpload
+                value={formData.imageUrl}
+                onChange={(url) => setFormData({ ...formData, imageUrl: url })}
+                type="book"
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="title" className="text-slate-700 flex items-center gap-2">

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ImageUpload } from "@/components/image-upload"
 import { User, Mail, Phone } from "lucide-react"
 
 interface AddStudentDialogProps {
@@ -20,6 +21,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
     fullName: initialData?.fullName || "",
     email: initialData?.email || "",
     phone: initialData?.phone || "",
+    imageUrl: initialData?.imageUrl || "",
   })
   const [loading, setLoading] = useState(false)
 
@@ -30,12 +32,14 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
           fullName: initialData.fullName || "",
           email: initialData.email || "",
           phone: initialData.phone || "",
+          imageUrl: initialData.imageUrl || "",
         })
       } else {
         setFormData({
           fullName: "",
           email: "",
           phone: "",
+          imageUrl: "",
         })
       }
     }
@@ -50,6 +54,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
         fullName: "",
         email: "",
         phone: "",
+        imageUrl: "",
       })
       onOpenChange(false)
     } catch (error) {
@@ -71,11 +76,11 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="flex justify-center">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center border-4 border-white shadow-lg">
-              <User className="w-8 h-8 text-white" />
-            </div>
-          </div>
+          <ImageUpload
+            value={formData.imageUrl}
+            onChange={(url) => setFormData({ ...formData, imageUrl: url })}
+            type="profile"
+          />
 
           <div className="space-y-2">
             <Label htmlFor="fullName" className="text-slate-700 flex items-center gap-2">

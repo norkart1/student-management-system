@@ -41,7 +41,29 @@ A comprehensive student management system built with Next.js 15, React, TypeScri
 - `NEXT_TELEMETRY_DISABLED` - Disable Next.js telemetry
 - `NEXT_PUBLIC_APP_URL` - Public application URL
 
+### Image Upload (Cloudinary)
+- `CLOUDINARY_CLOUD_NAME` - Cloudinary cloud name
+- `CLOUDINARY_API_KEY` - Cloudinary API key
+- `CLOUDINARY_API_SECRET` - Cloudinary API secret
+
 ## Recent Changes
+
+### November 29, 2025 - Image Upload Feature
+1. **Cloudinary Integration**
+   - Installed next-cloudinary and cloudinary packages
+   - Created image upload component with preview and remove functionality
+   - Created /api/upload route for handling image uploads to Cloudinary
+   - Profile images auto-cropped to face-centered 200x200
+   - Book covers auto-cropped to 300x450
+
+2. **Updated Dialogs**
+   - Added image upload to Add/Edit Student dialog
+   - Added image upload to Add/Edit Teacher dialog
+   - Added image upload to Add/Edit Book dialog (with book cover aspect ratio)
+
+3. **Configuration**
+   - Added Cloudinary domain to Next.js image remotePatterns
+   - Image URLs stored in MongoDB with each record
 
 ### November 29, 2025 - GitHub Project Import to Replit
 1. **Project Import and Setup**
