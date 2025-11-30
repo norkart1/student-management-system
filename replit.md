@@ -49,6 +49,27 @@ Note: Image upload feature requires Cloudinary credentials. If not configured, t
 
 ## Recent Changes
 
+### November 30, 2025 - Landing Page Addition
+1. **New Public Landing Page**
+   - Created a professional marketing landing page at the root URL (/)
+   - Previously redirected directly to /login, now shows a full landing experience
+   - Features sticky header with SMS branding and Login button
+
+2. **Landing Page Sections**
+   - **Hero Section**: Gradient background with headline "Manage Your School Effortlessly"
+   - **Features Grid**: 6 feature cards (Students, Teachers, Library, Calendar, Reports, Security)
+   - **How It Works**: 3-step workflow explanation
+   - **Stats Section**: Highlights key metrics (500+ students, 50+ teachers, etc.)
+   - **Benefits Section**: Checklist of platform advantages
+   - **CTA Section**: Final call-to-action with gradient card
+   - **Footer**: Reused existing footer component with contact info and social links
+
+3. **Technical Implementation**
+   - Uses existing UI components (Button, Card) with asChild pattern for accessibility
+   - Responsive design with mobile-first approach
+   - Brand colors from CSS variables (teal, green, mint palette)
+   - Smooth hover animations and gradient effects
+
 ### November 29, 2025 - Dashboard UI Improvements
 1. **Admin Profile Button Dark Mode Support**
    - Added 'variant' prop to ProfileDropdown component ('light' or 'dark')
