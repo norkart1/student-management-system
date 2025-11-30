@@ -4,6 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ProtectedLayout } from "@/components/protected-layout"
+import { getAuthToken } from "@/lib/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataTable } from "@/components/data-table"
 import { Button } from "@/components/ui/button"
@@ -51,12 +52,16 @@ export default function BooksPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const token = getAuthToken()
     setSaving(true)
     try {
       if (bookToEdit) {
         const response = await fetch(`/api/books/${bookToEdit._id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
           body: JSON.stringify(formData),
         })
         if (response.ok) {
@@ -67,7 +72,10 @@ export default function BooksPage() {
       } else {
         const response = await fetch("/api/books", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
           body: JSON.stringify(formData),
         })
         if (response.ok) {
@@ -121,9 +129,15 @@ export default function BooksPage() {
   const handleDeleteConfirm = async () => {
     if (!bookToDelete) return
     
+    const token = getAuthToken()
     setDeleting(true)
     try {
-      const response = await fetch(`/api/books/${bookToDelete._id}`, { method: "DELETE" })
+      const response = await fetch(`/api/books/${bookToDelete._id}`, { 
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      })
       if (response.ok) {
         setDeleteDialogOpen(false)
         setBookToDelete(null)

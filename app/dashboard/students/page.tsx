@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ProtectedLayout } from "@/components/protected-layout"
+import { getAuthToken } from "@/lib/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataTable } from "@/components/data-table"
 import { AddStudentDialog } from "@/components/add-student-dialog"
@@ -38,11 +39,15 @@ export default function StudentsPage() {
   }
 
   const handleAddStudent = async (formData: any) => {
+    const token = getAuthToken()
     try {
       if (studentToEdit) {
         const response = await fetch(`/api/students/${studentToEdit._id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
           body: JSON.stringify(formData),
         })
         if (response.ok) {
@@ -52,7 +57,10 @@ export default function StudentsPage() {
       } else {
         const response = await fetch("/api/students", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
           body: JSON.stringify(formData),
         })
         if (response.ok) {
@@ -88,9 +96,15 @@ export default function StudentsPage() {
   const handleDeleteConfirm = async () => {
     if (!studentToDelete) return
     
+    const token = getAuthToken()
     setDeleting(true)
     try {
-      const response = await fetch(`/api/students/${studentToDelete._id}`, { method: "DELETE" })
+      const response = await fetch(`/api/students/${studentToDelete._id}`, { 
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      })
       if (response.ok) {
         setDeleteDialogOpen(false)
         setStudentToDelete(null)
