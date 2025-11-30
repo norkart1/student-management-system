@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { 
   GraduationCap, 
@@ -11,12 +12,38 @@ import {
   ArrowRight,
   CheckCircle2,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Footer } from "@/components/footer"
+
+interface Stats {
+  students: number
+  teachers: number
+  books: number
+}
 
 export default function LandingPage() {
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const response = await fetch('/api/stats')
+        if (response.ok) {
+          const data = await response.json()
+          setStats(data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch stats:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchStats()
+  }, [])
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-950 text-white">
       <header className="fixed top-0 left-0 right-0 z-50 bg-gray-950/80 backdrop-blur-xl border-b border-white/10">
@@ -82,18 +109,30 @@ export default function LandingPage() {
 
               <div className="flex items-center gap-8 mt-12 pt-12 border-t border-white/10">
                 <div>
-                  <div className="text-3xl font-bold text-white">500+</div>
+                  {loading ? (
+                    <Loader2 className="w-6 h-6 text-emerald-400 animate-spin" />
+                  ) : (
+                    <div className="text-3xl font-bold text-white">{stats?.students || 0}</div>
+                  )}
                   <div className="text-sm text-gray-500">Active Students</div>
                 </div>
                 <div className="w-px h-12 bg-white/10" />
                 <div>
-                  <div className="text-3xl font-bold text-white">50+</div>
+                  {loading ? (
+                    <Loader2 className="w-6 h-6 text-emerald-400 animate-spin" />
+                  ) : (
+                    <div className="text-3xl font-bold text-white">{stats?.teachers || 0}</div>
+                  )}
                   <div className="text-sm text-gray-500">Teachers</div>
                 </div>
                 <div className="w-px h-12 bg-white/10" />
                 <div>
-                  <div className="text-3xl font-bold text-white">99.9%</div>
-                  <div className="text-sm text-gray-500">Uptime</div>
+                  {loading ? (
+                    <Loader2 className="w-6 h-6 text-emerald-400 animate-spin" />
+                  ) : (
+                    <div className="text-3xl font-bold text-white">{stats?.books || 0}</div>
+                  )}
+                  <div className="text-sm text-gray-500">Library Books</div>
                 </div>
               </div>
             </div>
@@ -120,18 +159,27 @@ export default function LandingPage() {
                 title="Student Management"
                 description="Complete profiles with photos, contact details, and academic records."
                 gradient="from-blue-500 to-blue-600"
+                count={stats?.students}
+                label="students"
+                loading={loading}
               />
               <FeatureCard
                 icon={<GraduationCap className="w-6 h-6" />}
                 title="Teacher Directory"
                 description="Centralized system for managing teacher information and qualifications."
                 gradient="from-emerald-500 to-cyan-500"
+                count={stats?.teachers}
+                label="teachers"
+                loading={loading}
               />
               <FeatureCard
                 icon={<BookOpen className="w-6 h-6" />}
                 title="Library System"
                 description="Track books with ISBN, manage inventory, and catalog cover images."
                 gradient="from-violet-500 to-purple-600"
+                count={stats?.books}
+                label="books"
+                loading={loading}
               />
               <FeatureCard
                 icon={<Calendar className="w-6 h-6" />}
@@ -217,10 +265,26 @@ export default function LandingPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-3xl blur-3xl" />
                 <div className="relative bg-gray-800/50 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
                   <div className="grid grid-cols-2 gap-6">
-                    <StatBox number="1000+" label="Books Catalogued" />
-                    <StatBox number="24/7" label="System Availability" />
-                    <StatBox number="100%" label="Data Encrypted" />
-                    <StatBox number="5min" label="Setup Time" />
+                    <StatBox 
+                      number={loading ? null : stats?.students} 
+                      label="Students" 
+                      loading={loading}
+                    />
+                    <StatBox 
+                      number={loading ? null : stats?.teachers} 
+                      label="Teachers" 
+                      loading={loading}
+                    />
+                    <StatBox 
+                      number={loading ? null : stats?.books} 
+                      label="Books" 
+                      loading={loading}
+                    />
+                    <StatBox 
+                      number="24/7" 
+                      label="Support" 
+                      loading={false}
+                    />
                   </div>
                 </div>
               </div>
@@ -251,9 +315,23 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-      </main>
 
-      <Footer />
+        <div className="border-t border-white/10 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-cyan-400 rounded-lg flex items-center justify-center">
+                  <GraduationCap className="w-4 h-4 text-gray-900" />
+                </div>
+                <span className="font-semibold">Student Management System</span>
+              </div>
+              <p className="text-gray-500 text-sm">
+                © {new Date().getFullYear()} SMS. All rights reserved.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   )
 }
@@ -262,17 +340,37 @@ function FeatureCard({
   icon, 
   title, 
   description, 
-  gradient 
+  gradient,
+  count,
+  label,
+  loading
 }: { 
   icon: React.ReactNode
   title: string
   description: string
-  gradient: string 
+  gradient: string
+  count?: number
+  label?: string
+  loading?: boolean
 }) {
   return (
     <div className="group relative bg-gray-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300">
-      <div className={`w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center text-white mb-5`}>
-        {icon}
+      <div className="flex items-start justify-between mb-5">
+        <div className={`w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center text-white`}>
+          {icon}
+        </div>
+        {count !== undefined && (
+          <div className="text-right">
+            {loading ? (
+              <Loader2 className="w-5 h-5 text-gray-500 animate-spin" />
+            ) : (
+              <>
+                <div className="text-2xl font-bold text-white">{count}</div>
+                <div className="text-xs text-gray-500">{label}</div>
+              </>
+            )}
+          </div>
+        )}
       </div>
       <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
       <p className="text-gray-400">{description}</p>
@@ -313,14 +411,20 @@ function BenefitItem({ text }: { text: string }) {
 
 function StatBox({ 
   number, 
-  label 
+  label,
+  loading
 }: { 
-  number: string
-  label: string 
+  number: number | string | null | undefined
+  label: string
+  loading: boolean
 }) {
   return (
     <div className="text-center p-4 bg-white/5 rounded-2xl">
-      <div className="text-2xl sm:text-3xl font-bold text-white mb-1">{number}</div>
+      {loading ? (
+        <Loader2 className="w-6 h-6 text-emerald-400 animate-spin mx-auto mb-1" />
+      ) : (
+        <div className="text-2xl sm:text-3xl font-bold text-white mb-1">{number ?? 0}</div>
+      )}
       <div className="text-sm text-gray-400">{label}</div>
     </div>
   )
