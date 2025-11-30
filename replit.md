@@ -1,290 +1,111 @@
 # Student Management System
 
 ## Overview
-A comprehensive student management system built with Next.js 15, React, TypeScript, and MongoDB. This application provides a complete portal for managing students, teachers, books, and academic events.
 
-## Project Architecture
+A comprehensive web application for managing students, teachers, books, and academic events. Built with Next.js 14 (App Router), React, TypeScript, and MongoDB. The system provides CRUD operations for educational entities, calendar event management, analytics dashboards, and public profile pages with QR code generation.
 
-### Tech Stack
-- **Frontend**: Next.js 15 (App Router), React 18, TypeScript
-- **Backend**: Next.js API Routes
-- **Database**: MongoDB (cloud-hosted)
-- **Styling**: Tailwind CSS
-- **UI Components**: Radix UI primitives
-- **Authentication**: JWT-based authentication with bcryptjs
+## User Preferences
 
-### Directory Structure
-- `/app` - Next.js App Router pages and API routes
-  - `/api` - Backend API endpoints (auth, students, teachers, books, events, stats)
-  - `/dashboard` - Dashboard pages (students, teachers, books, calendar, settings)
-  - `/login` - Login page
-- `/components` - Reusable React components
-  - `/ui` - Base UI components (button, input, dialog, etc.)
-- `/lib` - Utility functions and configurations
-  - `db.ts` - MongoDB connection handler
-  - `auth.ts` - Client-side auth utilities
-  - `jwt.ts` - JWT token management
-  - `init-db.ts` - Database initialization
-- `/hooks` - Custom React hooks
-- `/public` - Static assets
+Preferred communication style: Simple, everyday language.
 
-## Environment Variables
+## System Architecture
 
-### Required Secrets (Already Configured)
-- `MONGODB_URI` - MongoDB connection string
-- `ADMIN_USERNAME` - Admin login username
-- `ADMIN_PASSWORD` - Admin login password
-- `SESSION_SECRET` - Session encryption secret
+### Frontend Architecture
 
-### Application Variables
-- `JWT_SECRET` - JWT signing secret (set)
-- `NEXT_TELEMETRY_DISABLED` - Disable Next.js telemetry
-- `NEXT_PUBLIC_APP_URL` - Public application URL
+**Framework**: Next.js 14 with App Router and React Server Components
+- **Rationale**: Leverages modern React patterns with server-side rendering for better performance and SEO
+- **UI Library**: shadcn/ui components built on Radix UI primitives
+- **Styling**: Tailwind CSS with custom design system using CSS variables for theming
+- **State Management**: React hooks (useState, useEffect) for local component state
+- **Form Handling**: React Hook Form with Zod validation (@hookform/resolvers)
+- **Icons**: Lucide React icon library
 
-### Optional: Image Upload (Cloudinary)
-Note: Image upload feature requires Cloudinary credentials. If not configured, the upload feature will return an error.
-- `CLOUDINARY_CLOUD_NAME` - Cloudinary cloud name
-- `CLOUDINARY_API_KEY` - Cloudinary API key  
-- `CLOUDINARY_API_SECRET` - Cloudinary API secret
+**Design Patterns**:
+- Protected routes using client-side authentication checks via `useAuth` hook
+- Shared `ProtectedLayout` component wrapping authenticated pages
+- Responsive design with desktop sidebar and mobile bottom navigation
+- Reusable dialog components for CRUD operations
+- Custom data table component with search, filtering, and actions
 
-## Recent Changes
+**Client-Side Routing**: Next.js App Router with nested layouts for profile pages
 
-### November 30, 2025 - Landing Page Addition
-1. **New Public Landing Page**
-   - Created a professional marketing landing page at the root URL (/)
-   - Previously redirected directly to /login, now shows a full landing experience
-   - Features sticky header with SMS branding and Login button
+### Backend Architecture
 
-2. **Landing Page Sections**
-   - **Hero Section**: Gradient background with headline "Manage Your School Effortlessly"
-   - **Features Grid**: 6 feature cards (Students, Teachers, Library, Calendar, Reports, Security)
-   - **How It Works**: 3-step workflow explanation
-   - **Stats Section**: Highlights key metrics (500+ students, 50+ teachers, etc.)
-   - **Benefits Section**: Checklist of platform advantages
-   - **CTA Section**: Final call-to-action with gradient card
-   - **Footer**: Reused existing footer component with contact info and social links
+**Runtime**: Next.js API Routes (serverless functions)
+- **Rationale**: Collocated with frontend code, automatic API endpoint creation, edge-ready
+- **Authentication**: JWT-based with environment variable credentials (no database for admin users)
+- **Authorization**: Middleware pattern using `validateAuth` helper for protected endpoints
 
-3. **Technical Implementation**
-   - Uses existing UI components (Button, Card) with asChild pattern for accessibility
-   - Responsive design with mobile-first approach
-   - Brand colors from CSS variables (teal, green, mint palette)
-   - Smooth hover animations and gradient effects
+**API Structure**:
+- RESTful endpoints organized by resource (`/api/students`, `/api/teachers`, `/api/books`, `/api/events`)
+- CRUD operations using standard HTTP methods (GET, POST, PUT, DELETE)
+- Nested routes for individual resource operations (`/api/students/[id]`)
+- Centralized auth middleware (`lib/auth-middleware.ts`)
+- Token extraction and validation reusable across endpoints
 
-### November 29, 2025 - Dashboard UI Improvements
-1. **Admin Profile Button Dark Mode Support**
-   - Added 'variant' prop to ProfileDropdown component ('light' or 'dark')
-   - Light variant shows emerald gradient background for visibility on light backgrounds
-   - Dark variant maintains original styling for dark backgrounds
-
-2. **Removed Upcoming Events Card**
-   - Removed the 4th stat card (Upcoming Events) from dashboard
-   - Changed grid from 4 columns to 3 columns with responsive breakpoints
-
-3. **Added Live Date/Time Display**
-   - Added clock icon and real-time date/time in the dashboard header
-   - Date format: "Saturday, November 29, 2025"
-   - Time format: "01:22:15 PM" with seconds, updates every second
-
-4. **Fixed Quick Access Boxes Alignment**
-   - Added auto-rows-fr for equal height rows
-   - Used flex layout for consistent card content alignment
-   - Responsive grid: 1 column on mobile, 2 on tablet, 4 on desktop
-
-### November 29, 2025 - Vercel to Replit Migration
-1. **Project Migration from Vercel**
-   - Successfully migrated Next.js application from Vercel to Replit
-   - Verified all configuration files are compatible with Replit environment
-   - Next.js config already includes proper Replit domain handling and webpack polling
-
-2. **Secrets Configuration**
-   - Configured all required secrets securely in Replit:
-     - MONGODB_URI (MongoDB database connection)
-     - JWT_SECRET (JWT token signing)
-     - CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET (image uploads)
-   - All secrets stored securely and available as environment variables
-
-3. **Dependency Installation**
-   - Installed all npm dependencies (536 packages)
-   - No vulnerabilities detected in dependency audit
-   - All LSP errors resolved successfully
-
-4. **Workflow Configuration**
-   - Configured "Next.js Development Server" workflow with `npm run dev` command
-   - Server properly bound to 0.0.0.0:5000 for Replit proxy compatibility
-   - Webview output type configured for port 5000
-   - Application successfully compiles and serves all routes
-
-5. **Deployment Configuration**
-   - Set up Replit Autoscale deployment for production
-   - Build command: `npm run build`
-   - Run command: `npm run start`
-   - Port 5000 configured for production serving
-
-6. **Verification**
-   - Login page rendering successfully with beautiful UI
-   - Development server running without errors (Next.js 15.5.6)
-   - All routes compiling successfully
-   - Application fully operational in Replit environment
-
-### November 29, 2025 - Fresh GitHub Import Setup (Third Session)
-1. **Project Re-Import from GitHub**
-   - Fresh clone re-imported to Replit environment
-   - Installed all npm dependencies (536 packages successfully)
-   - All secrets pre-configured and verified (MONGODB_URI, ADMIN_USERNAME, ADMIN_PASSWORD, SESSION_SECRET, JWT_SECRET, CLOUDINARY credentials)
-
-2. **Workflow Configuration**
-   - Configured "Next.js App" workflow with `npm run dev` command
-   - Server properly bound to 0.0.0.0:5000 for Replit proxy compatibility
-   - Webview output type configured for port 5000
-   - Application successfully compiles and serves all routes
-   - Next.js 15.5.6 compiled successfully in 11.4s
-
-3. **Deployment Configuration**
-   - Set up Replit Autoscale deployment
-   - Build command: `npm run build`
-   - Run command: `npm run start`
-   - Port 5000 configured for production serving
-
-4. **Verification**
-   - Development server running without errors
-   - All Next.js routes compiling successfully (584 modules)
-   - Next.js config already includes proper Replit domain handling
-   - Webpack polling enabled for file system compatibility
-   - Application ready for use in Replit environment
-
-### November 29, 2025 - Auto-Capitalization & Bulk Reports with Images
-1. **Auto-Capitalization for Names**
-   - Created `lib/text-utils.ts` with `toTitleCase` utility function
-   - Student names automatically capitalize each word as you type
-   - Teacher names automatically capitalize each word as you type
-   - Book titles and author names automatically capitalize each word as you type
-
-2. **Bulk Reports with Profile Images**
-   - Updated `lib/report-utils.ts` to include photos in bulk report tables
-   - Students/Teachers: Circular profile thumbnails (40x40px)
-   - Books: Rectangular cover thumbnails (35x50px)
-   - Placeholder icons shown for records without images
-   - Works for both Print and PDF Download options
-
-### November 29, 2025 - Image Display Fix & Mobile UI Improvements
-1. **Fixed Image Display in Data Tables**
-   - Added imageUrl column to Students page columns with type="image"
-   - Added imageUrl column to Teachers page columns with type="image"
-   - Added imageUrl column to Books page columns with type="image" and imageStyle="book"
-   - Images now properly display in both desktop table and mobile card views
-
-2. **Improved Mobile Delete Dialog**
-   - Made delete confirmation dialog wider on mobile
-   - Improved responsive padding and spacing
-   - Better text sizing for mobile readability
-
-### November 29, 2025 - Image Upload Feature
-1. **Cloudinary Integration**
-   - Installed next-cloudinary and cloudinary packages
-   - Created image upload component with preview and remove functionality
-   - Created /api/upload route for handling image uploads to Cloudinary
-   - Profile images auto-cropped to face-centered 200x200
-   - Book covers auto-cropped to 300x450
-
-2. **Updated Dialogs**
-   - Added image upload to Add/Edit Student dialog
-   - Added image upload to Add/Edit Teacher dialog
-   - Added image upload to Add/Edit Book dialog (with book cover aspect ratio)
-
-3. **Configuration**
-   - Added Cloudinary domain to Next.js image remotePatterns
-   - Image URLs stored in MongoDB with each record
-
-### November 29, 2025 - Fresh GitHub Project Import to Replit
-1. **Project Import and Setup**
-   - Fresh clone from GitHub repository
-   - Installed all npm dependencies (518 packages)
-   - Verified MongoDB connection successfully established
-   - JWT_SECRET environment variable configured in shared environment
-   - All secrets properly configured (MONGODB_URI, ADMIN_USERNAME, ADMIN_PASSWORD, SESSION_SECRET)
-
-2. **Workflow Configuration**
-   - Set up "Next.js App" workflow running on port 5000 with webview output
-   - Server bound to 0.0.0.0:5000 for Replit proxy compatibility
-   - Next.js config already includes REPLIT_DEV_DOMAIN and REPLIT_DOMAINS for proper host header handling
-   - Webpack polling enabled for Replit file system compatibility
-
-3. **Deployment Configuration**
-   - Configured Replit Autoscale deployment
-   - Build command: `npm run build`
-   - Run command: `npm run start`
-   - Port 5000 configured for frontend serving
-
-4. **Verification**
-   - Application successfully compiles and serves all routes
-   - Login page rendering correctly with beautiful UI
-   - MongoDB connection verified: `[v0] Successfully connected to MongoDB`
-   - Database status endpoint confirmed: database online with 487ms latency
-   - API endpoints functional (status, login, students, teachers, books, events)
-   - All middleware and routes compiling successfully
-
-## Running the Application
-
-### Development
-The workflow "Next.js App" runs automatically and executes:
-```bash
-npm run dev
-```
-This starts the Next.js development server on http://0.0.0.0:5000
-
-### Production Build
-```bash
-npm run build
-npm run start
-```
-
-## Database
-- MongoDB is used for data persistence
-- Collections: students, teachers, books
-- Database initialization runs automatically on first connection
-- Indexes created on email fields for students/teachers and isbn for books
-
-## Deployment
-Configured for Replit Autoscale deployment:
-- Build command: `npm run build`
-- Run command: `npm run start`
-- Automatically scales based on traffic
-
-## Authentication Flow
-1. Admin logs in with username/password
-2. Server validates credentials and returns JWT token
+**Authentication Flow**:
+1. Admin credentials validated against environment variables (`ADMIN_USERNAME`, `ADMIN_PASSWORD`)
+2. JWT token generated with 7-day expiration
 3. Token stored in localStorage on client
-4. Protected routes verify token on each request
-5. Token expires after 7 days
+4. Device tracking on login with user agent parsing
+5. Token verification on protected API requests via Authorization header
 
-### November 29, 2025 - Security & Code Quality Improvements
-1. **Enhanced API Security**
-   - Added JWT authentication validation to all mutating API routes (POST, PUT, DELETE)
-   - Students, Teachers, Books, Events routes now require valid JWT token
-   - Upload route protected with auth middleware
-   - Admin devices route uses consistent auth-middleware pattern
-   - GET endpoints remain public for profile viewing/sharing
+### Data Storage
 
-2. **Improved Error Handling**
-   - Added input validation for all API routes
-   - ObjectId validation prevents invalid MongoDB queries
-   - Proper HTTP status codes (400 for bad request, 401 for unauthorized, 404 for not found)
-   - Consistent error response format across all endpoints
+**Database**: MongoDB with native Node.js driver
+- **Rationale**: Flexible schema for varying entity structures, scalable, cloud-ready
+- **Connection Management**: Cached connection pattern to reuse database instances across serverless invocations
+- **Collections**: `students`, `teachers`, `books`, `events`, `devices`
+- **Indexes**: Email index on students/teachers, ISBN on books for faster queries
 
-3. **Code Quality**
-   - Fixed JWT_SECRET variable reference to use getJwtSecret() function
-   - Added TypeScript interfaces for request input types
-   - Removed "latest" tags from package.json dependencies
-   - Moved @types packages to devDependencies
-   - Consolidated font loading using Google Fonts CDN with preconnect
+**Schema Design**:
+- Documents include `createdAt` and `updatedAt` timestamps
+- ObjectId used for primary keys
+- Nullable fields for optional data (imageUrl, description, isbn)
+- No relational constraints (NoSQL approach)
 
-4. **Font Configuration**
-   - Using Anek Latin and Anek Malayalam fonts for improved typography
-   - Google Fonts loaded via CDN with preconnect for performance
-   - Tailwind fontFamily configured for consistent styling
+**Initialization**: Database collections created on first connection if they don't exist
 
-## Known Issues/Notes
-- TypeScript build errors ignored in next.config.mjs (legacy code)
-- Images are unoptimized for faster builds
-- Webpack polling enabled for Replit file system compatibility
-- Minor hydration mismatch warning in development (caused by browser extensions, not a production issue)
+### External Dependencies
+
+**Image Storage**: Cloudinary
+- **Purpose**: Profile images for students/teachers, book covers
+- **Configuration**: Cloud name, API key, and secret from environment variables
+- **Upload Flow**: Client uploads to API route, server uploads to Cloudinary, returns URL
+- **Validation**: File type checking (JPEG, PNG, GIF, WebP), 5MB size limit
+
+**QR Code Generation**: qrcode library
+- **Purpose**: Generate QR codes for public profile pages
+- **Implementation**: Client-side generation on profile pages, data URL format
+- **Use Case**: Shareable student/teacher/book profiles
+
+**Analytics**: Vercel Analytics
+- **Purpose**: Track page views and user interactions
+- **Integration**: Client-side script injection
+
+**Chart Library**: Recharts
+- **Purpose**: Dashboard visualizations (bar charts, area charts)
+- **Data**: Weekly statistics for students, teachers, books added
+
+**Authentication**: jsonwebtoken
+- **Purpose**: Generate and verify JWT tokens
+- **Configuration**: Secret from `JWT_SECRET` environment variable
+- **Expiration**: 7 days
+
+**Environment Configuration**:
+- `MONGODB_URI`: Database connection string
+- `JWT_SECRET`: Token signing secret
+- `ADMIN_USERNAME`: Admin login username
+- `ADMIN_PASSWORD`: Admin login password
+- `CLOUDINARY_CLOUD_NAME`: Cloudinary account identifier
+- `CLOUDINARY_API_KEY`: Cloudinary API key
+- `CLOUDINARY_API_SECRET`: Cloudinary API secret
+- `NEXT_PUBLIC_APP_URL`: Base URL for the application (fallback to Vercel/Replit domains)
+
+**PDF/Print Generation**: Client-side HTML-to-print using browser print dialog
+- **Rationale**: No backend PDF generation needed, uses native browser capabilities
+- **Implementation**: Custom report templates with print-specific CSS
+
+**Date Handling**: date-fns library for formatting and manipulation
+
+**Middleware**: Next.js middleware for cache control headers on all routes (no-cache strategy)
