@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { clearAuthToken } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, GraduationCap, BookOpen, Layers, LogOut, Calendar, ChevronRight, Settings } from "lucide-react"
+import { LayoutDashboard, Users, GraduationCap, BookOpen, Layers, LogOut, Calendar, ChevronRight, Settings, ClipboardList } from "lucide-react"
 
 const menuItems = [
   { 
@@ -26,6 +26,12 @@ const menuItems = [
     href: "/dashboard/teachers", 
     icon: Users,
     description: "Faculty management"
+  },
+  { 
+    name: "Exams", 
+    href: "/dashboard/exams", 
+    icon: ClipboardList,
+    description: "Exams & Results"
   },
   { 
     name: "Books", 

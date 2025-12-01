@@ -70,12 +70,13 @@ The application runs automatically via the configured workflow:
 ### Key Features
 1. **Student Management**: Add, edit, and track student records
 2. **Teacher Management**: Manage teacher profiles and assignments
-3. **Library System**: Track books, loans, and returns
-4. **Event Calendar**: Schedule and manage school events
-5. **Authentication**: Secure admin and user authentication
-6. **Image Uploads**: Profile pictures and media via Cloudinary
-7. **QR Code Generation**: For student/teacher IDs
-8. **PDF Report Export**: Generate reports for records
+3. **Exam Results System**: Create exams, enter student results, view grades and statistics
+4. **Library System**: Track books, loans, and returns
+5. **Event Calendar**: Schedule and manage school events
+6. **Authentication**: Secure admin and user authentication
+7. **Image Uploads**: Profile pictures and media via Cloudinary
+8. **QR Code Generation**: For student/teacher IDs
+9. **PDF Report Export**: Generate reports for records
 
 ## Deployment
 
@@ -96,12 +97,23 @@ The application runs automatically via the configured workflow:
 - `students` - Student records (indexed on email)
 - `teachers` - Teacher records (indexed on email)
 - `books` - Library book inventory (indexed on ISBN)
+- `exams` - Exam records with subject, date, total/passing marks
+- `results` - Student exam results with marks, grades, and pass/fail status
 - Additional collections for events and other data
 
 ### Initialization
 Database collections are automatically created on first run via `lib/init-db.ts`.
 
 ## Recent Changes
+- December 1, 2025: Added Exam Results System
+  - Created API routes for exams (CRUD operations)
+  - Created API routes for results (CRUD with automatic grade calculation)
+  - Added dashboard page for exam management
+  - Added dialog components for adding exams and entering results
+  - Added results view with statistics (pass rate, average, rankings)
+  - Updated sidebar and bottom navigation with Exams section
+  - Grading system: A+ (90+), A (80-89), B+ (70-79), B (60-69), C (50-59), D (40-49), F (<40)
+
 - December 1, 2025: Imported from GitHub and configured for Replit environment
   - Installed all dependencies
   - Configured environment variables
