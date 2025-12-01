@@ -68,15 +68,23 @@ The application runs automatically via the configured workflow:
 - **Host**: 0.0.0.0 (configured for Replit proxy)
 
 ### Key Features
-1. **Student Management**: Add, edit, and track student records
+1. **Student Management**: Add, edit, and track student records with registration numbers
 2. **Teacher Management**: Manage teacher profiles and assignments
-3. **Exam Results System**: Create exams, enter student results, view grades and statistics
-4. **Library System**: Track books, loans, and returns
-5. **Event Calendar**: Schedule and manage school events
-6. **Authentication**: Secure admin and user authentication
-7. **Image Uploads**: Profile pictures and media via Cloudinary
-8. **QR Code Generation**: For student/teacher IDs
-9. **PDF Report Export**: Generate reports for records
+3. **Exam Category System**: 
+   - Create categories (First Sem, Second Sem) with thumbnail images
+   - Add subjects with max scores
+   - Students apply when category is "open"
+   - Teachers approve/reject applications
+   - Enter per-subject scores (no grades, scores only)
+   - Publish results when ready
+4. **Public Result Search**: Students can search results by registration number on home page
+5. **Announcements**: Display important announcements on home page
+6. **Library System**: Track books, loans, and returns
+7. **Event Calendar**: Schedule and manage school events
+8. **Authentication**: Secure admin and user authentication
+9. **Image Uploads**: Profile pictures and media via Cloudinary
+10. **QR Code Generation**: For student/teacher IDs
+11. **PDF Report Export**: Generate reports for records
 
 ## Deployment
 
@@ -94,26 +102,31 @@ The application runs automatically via the configured workflow:
 ## Database
 
 ### MongoDB Collections
-- `students` - Student records (indexed on email)
+- `students` - Student records (indexed on email, registrationNumber)
 - `teachers` - Teacher records (indexed on email)
 - `books` - Library book inventory (indexed on ISBN)
-- `exams` - Exam records with subject, date, total/passing marks
-- `results` - Student exam results with marks, grades, and pass/fail status
+- `examCategories` - Exam categories with status workflow (draft/open/closed/scoring/published)
+- `examSubjects` - Subjects within categories with maxScore
+- `examApplications` - Student applications for exams (pending/approved/rejected)
+- `examResults` - Per-subject scores for approved students
+- `announcements` - Home page announcements (general/exam/event/urgent)
 - Additional collections for events and other data
 
 ### Initialization
 Database collections are automatically created on first run via `lib/init-db.ts`.
 
 ## Recent Changes
-- December 1, 2025: Added Exam Results System with Enhanced Security
-  - Created API routes for exams (CRUD operations) - ALL endpoints require authentication
-  - Created API routes for results (CRUD with automatic grade calculation) - ALL endpoints require authentication
-  - Added dashboard page for exam management with proper auth token handling
-  - Added dialog components for adding exams and entering results
-  - Added results view with statistics (pass rate, average, rankings)
-  - Updated sidebar and bottom navigation with Exams section
-  - Grading system: A+ (90+), A (80-89), B+ (70-79), B (60-69), C (50-59), D (40-49), F (<40)
-  - Security: All exam/result GET endpoints require Bearer token authentication (protecting sensitive student grade data)
+- December 1, 2025: Comprehensive Exam Category System Redesign
+  - **Exam Categories**: Create categories like "First Semester", "Second Semester" with thumbnail images (1280x720)
+  - **Subject Management**: Add subjects to categories with max scores (scores only, no grades)
+  - **Application Workflow**: Students can apply for exams when category is "open", teachers approve/reject
+  - **Status Lifecycle**: draft → open → closed → scoring → published (with server-side enforcement)
+  - **Score Entry**: Enter per-subject scores for approved students only
+  - **Result Publishing**: Results visible only after category is published
+  - **Home Page Updates**: Added announcements section and result search by registration number
+  - **Security**: Status transitions validated server-side, scores require approved applications
+  - New APIs: /api/announcements, /api/public/results, /api/exam-results, /api/exam-results/bulk
+  - New Collections: examCategories, examSubjects, examApplications, examResults, announcements
 
 - December 1, 2025: Imported from GitHub and configured for Replit environment
   - Installed all dependencies

@@ -1,132 +1,177 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { ProtectedLayout } from "@/components/protected-layout"
 import { getAuthToken } from "@/lib/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { AddExamDialog } from "@/components/add-exam-dialog"
-import { EnterResultDialog } from "@/components/enter-result-dialog"
-import { ViewResultsDialog } from "@/components/view-results-dialog"
+import { AddCategoryDialog } from "@/components/add-category-dialog"
+import { AddSubjectDialog } from "@/components/add-subject-dialog"
+import { ApplicationApprovalDialog } from "@/components/application-approval-dialog"
+import { EnterScoresDialog } from "@/components/enter-scores-dialog"
+import { ViewCategoryResultsDialog } from "@/components/view-category-results-dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
 import { Spinner } from "@/components/spinner"
 import { 
-  ClipboardList, 
+  FolderOpen, 
   Plus, 
   Search, 
   Pencil, 
   Trash2, 
-  FileText, 
   Eye,
   BookOpen,
-  Calendar,
-  Target,
-  Users
+  Users,
+  FileText,
+  CheckCircle,
+  Clock,
+  Send,
+  PlayCircle,
+  LockOpen,
+  Lock,
+  ClipboardList,
+  ChevronRight,
+  Image
 } from "lucide-react"
 
-interface Exam {
+interface ExamCategory {
   _id: string
   name: string
-  subject: string
-  date: string
-  totalMarks: number
-  passingMarks: number
-  description?: string
+  description: string
+  thumbnailUrl?: string
+  status: "draft" | "open" | "closed" | "scoring" | "published"
+  publishedAt?: string
+  subjectCount: number
+  applicationCount: number
+  approvedCount: number
+  createdAt: string
 }
 
-interface Student {
+interface Subject {
   _id: string
-  fullName: string
-  email: string
+  categoryId: string
+  name: string
+  maxScore: number
+  order: number
 }
 
-interface Result {
+interface Application {
   _id: string
-  examId: string
   studentId: string
   studentName: string
-  marksObtained: number
+  studentEmail: string
+  registrationNumber: string
+  studentImage?: string
+  status: "pending" | "approved" | "rejected"
+  appliedAt: string
+}
+
+interface StudentResult {
+  studentId: string
+  studentName: string
+  registrationNumber: string
+  studentImage?: string
+  scores: Record<string, number>
+  totalScore: number
+  maxTotalScore: number
   percentage: number
-  grade: string
-  passed: boolean
-  remarks?: string
+}
+
+const statusConfig = {
+  draft: { label: "Draft", color: "bg-slate-100 text-slate-700", icon: FileText },
+  open: { label: "Open for Applications", color: "bg-blue-100 text-blue-700", icon: LockOpen },
+  closed: { label: "Applications Closed", color: "bg-amber-100 text-amber-700", icon: Lock },
+  scoring: { label: "Scoring", color: "bg-purple-100 text-purple-700", icon: ClipboardList },
+  published: { label: "Published", color: "bg-emerald-100 text-emerald-700", icon: CheckCircle },
 }
 
 export default function ExamsPage() {
-  const [exams, setExams] = useState<Exam[]>([])
-  const [students, setStudents] = useState<Student[]>([])
+  const [categories, setCategories] = useState<ExamCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   
-  const [addDialogOpen, setAddDialogOpen] = useState(false)
-  const [examToEdit, setExamToEdit] = useState<Exam | null>(null)
+  const [addCategoryDialogOpen, setAddCategoryDialogOpen] = useState(false)
+  const [categoryToEdit, setCategoryToEdit] = useState<ExamCategory | null>(null)
   
-  const [enterResultDialogOpen, setEnterResultDialogOpen] = useState(false)
-  const [selectedExamForResult, setSelectedExamForResult] = useState<Exam | null>(null)
-  const [examResults, setExamResults] = useState<Result[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<ExamCategory | null>(null)
+  const [subjects, setSubjects] = useState<Subject[]>([])
+  const [addSubjectDialogOpen, setAddSubjectDialogOpen] = useState(false)
   
-  const [viewResultsDialogOpen, setViewResultsDialogOpen] = useState(false)
-  const [selectedExamForView, setSelectedExamForView] = useState<Exam | null>(null)
-  const [viewResults, setViewResults] = useState<Result[]>([])
+  const [applications, setApplications] = useState<Application[]>([])
+  const [applicationsDialogOpen, setApplicationsDialogOpen] = useState(false)
+  
+  const [scoresDialogOpen, setScoresDialogOpen] = useState(false)
+  const [approvedStudents, setApprovedStudents] = useState<any[]>([])
+  const [existingResults, setExistingResults] = useState<Map<string, any[]>>(new Map())
+  
+  const [resultsDialogOpen, setResultsDialogOpen] = useState(false)
+  const [studentResults, setStudentResults] = useState<StudentResult[]>([])
   
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [examToDelete, setExamToDelete] = useState<Exam | null>(null)
+  const [categoryToDelete, setCategoryToDelete] = useState<ExamCategory | null>(null)
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
-    fetchExams()
-    fetchStudents()
+    fetchCategories()
   }, [])
 
-  const fetchExams = async () => {
+  const fetchCategories = async () => {
     const token = getAuthToken()
     try {
-      const response = await fetch("/api/exams", {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
+      const response = await fetch("/api/exam-categories", {
+        headers: { "Authorization": `Bearer ${token}` },
       })
       const data = await response.json()
-      setExams(data)
+      setCategories(Array.isArray(data) ? data : [])
     } catch (error) {
-      console.error("Error fetching exams:", error)
+      console.error("Error fetching categories:", error)
     } finally {
       setLoading(false)
     }
   }
 
-  const fetchStudents = async () => {
+  const fetchCategoryDetails = async (categoryId: string) => {
+    const token = getAuthToken()
     try {
-      const response = await fetch("/api/students")
+      const response = await fetch(`/api/exam-categories/${categoryId}`, {
+        headers: { "Authorization": `Bearer ${token}` },
+      })
       const data = await response.json()
-      setStudents(data)
+      setSubjects(data.subjects || [])
+      setApplications(data.applications || [])
+      return data
     } catch (error) {
-      console.error("Error fetching students:", error)
+      console.error("Error fetching category details:", error)
     }
   }
 
-  const fetchResultsForExam = async (examId: string) => {
+  const fetchResultsForCategory = useCallback(async (categoryId: string) => {
     const token = getAuthToken()
     try {
-      const response = await fetch(`/api/results?examId=${examId}`, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
+      const response = await fetch(`/api/exam-results?categoryId=${categoryId}`, {
+        headers: { "Authorization": `Bearer ${token}` },
       })
       const data = await response.json()
+      
+      const resultsMap = new Map<string, any[]>()
+      data.forEach((result: any) => {
+        const existing = resultsMap.get(result.studentId) || []
+        existing.push({ subjectId: result.subjectId, score: result.score })
+        resultsMap.set(result.studentId, existing)
+      })
+      setExistingResults(resultsMap)
       return data
     } catch (error) {
       console.error("Error fetching results:", error)
       return []
     }
-  }
+  }, [])
 
-  const handleAddExam = async (formData: any) => {
+  const handleAddCategory = async (formData: any) => {
     const token = getAuthToken()
     try {
-      if (examToEdit) {
-        const response = await fetch(`/api/exams/${examToEdit._id}`, {
+      if (categoryToEdit) {
+        const response = await fetch(`/api/exam-categories/${categoryToEdit._id}`, {
           method: "PUT",
           headers: { 
             "Content-Type": "application/json",
@@ -135,11 +180,11 @@ export default function ExamsPage() {
           body: JSON.stringify(formData),
         })
         if (response.ok) {
-          setExamToEdit(null)
-          fetchExams()
+          setCategoryToEdit(null)
+          fetchCategories()
         }
       } else {
-        const response = await fetch("/api/exams", {
+        const response = await fetch("/api/exam-categories", {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
@@ -148,84 +193,231 @@ export default function ExamsPage() {
           body: JSON.stringify(formData),
         })
         if (response.ok) {
-          fetchExams()
+          fetchCategories()
         }
       }
     } catch (error) {
-      console.error("Error saving exam:", error)
+      console.error("Error saving category:", error)
     }
   }
 
-  const handleEnterResults = async (exam: Exam) => {
-    setSelectedExamForResult(exam)
-    const results = await fetchResultsForExam(exam._id)
-    setExamResults(results)
-    setEnterResultDialogOpen(true)
-  }
-
-  const handleSubmitResult = async (resultData: any) => {
+  const handleAddSubject = async (formData: any) => {
+    if (!selectedCategory) return
     const token = getAuthToken()
     try {
-      const response = await fetch("/api/results", {
+      const response = await fetch(`/api/exam-categories/${selectedCategory._id}/subjects`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(resultData),
+        body: JSON.stringify(formData),
       })
       if (response.ok) {
-        const results = await fetchResultsForExam(resultData.examId)
-        setExamResults(results)
+        await fetchCategoryDetails(selectedCategory._id)
+        fetchCategories()
       }
     } catch (error) {
-      console.error("Error saving result:", error)
+      console.error("Error saving subject:", error)
     }
   }
 
-  const handleViewResults = async (exam: Exam) => {
-    setSelectedExamForView(exam)
-    const results = await fetchResultsForExam(exam._id)
-    setViewResults(results)
-    setViewResultsDialogOpen(true)
+  const handleDeleteSubject = async (subjectId: string) => {
+    if (!selectedCategory) return
+    const token = getAuthToken()
+    try {
+      const response = await fetch(
+        `/api/exam-categories/${selectedCategory._id}/subjects?subjectId=${subjectId}`, 
+        {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${token}` },
+        }
+      )
+      if (response.ok) {
+        await fetchCategoryDetails(selectedCategory._id)
+        fetchCategories()
+      }
+    } catch (error) {
+      console.error("Error deleting subject:", error)
+    }
   }
 
-  const handleEditClick = (exam: Exam) => {
-    setExamToEdit(exam)
-    setAddDialogOpen(true)
+  const handleUpdateStatus = async (category: ExamCategory, newStatus: string) => {
+    const token = getAuthToken()
+    try {
+      const response = await fetch(`/api/exam-categories/${category._id}`, {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      })
+      if (response.ok) {
+        fetchCategories()
+      }
+    } catch (error) {
+      console.error("Error updating status:", error)
+    }
   }
 
-  const handleDialogClose = (open: boolean) => {
-    setAddDialogOpen(open)
+  const handleApproveApplication = async (applicationId: string) => {
+    const token = getAuthToken()
+    try {
+      const response = await fetch(`/api/exam-applications/${applicationId}`, {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: "approved" }),
+      })
+      if (response.ok && selectedCategory) {
+        await fetchCategoryDetails(selectedCategory._id)
+        fetchCategories()
+      }
+    } catch (error) {
+      console.error("Error approving application:", error)
+    }
+  }
+
+  const handleRejectApplication = async (applicationId: string) => {
+    const token = getAuthToken()
+    try {
+      const response = await fetch(`/api/exam-applications/${applicationId}`, {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: "rejected" }),
+      })
+      if (response.ok && selectedCategory) {
+        await fetchCategoryDetails(selectedCategory._id)
+        fetchCategories()
+      }
+    } catch (error) {
+      console.error("Error rejecting application:", error)
+    }
+  }
+
+  const handleSaveScores = async (studentId: string, scores: Array<{ subjectId: string; score: number }>) => {
+    if (!selectedCategory) return
+    const token = getAuthToken()
+    try {
+      const response = await fetch("/api/exam-results/bulk", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          categoryId: selectedCategory._id,
+          studentId,
+          scores,
+        }),
+      })
+      if (response.ok) {
+        await fetchResultsForCategory(selectedCategory._id)
+      }
+    } catch (error) {
+      console.error("Error saving scores:", error)
+    }
+  }
+
+  const openApplicationsDialog = async (category: ExamCategory) => {
+    setSelectedCategory(category)
+    await fetchCategoryDetails(category._id)
+    setApplicationsDialogOpen(true)
+  }
+
+  const openScoresDialog = async (category: ExamCategory) => {
+    setSelectedCategory(category)
+    await fetchCategoryDetails(category._id)
+    await fetchResultsForCategory(category._id)
+    
+    const approved = applications.filter(a => a.status === "approved").map(a => ({
+      _id: a._id,
+      studentId: a.studentId,
+      studentName: a.studentName,
+      registrationNumber: a.registrationNumber,
+      studentImage: a.studentImage,
+    }))
+    setApprovedStudents(approved)
+    setScoresDialogOpen(true)
+  }
+
+  const openResultsDialog = async (category: ExamCategory) => {
+    setSelectedCategory(category)
+    await fetchCategoryDetails(category._id)
+    const results = await fetchResultsForCategory(category._id)
+    
+    const approved = applications.filter(a => a.status === "approved")
+    const studentResultsList: StudentResult[] = approved.map(app => {
+      const studentResults = existingResults.get(app.studentId) || []
+      const scores: Record<string, number> = {}
+      let totalScore = 0
+      let maxTotalScore = 0
+      
+      subjects.forEach(subject => {
+        const result = studentResults.find(r => r.subjectId === subject._id)
+        if (result) {
+          scores[subject._id] = result.score
+          totalScore += result.score
+        }
+        maxTotalScore += subject.maxScore
+      })
+      
+      return {
+        studentId: app.studentId,
+        studentName: app.studentName,
+        registrationNumber: app.registrationNumber,
+        studentImage: app.studentImage,
+        scores,
+        totalScore,
+        maxTotalScore,
+        percentage: maxTotalScore > 0 ? (totalScore / maxTotalScore) * 100 : 0,
+      }
+    })
+    
+    setStudentResults(studentResultsList)
+    setResultsDialogOpen(true)
+  }
+
+  const handleEditClick = (category: ExamCategory) => {
+    setCategoryToEdit(category)
+    setAddCategoryDialogOpen(true)
+  }
+
+  const handleCategoryDialogClose = (open: boolean) => {
+    setAddCategoryDialogOpen(open)
     if (!open) {
-      setExamToEdit(null)
+      setCategoryToEdit(null)
     }
   }
 
-  const handleDeleteClick = (exam: Exam) => {
-    setExamToDelete(exam)
+  const handleDeleteClick = (category: ExamCategory) => {
+    setCategoryToDelete(category)
     setDeleteDialogOpen(true)
   }
 
   const handleDeleteConfirm = async () => {
-    if (!examToDelete) return
+    if (!categoryToDelete) return
     
     const token = getAuthToken()
     setDeleting(true)
     try {
-      const response = await fetch(`/api/exams/${examToDelete._id}`, { 
+      const response = await fetch(`/api/exam-categories/${categoryToDelete._id}`, { 
         method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
+        headers: { "Authorization": `Bearer ${token}` },
       })
       if (response.ok) {
         setDeleteDialogOpen(false)
-        setExamToDelete(null)
-        fetchExams()
+        setCategoryToDelete(null)
+        fetchCategories()
       }
     } catch (error) {
-      console.error("Error deleting exam:", error)
+      console.error("Error deleting category:", error)
     } finally {
       setDeleting(false)
     }
@@ -239,9 +431,24 @@ export default function ExamsPage() {
     })
   }
 
-  const filteredExams = exams.filter((exam) => 
-    exam.name.toLowerCase().includes(search.toLowerCase()) ||
-    exam.subject.toLowerCase().includes(search.toLowerCase())
+  const getNextAction = (category: ExamCategory) => {
+    switch (category.status) {
+      case "draft":
+        return { label: "Open Applications", action: () => handleUpdateStatus(category, "open"), icon: LockOpen }
+      case "open":
+        return { label: "Close Applications", action: () => handleUpdateStatus(category, "closed"), icon: Lock }
+      case "closed":
+        return { label: "Start Scoring", action: () => handleUpdateStatus(category, "scoring"), icon: ClipboardList }
+      case "scoring":
+        return { label: "Publish Results", action: () => handleUpdateStatus(category, "published"), icon: Send }
+      default:
+        return null
+    }
+  }
+
+  const filteredCategories = categories.filter((cat) => 
+    cat.name.toLowerCase().includes(search.toLowerCase()) ||
+    cat.description?.toLowerCase().includes(search.toLowerCase())
   )
 
   return (
@@ -250,16 +457,16 @@ export default function ExamsPage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/25">
-              <ClipboardList className="w-6 h-6 text-white" strokeWidth={2} />
+              <FolderOpen className="w-6 h-6 text-white" strokeWidth={2} />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Exams & Results</h1>
-              <p className="text-slate-500 text-sm md:text-base">Manage exams and student results</p>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Exam Categories</h1>
+              <p className="text-slate-500 text-sm md:text-base">Manage exam categories, subjects, and results</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg font-medium text-sm">
-              {exams.length} Total Exams
+              {categories.length} Categories
             </span>
           </div>
         </div>
@@ -268,15 +475,15 @@ export default function ExamsPage() {
           <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-5">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-slate-800 text-lg">All Exams</CardTitle>
-                <CardDescription className="text-slate-500">View and manage all examination records</CardDescription>
+                <CardTitle className="text-slate-800 text-lg">All Exam Categories</CardTitle>
+                <CardDescription className="text-slate-500">Create semesters, add subjects, manage applications, enter scores</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="p-6">
             {loading ? (
               <div className="flex justify-center py-16">
-                <Spinner message="Loading exams..." />
+                <Spinner message="Loading categories..." />
               </div>
             ) : (
               <div className="space-y-6">
@@ -284,158 +491,280 @@ export default function ExamsPage() {
                   <div className="relative w-full sm:max-w-md">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <Input
-                      placeholder="Search exams..."
+                      placeholder="Search categories..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       className="pl-10 h-11 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20 rounded-xl"
                     />
                   </div>
                   <Button 
-                    onClick={() => setAddDialogOpen(true)} 
+                    onClick={() => setAddCategoryDialogOpen(true)} 
                     className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md shadow-emerald-500/25 h-11 px-6 rounded-xl w-full sm:w-auto"
                   >
                     <Plus className="w-4 h-4" />
-                    Add New Exam
+                    New Category
                   </Button>
                 </div>
 
-                {filteredExams.length > 0 ? (
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {filteredExams.map((exam) => (
-                      <div 
-                        key={exam._id} 
-                        className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md transition-all"
-                      >
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-white" />
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              onClick={() => handleViewResults(exam)}
-                              className="h-8 w-8 p-0 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg"
-                              title="View Results"
-                            >
-                              <Eye className="w-4 h-4 text-emerald-500" />
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              onClick={() => handleEnterResults(exam)}
-                              className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600 rounded-lg"
-                              title="Enter Results"
-                            >
-                              <Users className="w-4 h-4 text-blue-500" />
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              onClick={() => handleEditClick(exam)}
-                              className="h-8 w-8 p-0 hover:bg-slate-100 rounded-lg"
-                              title="Edit"
-                            >
-                              <Pencil className="w-4 h-4 text-slate-500" />
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              onClick={() => handleDeleteClick(exam)}
-                              className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600 rounded-lg"
-                              title="Delete"
-                            >
-                              <Trash2 className="w-4 h-4 text-slate-500" />
-                            </Button>
-                          </div>
-                        </div>
-                        
-                        <h3 className="font-semibold text-slate-800 text-lg mb-1">{exam.name}</h3>
-                        
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center gap-2 text-slate-600">
-                            <BookOpen className="w-4 h-4 text-slate-400" />
-                            <span>{exam.subject}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-slate-600">
-                            <Calendar className="w-4 h-4 text-slate-400" />
-                            <span>{formatDate(exam.date)}</span>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-1.5 text-slate-600">
-                              <Target className="w-4 h-4 text-slate-400" />
-                              <span>Total: {exam.totalMarks}</span>
+                {filteredCategories.length > 0 ? (
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {filteredCategories.map((category) => {
+                      const StatusIcon = statusConfig[category.status].icon
+                      const nextAction = getNextAction(category)
+                      
+                      return (
+                        <div 
+                          key={category._id} 
+                          className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-lg transition-all"
+                        >
+                          {category.thumbnailUrl ? (
+                            <div className="aspect-video bg-slate-100 overflow-hidden">
+                              <img 
+                                src={category.thumbnailUrl} 
+                                alt={category.name}
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                            <div className="text-slate-600">
-                              Pass: {exam.passingMarks}
+                          ) : (
+                            <div className="aspect-video bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center">
+                              <Image className="w-12 h-12 text-emerald-300" />
                             </div>
-                          </div>
-                        </div>
+                          )}
+                          
+                          <div className="p-5">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-slate-800 text-lg">{category.name}</h3>
+                                <p className="text-sm text-slate-500 line-clamp-1">{category.description || "No description"}</p>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  onClick={() => handleEditClick(category)}
+                                  className="h-8 w-8 p-0 hover:bg-slate-100 rounded-lg"
+                                  title="Edit"
+                                >
+                                  <Pencil className="w-4 h-4 text-slate-500" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  onClick={() => handleDeleteClick(category)}
+                                  className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600 rounded-lg"
+                                  title="Delete"
+                                >
+                                  <Trash2 className="w-4 h-4 text-slate-500" />
+                                </Button>
+                              </div>
+                            </div>
 
-                        {exam.description && (
-                          <p className="mt-3 text-sm text-slate-500 line-clamp-2">{exam.description}</p>
-                        )}
-                      </div>
-                    ))}
+                            <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig[category.status].color}`}>
+                              <StatusIcon className="w-3.5 h-3.5" />
+                              {statusConfig[category.status].label}
+                            </div>
+
+                            <div className="flex items-center gap-4 mt-4 text-sm text-slate-600">
+                              <div className="flex items-center gap-1.5">
+                                <BookOpen className="w-4 h-4 text-slate-400" />
+                                <span>{category.subjectCount} subjects</span>
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <Users className="w-4 h-4 text-slate-400" />
+                                <span>{category.approvedCount}/{category.applicationCount} approved</span>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={async () => {
+                                  setSelectedCategory(category)
+                                  await fetchCategoryDetails(category._id)
+                                  setAddSubjectDialogOpen(true)
+                                }}
+                                className="gap-1.5 text-xs border-slate-200"
+                              >
+                                <BookOpen className="w-3.5 h-3.5" />
+                                Subjects
+                              </Button>
+
+                              {(category.status === "open" || category.status === "closed" || category.status === "scoring") && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => openApplicationsDialog(category)}
+                                  className="gap-1.5 text-xs border-slate-200"
+                                >
+                                  <Users className="w-3.5 h-3.5" />
+                                  Applications
+                                </Button>
+                              )}
+
+                              {(category.status === "scoring" || category.status === "published") && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => openScoresDialog(category)}
+                                  className="gap-1.5 text-xs border-slate-200"
+                                >
+                                  <ClipboardList className="w-3.5 h-3.5" />
+                                  Scores
+                                </Button>
+                              )}
+
+                              {category.status === "published" && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => openResultsDialog(category)}
+                                  className="gap-1.5 text-xs border-emerald-200 text-emerald-700"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                  Results
+                                </Button>
+                              )}
+                            </div>
+
+                            {nextAction && (
+                              <Button
+                                size="sm"
+                                onClick={nextAction.action}
+                                className="w-full mt-3 gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
+                              >
+                                <nextAction.icon className="w-4 h-4" />
+                                {nextAction.label}
+                                <ChevronRight className="w-4 h-4 ml-auto" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 ) : (
                   <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
                     <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <ClipboardList className="w-8 h-8 text-slate-400" />
+                      <FolderOpen className="w-8 h-8 text-slate-400" />
                     </div>
-                    <h3 className="font-medium text-slate-700 mb-1">No exams found</h3>
+                    <h3 className="font-medium text-slate-700 mb-1">No exam categories found</h3>
                     <p className="text-sm text-slate-500 mb-4">
-                      {search ? "Try adjusting your search" : "Create your first exam to get started"}
+                      {search ? "Try adjusting your search" : "Create your first exam category to get started"}
                     </p>
                     {!search && (
                       <Button 
-                        onClick={() => setAddDialogOpen(true)}
+                        onClick={() => setAddCategoryDialogOpen(true)}
                         className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
                       >
                         <Plus className="w-4 h-4 mr-2" />
-                        Add Exam
+                        Create Category
                       </Button>
                     )}
                   </div>
                 )}
 
                 <div className="text-sm text-slate-500">
-                  Showing <span className="font-medium text-slate-700">{filteredExams.length}</span> of <span className="font-medium text-slate-700">{exams.length}</span> exams
+                  Showing <span className="font-medium text-slate-700">{filteredCategories.length}</span> of <span className="font-medium text-slate-700">{categories.length}</span> categories
                 </div>
               </div>
             )}
           </CardContent>
         </Card>
 
-        <AddExamDialog 
-          open={addDialogOpen} 
-          onOpenChange={handleDialogClose} 
-          onSubmit={handleAddExam}
-          initialData={examToEdit}
+        {selectedCategory && subjects.length > 0 && (
+          <Card className="border border-slate-200 bg-white shadow-sm rounded-2xl">
+            <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-slate-800 text-base">Subjects in "{selectedCategory.name}"</CardTitle>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => setAddSubjectDialogOpen(true)}
+                  className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Subject
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {subjects.map((subject) => (
+                  <div key={subject._id} className="flex items-center justify-between p-3 border border-slate-200 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <BookOpen className="w-4 h-4 text-emerald-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-slate-700">{subject.name}</p>
+                        <p className="text-xs text-slate-500">Max: {subject.maxScore}</p>
+                      </div>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      onClick={() => handleDeleteSubject(subject._id)}
+                      className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600 rounded-lg"
+                    >
+                      <Trash2 className="w-4 h-4 text-slate-400" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <AddCategoryDialog 
+          open={addCategoryDialogOpen} 
+          onOpenChange={handleCategoryDialogClose} 
+          onSubmit={handleAddCategory}
+          initialData={categoryToEdit}
         />
 
-        <EnterResultDialog
-          open={enterResultDialogOpen}
-          onOpenChange={setEnterResultDialogOpen}
-          onSubmit={handleSubmitResult}
-          exam={selectedExamForResult}
-          students={students}
-          existingResults={examResults}
+        <AddSubjectDialog
+          open={addSubjectDialogOpen}
+          onOpenChange={setAddSubjectDialogOpen}
+          onSubmit={handleAddSubject}
+          categoryName={selectedCategory?.name}
         />
 
-        <ViewResultsDialog
-          open={viewResultsDialogOpen}
-          onOpenChange={setViewResultsDialogOpen}
-          exam={selectedExamForView}
-          results={viewResults}
+        <ApplicationApprovalDialog
+          open={applicationsDialogOpen}
+          onOpenChange={setApplicationsDialogOpen}
+          applications={applications}
+          categoryName={selectedCategory?.name || ""}
+          onApprove={handleApproveApplication}
+          onReject={handleRejectApplication}
+        />
+
+        <EnterScoresDialog
+          open={scoresDialogOpen}
+          onOpenChange={setScoresDialogOpen}
+          categoryId={selectedCategory?._id || ""}
+          categoryName={selectedCategory?.name || ""}
+          subjects={subjects}
+          approvedStudents={approvedStudents}
+          existingResults={existingResults}
+          onSaveScores={handleSaveScores}
+        />
+
+        <ViewCategoryResultsDialog
+          open={resultsDialogOpen}
+          onOpenChange={setResultsDialogOpen}
+          categoryName={selectedCategory?.name || ""}
+          subjects={subjects}
+          results={studentResults}
         />
         
         <DeleteConfirmationDialog
           open={deleteDialogOpen}
           onOpenChange={setDeleteDialogOpen}
           onConfirm={handleDeleteConfirm}
-          title="Delete Exam"
-          itemName={examToDelete?.name}
+          title="Delete Exam Category"
+          itemName={categoryToDelete?.name}
           loading={deleting}
         />
       </div>

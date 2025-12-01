@@ -77,7 +77,76 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (data.name) updateData.name = data.name.trim()
     if (data.description !== undefined) updateData.description = data.description.trim()
     if (data.thumbnailUrl !== undefined) updateData.thumbnailUrl = data.thumbnailUrl
+    
     if (data.status) {
+      const category = await db.collection("examCategories").findOne({ _id: new ObjectId(id) })
+      if (!category) {
+        return NextResponse.json({ error: "Category not found" }, { status: 404 })
+      }
+
+      const validTransitions: Record<string, string[]> = {
+        draft: ["open"],
+        open: ["closed", "draft"],
+        closed: ["scoring", "open"],
+        scoring: ["published", "closed"],
+        published: [],
+      }
+
+      if (!validTransitions[category.status]?.includes(data.status)) {
+        return NextResponse.json({ 
+          error: `Cannot transition from '${category.status}' to '${data.status}'` 
+        }, { status: 400 })
+      }
+
+      if (data.status === "open") {
+        const subjectCount = await db.collection("examSubjects").countDocuments({ categoryId: id })
+        if (subjectCount === 0) {
+          return NextResponse.json({ 
+            error: "Cannot open applications: Add at least one subject first" 
+          }, { status: 400 })
+        }
+      }
+
+      if (data.status === "published") {
+        const approvedCount = await db.collection("examApplications").countDocuments({ 
+          categoryId: id, 
+          status: "approved" 
+        })
+        if (approvedCount === 0) {
+          return NextResponse.json({ 
+            error: "Cannot publish: No approved students" 
+          }, { status: 400 })
+        }
+
+        const subjects = await db.collection("examSubjects").find({ categoryId: id }).toArray()
+        const subjectIds = new Set(subjects.map(s => s._id.toString()))
+        
+        const approvedApps = await db.collection("examApplications")
+          .find({ categoryId: id, status: "approved" })
+          .toArray()
+
+        for (const app of approvedApps) {
+          const studentResults = await db.collection("examResults")
+            .find({
+              categoryId: id,
+              studentId: app.studentId,
+            })
+            .toArray()
+
+          const coveredSubjectIds = new Set(studentResults.map(r => r.subjectId))
+          
+          for (const subjectId of subjectIds) {
+            if (!coveredSubjectIds.has(subjectId)) {
+              const student = await db.collection("students").findOne({ _id: new ObjectId(app.studentId) })
+              const missingSubject = subjects.find(s => s._id.toString() === subjectId)
+              return NextResponse.json({ 
+                error: `Cannot publish: ${student?.fullName || 'A student'} is missing score for ${missingSubject?.name || 'a subject'}` 
+              }, { status: 400 })
+            }
+          }
+        }
+      }
+
       updateData.status = data.status
       if (data.status === "published") {
         updateData.publishedAt = new Date()
