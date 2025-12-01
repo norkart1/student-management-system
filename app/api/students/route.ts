@@ -1,11 +1,30 @@
 import { connectToDatabase } from "@/lib/db"
 import { validateAuth, unauthorizedResponse } from "@/lib/auth-middleware"
 import { type NextRequest, NextResponse } from "next/server"
+import { Db } from "mongodb"
+
+async function generateRegistrationNumber(db: Db): Promise<string> {
+  const year = new Date().getFullYear()
+  const lastStudent = await db.collection("students")
+    .find({ registrationNumber: { $regex: `^STU${year}` } })
+    .sort({ registrationNumber: -1 })
+    .limit(1)
+    .toArray()
+  
+  let nextNumber = 1
+  if (lastStudent.length > 0 && lastStudent[0].registrationNumber) {
+    const lastNum = parseInt(lastStudent[0].registrationNumber.slice(-4))
+    nextNumber = lastNum + 1
+  }
+  
+  return `STU${year}${nextNumber.toString().padStart(4, '0')}`
+}
 
 interface StudentInput {
   fullName: string
   email: string
   phone: string
+  registrationNumber?: string
   imageUrl?: string
 }
 
@@ -34,10 +53,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    const registrationNumber = data.registrationNumber || await generateRegistrationNumber(db)
+
     const student = {
       fullName: data.fullName.trim(),
       email: data.email.trim().toLowerCase(),
       phone: data.phone.trim(),
+      registrationNumber: registrationNumber,
       imageUrl: data.imageUrl || null,
       createdAt: new Date(),
       updatedAt: new Date(),
