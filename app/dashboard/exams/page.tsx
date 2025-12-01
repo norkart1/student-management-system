@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AddCategoryDialog } from "@/components/add-category-dialog"
 import { AddSubjectDialog } from "@/components/add-subject-dialog"
-import { ApplicationApprovalDialog } from "@/components/application-approval-dialog"
 import { EnterScoresDialog } from "@/components/enter-scores-dialog"
 import { ViewCategoryResultsDialog } from "@/components/view-category-results-dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
@@ -55,16 +54,6 @@ interface Subject {
   order: number
 }
 
-interface Application {
-  _id: string
-  studentId: string
-  studentName: string
-  studentEmail: string
-  registrationNumber: string
-  studentImage?: string
-  status: "pending" | "approved" | "rejected"
-  appliedAt: string
-}
 
 interface StudentResult {
   studentId: string
@@ -79,8 +68,8 @@ interface StudentResult {
 
 const statusConfig = {
   draft: { label: "Draft", color: "bg-slate-100 text-slate-700", icon: FileText },
-  open: { label: "Open for Applications", color: "bg-blue-100 text-blue-700", icon: LockOpen },
-  closed: { label: "Applications Closed", color: "bg-amber-100 text-amber-700", icon: Lock },
+  open: { label: "Ready", color: "bg-blue-100 text-blue-700", icon: LockOpen },
+  closed: { label: "Closed", color: "bg-amber-100 text-amber-700", icon: Lock },
   scoring: { label: "Scoring", color: "bg-purple-100 text-purple-700", icon: ClipboardList },
   published: { label: "Published", color: "bg-emerald-100 text-emerald-700", icon: CheckCircle },
 }
@@ -97,8 +86,6 @@ export default function ExamsPage() {
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [addSubjectDialogOpen, setAddSubjectDialogOpen] = useState(false)
   
-  const [applications, setApplications] = useState<Application[]>([])
-  const [applicationsDialogOpen, setApplicationsDialogOpen] = useState(false)
   
   const [scoresDialogOpen, setScoresDialogOpen] = useState(false)
   const [approvedStudents, setApprovedStudents] = useState<any[]>([])
@@ -138,7 +125,6 @@ export default function ExamsPage() {
       })
       const data = await response.json()
       setSubjects(data.subjects || [])
-      setApplications(data.applications || [])
       return data
     } catch (error) {
       console.error("Error fetching category details:", error)
@@ -261,46 +247,6 @@ export default function ExamsPage() {
     }
   }
 
-  const handleApproveApplication = async (applicationId: string) => {
-    const token = getAuthToken()
-    try {
-      const response = await fetch(`/api/exam-applications/${applicationId}`, {
-        method: "PUT",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status: "approved" }),
-      })
-      if (response.ok && selectedCategory) {
-        await fetchCategoryDetails(selectedCategory._id)
-        fetchCategories()
-      }
-    } catch (error) {
-      console.error("Error approving application:", error)
-    }
-  }
-
-  const handleRejectApplication = async (applicationId: string) => {
-    const token = getAuthToken()
-    try {
-      const response = await fetch(`/api/exam-applications/${applicationId}`, {
-        method: "PUT",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status: "rejected" }),
-      })
-      if (response.ok && selectedCategory) {
-        await fetchCategoryDetails(selectedCategory._id)
-        fetchCategories()
-      }
-    } catch (error) {
-      console.error("Error rejecting application:", error)
-    }
-  }
-
   const handleSaveScores = async (studentId: string, scores: Array<{ subjectId: string; score: number }>) => {
     if (!selectedCategory) return
     const token = getAuthToken()
@@ -325,10 +271,18 @@ export default function ExamsPage() {
     }
   }
 
-  const openApplicationsDialog = async (category: ExamCategory) => {
-    setSelectedCategory(category)
-    await fetchCategoryDetails(category._id)
-    setApplicationsDialogOpen(true)
+  const fetchAllStudents = async () => {
+    const token = getAuthToken()
+    try {
+      const response = await fetch("/api/students", {
+        headers: { "Authorization": `Bearer ${token}` },
+      })
+      const data = await response.json()
+      return Array.isArray(data) ? data : []
+    } catch (error) {
+      console.error("Error fetching students:", error)
+      return []
+    }
   }
 
   const openScoresDialog = async (category: ExamCategory) => {
@@ -336,31 +290,40 @@ export default function ExamsPage() {
     await fetchCategoryDetails(category._id)
     await fetchResultsForCategory(category._id)
     
-    const approved = applications.filter(a => a.status === "approved").map(a => ({
-      _id: a._id,
-      studentId: a.studentId,
-      studentName: a.studentName,
-      registrationNumber: a.registrationNumber,
-      studentImage: a.studentImage,
+    const students = await fetchAllStudents()
+    const studentsList = students.map((s: any) => ({
+      _id: s._id,
+      studentId: s._id,
+      studentName: s.name,
+      registrationNumber: s.registrationNumber,
+      studentImage: s.imageUrl,
     }))
-    setApprovedStudents(approved)
+    setApprovedStudents(studentsList)
     setScoresDialogOpen(true)
   }
 
   const openResultsDialog = async (category: ExamCategory) => {
     setSelectedCategory(category)
-    await fetchCategoryDetails(category._id)
+    const categoryData = await fetchCategoryDetails(category._id)
+    const subjectsList = categoryData?.subjects || []
     const results = await fetchResultsForCategory(category._id)
     
-    const approved = applications.filter(a => a.status === "approved")
-    const studentResultsList: StudentResult[] = approved.map(app => {
-      const studentResults = existingResults.get(app.studentId) || []
+    const resultsMap = new Map<string, any[]>()
+    results.forEach((result: any) => {
+      const existing = resultsMap.get(result.studentId) || []
+      existing.push({ subjectId: result.subjectId, score: result.score })
+      resultsMap.set(result.studentId, existing)
+    })
+    
+    const students = await fetchAllStudents()
+    const studentResultsList: StudentResult[] = students.map((student: any) => {
+      const studentScores = resultsMap.get(student._id) || []
       const scores: Record<string, number> = {}
       let totalScore = 0
       let maxTotalScore = 0
       
-      subjects.forEach(subject => {
-        const result = studentResults.find(r => r.subjectId === subject._id)
+      subjectsList.forEach((subject: Subject) => {
+        const result = studentScores.find((r: any) => r.subjectId === subject._id)
         if (result) {
           scores[subject._id] = result.score
           totalScore += result.score
@@ -369,10 +332,10 @@ export default function ExamsPage() {
       })
       
       return {
-        studentId: app.studentId,
-        studentName: app.studentName,
-        registrationNumber: app.registrationNumber,
-        studentImage: app.studentImage,
+        studentId: student._id,
+        studentName: student.name,
+        registrationNumber: student.registrationNumber,
+        studentImage: student.imageUrl,
         scores,
         totalScore,
         maxTotalScore,
@@ -434,9 +397,9 @@ export default function ExamsPage() {
   const getNextAction = (category: ExamCategory) => {
     switch (category.status) {
       case "draft":
-        return { label: "Open Applications", action: () => handleUpdateStatus(category, "open"), icon: LockOpen }
+        return { label: "Start Scoring", action: () => handleUpdateStatus(category, "scoring"), icon: ClipboardList }
       case "open":
-        return { label: "Close Applications", action: () => handleUpdateStatus(category, "closed"), icon: Lock }
+        return { label: "Start Scoring", action: () => handleUpdateStatus(category, "scoring"), icon: ClipboardList }
       case "closed":
         return { label: "Start Scoring", action: () => handleUpdateStatus(category, "scoring"), icon: ClipboardList }
       case "scoring":
@@ -476,7 +439,7 @@ export default function ExamsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-slate-800 text-lg">All Exam Categories</CardTitle>
-                <CardDescription className="text-slate-500">Create semesters, add subjects, manage applications, enter scores</CardDescription>
+                <CardDescription className="text-slate-500">Create semesters, add subjects, and enter scores</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -569,10 +532,6 @@ export default function ExamsPage() {
                                 <BookOpen className="w-4 h-4 text-slate-400" />
                                 <span>{category.subjectCount} subjects</span>
                               </div>
-                              <div className="flex items-center gap-1.5">
-                                <Users className="w-4 h-4 text-slate-400" />
-                                <span>{category.approvedCount}/{category.applicationCount} approved</span>
-                              </div>
                             </div>
 
                             <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100">
@@ -589,18 +548,6 @@ export default function ExamsPage() {
                                 <BookOpen className="w-3.5 h-3.5" />
                                 Subjects
                               </Button>
-
-                              {(category.status === "open" || category.status === "closed" || category.status === "scoring") && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => openApplicationsDialog(category)}
-                                  className="gap-1.5 text-xs border-slate-200"
-                                >
-                                  <Users className="w-3.5 h-3.5" />
-                                  Applications
-                                </Button>
-                              )}
 
                               {(category.status === "scoring" || category.status === "published") && (
                                 <Button
@@ -729,15 +676,6 @@ export default function ExamsPage() {
           onOpenChange={setAddSubjectDialogOpen}
           onSubmit={handleAddSubject}
           categoryName={selectedCategory?.name}
-        />
-
-        <ApplicationApprovalDialog
-          open={applicationsDialogOpen}
-          onOpenChange={setApplicationsDialogOpen}
-          applications={applications}
-          categoryName={selectedCategory?.name || ""}
-          onApprove={handleApproveApplication}
-          onReject={handleRejectApplication}
         />
 
         <EnterScoresDialog
