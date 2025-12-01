@@ -73,10 +73,10 @@ The application runs automatically via the configured workflow:
 3. **Exam Category System**: 
    - Create categories (First Sem, Second Sem) with thumbnail images
    - Add subjects with max scores
-   - Students apply when category is "open"
-   - Teachers approve/reject applications
-   - Enter per-subject scores (no grades, scores only)
+   - Admin selects which students participate in each exam (no student applications)
+   - Enter per-subject scores for selected students
    - Publish results when ready
+   - Simplified workflow: draft → scoring → published
 4. **Public Result Search**: Students can search results by registration number on home page
 5. **Announcements**: Display important announcements on home page
 6. **Library System**: Track books, loans, and returns
@@ -105,10 +105,9 @@ The application runs automatically via the configured workflow:
 - `students` - Student records (indexed on email, registrationNumber)
 - `teachers` - Teacher records (indexed on email)
 - `books` - Library book inventory (indexed on ISBN)
-- `examCategories` - Exam categories with status workflow (draft/open/closed/scoring/published)
+- `examCategories` - Exam categories with status workflow (draft/scoring/published) and selectedStudents array
 - `examSubjects` - Subjects within categories with maxScore
-- `examApplications` - Student applications for exams (pending/approved/rejected)
-- `examResults` - Per-subject scores for approved students
+- `examResults` - Per-subject scores for selected students
 - `announcements` - Home page announcements (general/exam/event/urgent)
 - Additional collections for events and other data
 
@@ -119,14 +118,14 @@ Database collections are automatically created on first run via `lib/init-db.ts`
 - December 1, 2025: Comprehensive Exam Category System Redesign
   - **Exam Categories**: Create categories like "First Semester", "Second Semester" with thumbnail images (1280x720)
   - **Subject Management**: Add subjects to categories with max scores (scores only, no grades)
-  - **Application Workflow**: Students can apply for exams when category is "open", teachers approve/reject
-  - **Status Lifecycle**: draft → open → closed → scoring → published (with server-side enforcement)
-  - **Score Entry**: Enter per-subject scores for approved students only
+  - **Admin Selection**: Admin manually selects which students participate in each exam (no student applications)
+  - **Status Lifecycle**: draft → scoring → published (with server-side enforcement)
+  - **Score Entry**: Enter per-subject scores for selected students only
   - **Result Publishing**: Results visible only after category is published
   - **Home Page Updates**: Added announcements section and result search by registration number
-  - **Security**: Status transitions validated server-side, scores require approved applications
+  - **Security**: Status transitions validated server-side, scores require selected students
   - New APIs: /api/announcements, /api/public/results, /api/exam-results, /api/exam-results/bulk
-  - New Collections: examCategories, examSubjects, examApplications, examResults, announcements
+  - New Collections: examCategories, examSubjects, examResults, announcements
 
 - December 1, 2025: Imported from GitHub and configured for Replit environment
   - Installed all dependencies
