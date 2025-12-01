@@ -11,6 +11,7 @@ import { AddSubjectDialog } from "@/components/add-subject-dialog"
 import { EnterScoresDialog } from "@/components/enter-scores-dialog"
 import { ViewCategoryResultsDialog } from "@/components/view-category-results-dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
+import { SelectStudentsDialog } from "@/components/select-students-dialog"
 import { Spinner } from "@/components/spinner"
 import { 
   FolderOpen, 
@@ -30,7 +31,8 @@ import {
   Lock,
   ClipboardList,
   ChevronRight,
-  Image
+  Image,
+  UserCheck
 } from "lucide-react"
 
 interface ExamCategory {
@@ -43,6 +45,7 @@ interface ExamCategory {
   subjectCount: number
   applicationCount: number
   approvedCount: number
+  selectedStudents?: string[]
   createdAt: string
 }
 
@@ -97,6 +100,9 @@ export default function ExamsPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [categoryToDelete, setCategoryToDelete] = useState<ExamCategory | null>(null)
   const [deleting, setDeleting] = useState(false)
+  
+  const [selectStudentsDialogOpen, setSelectStudentsDialogOpen] = useState(false)
+  const [currentCategoryStudents, setCurrentCategoryStudents] = useState<string[]>([])
 
   useEffect(() => {
     fetchCategories()
@@ -285,20 +291,51 @@ export default function ExamsPage() {
     }
   }
 
+  const openSelectStudentsDialog = (category: ExamCategory) => {
+    setSelectedCategory(category)
+    setCurrentCategoryStudents(category.selectedStudents || [])
+    setSelectStudentsDialogOpen(true)
+  }
+
+  const handleSaveSelectedStudents = async (studentIds: string[]) => {
+    if (!selectedCategory) return
+    const token = getAuthToken()
+    try {
+      const response = await fetch(`/api/exam-categories/${selectedCategory._id}`, {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ selectedStudents: studentIds }),
+      })
+      if (response.ok) {
+        fetchCategories()
+      }
+    } catch (error) {
+      console.error("Error saving selected students:", error)
+    }
+  }
+
   const openScoresDialog = async (category: ExamCategory) => {
     setSelectedCategory(category)
-    await fetchCategoryDetails(category._id)
+    const categoryData = await fetchCategoryDetails(category._id)
     await fetchResultsForCategory(category._id)
     
-    const students = await fetchAllStudents()
-    const studentsList = students.map((s: any) => ({
-      _id: s._id,
-      studentId: s._id,
-      studentName: s.name,
-      registrationNumber: s.registrationNumber,
-      studentImage: s.imageUrl,
-    }))
-    setApprovedStudents(studentsList)
+    const selectedStudentsData = categoryData?.selectedStudentsData || []
+    if (selectedStudentsData.length > 0) {
+      setApprovedStudents(selectedStudentsData)
+    } else {
+      const students = await fetchAllStudents()
+      const studentsList = students.map((s: any) => ({
+        _id: s._id,
+        studentId: s._id,
+        studentName: s.name,
+        registrationNumber: s.registrationNumber,
+        studentImage: s.imageUrl,
+      }))
+      setApprovedStudents(studentsList)
+    }
     setScoresDialogOpen(true)
   }
 
@@ -315,8 +352,21 @@ export default function ExamsPage() {
       resultsMap.set(result.studentId, existing)
     })
     
-    const students = await fetchAllStudents()
-    const studentResultsList: StudentResult[] = students.map((student: any) => {
+    const selectedStudentsData = categoryData?.selectedStudentsData || []
+    let studentsToShow: any[] = []
+    
+    if (selectedStudentsData.length > 0) {
+      studentsToShow = selectedStudentsData.map((s: any) => ({
+        _id: s.studentId,
+        name: s.studentName,
+        registrationNumber: s.registrationNumber,
+        imageUrl: s.studentImage,
+      }))
+    } else {
+      studentsToShow = await fetchAllStudents()
+    }
+    
+    const studentResultsList: StudentResult[] = studentsToShow.map((student: any) => {
       const studentScores = resultsMap.get(student._id) || []
       const scores: Record<string, number> = {}
       let totalScore = 0
@@ -549,6 +599,16 @@ export default function ExamsPage() {
                                 Subjects
                               </Button>
 
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => openSelectStudentsDialog(category)}
+                                className="gap-1.5 text-xs border-slate-200"
+                              >
+                                <UserCheck className="w-3.5 h-3.5" />
+                                Students ({category.selectedStudents?.length || 0})
+                              </Button>
+
                               {(category.status === "scoring" || category.status === "published") && (
                                 <Button
                                   size="sm"
@@ -695,6 +755,15 @@ export default function ExamsPage() {
           categoryName={selectedCategory?.name || ""}
           subjects={subjects}
           results={studentResults}
+        />
+        
+        <SelectStudentsDialog
+          open={selectStudentsDialogOpen}
+          onOpenChange={setSelectStudentsDialogOpen}
+          categoryId={selectedCategory?._id || ""}
+          categoryName={selectedCategory?.name || ""}
+          selectedStudentIds={currentCategoryStudents}
+          onSave={handleSaveSelectedStudents}
         />
         
         <DeleteConfirmationDialog

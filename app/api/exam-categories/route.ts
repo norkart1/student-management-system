@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
           subjectCount,
           applicationCount,
           approvedCount,
+          selectedStudents: category.selectedStudents || [],
         }
       })
     )

@@ -44,10 +44,26 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       })
     )
 
+    const selectedStudentIds = category.selectedStudents || []
+    let selectedStudentsData: any[] = []
+    if (selectedStudentIds.length > 0) {
+      const studentDocs = await db.collection("students")
+        .find({ _id: { $in: selectedStudentIds.map((id: string) => new ObjectId(id)) } })
+        .toArray()
+      selectedStudentsData = studentDocs.map(s => ({
+        _id: s._id.toString(),
+        studentId: s._id.toString(),
+        studentName: s.name || s.fullName,
+        registrationNumber: s.registrationNumber,
+        studentImage: s.imageUrl,
+      }))
+    }
+
     return NextResponse.json({
       ...category,
       subjects,
       applications: enrichedApplications,
+      selectedStudentsData,
     })
   } catch (error) {
     console.error("Failed to fetch exam category:", error)
@@ -77,6 +93,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (data.name) updateData.name = data.name.trim()
     if (data.description !== undefined) updateData.description = data.description.trim()
     if (data.thumbnailUrl !== undefined) updateData.thumbnailUrl = data.thumbnailUrl
+    if (data.selectedStudents !== undefined) updateData.selectedStudents = data.selectedStudents
     
     if (data.status) {
       const category = await db.collection("examCategories").findOne({ _id: new ObjectId(id) })
@@ -85,10 +102,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       }
 
       const validTransitions: Record<string, string[]> = {
-        draft: ["open"],
-        open: ["closed", "draft"],
-        closed: ["scoring", "open"],
-        scoring: ["published", "closed"],
+        draft: ["scoring"],
+        open: ["scoring"],
+        closed: ["scoring"],
+        scoring: ["published", "draft"],
         published: [],
       }
 
@@ -98,38 +115,31 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         }, { status: 400 })
       }
 
-      if (data.status === "open") {
+      if (data.status === "scoring") {
         const subjectCount = await db.collection("examSubjects").countDocuments({ categoryId: id })
         if (subjectCount === 0) {
           return NextResponse.json({ 
-            error: "Cannot open applications: Add at least one subject first" 
+            error: "Cannot start scoring: Add at least one subject first" 
           }, { status: 400 })
         }
       }
 
       if (data.status === "published") {
-        const approvedCount = await db.collection("examApplications").countDocuments({ 
-          categoryId: id, 
-          status: "approved" 
-        })
-        if (approvedCount === 0) {
+        const selectedStudents = category.selectedStudents || []
+        if (selectedStudents.length === 0) {
           return NextResponse.json({ 
-            error: "Cannot publish: No approved students" 
+            error: "Cannot publish: No students selected for this exam" 
           }, { status: 400 })
         }
 
         const subjects = await db.collection("examSubjects").find({ categoryId: id }).toArray()
         const subjectIds = new Set(subjects.map(s => s._id.toString()))
-        
-        const approvedApps = await db.collection("examApplications")
-          .find({ categoryId: id, status: "approved" })
-          .toArray()
 
-        for (const app of approvedApps) {
+        for (const studentId of selectedStudents) {
           const studentResults = await db.collection("examResults")
             .find({
               categoryId: id,
-              studentId: app.studentId,
+              studentId: studentId,
             })
             .toArray()
 
@@ -137,10 +147,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           
           for (const subjectId of subjectIds) {
             if (!coveredSubjectIds.has(subjectId)) {
-              const student = await db.collection("students").findOne({ _id: new ObjectId(app.studentId) })
+              const student = await db.collection("students").findOne({ _id: new ObjectId(studentId) })
               const missingSubject = subjects.find(s => s._id.toString() === subjectId)
               return NextResponse.json({ 
-                error: `Cannot publish: ${student?.fullName || 'A student'} is missing score for ${missingSubject?.name || 'a subject'}` 
+                error: `Cannot publish: ${student?.name || student?.fullName || 'A student'} is missing score for ${missingSubject?.name || 'a subject'}` 
               }, { status: 400 })
             }
           }
