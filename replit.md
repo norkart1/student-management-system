@@ -105,14 +105,15 @@ The application runs automatically via the configured workflow:
 Database collections are automatically created on first run via `lib/init-db.ts`.
 
 ## Recent Changes
-- December 1, 2025: Added Exam Results System
-  - Created API routes for exams (CRUD operations)
-  - Created API routes for results (CRUD with automatic grade calculation)
-  - Added dashboard page for exam management
+- December 1, 2025: Added Exam Results System with Enhanced Security
+  - Created API routes for exams (CRUD operations) - ALL endpoints require authentication
+  - Created API routes for results (CRUD with automatic grade calculation) - ALL endpoints require authentication
+  - Added dashboard page for exam management with proper auth token handling
   - Added dialog components for adding exams and entering results
   - Added results view with statistics (pass rate, average, rankings)
   - Updated sidebar and bottom navigation with Exams section
   - Grading system: A+ (90+), A (80-89), B+ (70-79), B (60-69), C (50-59), D (40-49), F (<40)
+  - Security: All exam/result GET endpoints require Bearer token authentication (protecting sensitive student grade data)
 
 - December 1, 2025: Imported from GitHub and configured for Replit environment
   - Installed all dependencies
