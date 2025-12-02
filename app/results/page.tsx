@@ -13,6 +13,7 @@ interface Subject {
   subjectId: string
   subjectName: string
   maxScore: number
+  passMarks: number
   score: number
 }
 
@@ -361,22 +362,36 @@ function ResultsPageContent() {
                           <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4">
                             {result.subjects.map((subject) => {
                               const subjectPercentage = calculatePercentage(subject.score, subject.maxScore)
+                              const passMarks = subject.passMarks ?? Math.round(subject.maxScore * 0.25)
+                              const isPassing = subject.score >= passMarks
                               return (
                                 <div
                                   key={subject.subjectId}
-                                  className="grid grid-cols-[1fr_auto] sm:flex sm:items-center sm:justify-between p-2 sm:p-3 rounded-lg bg-slate-700/30 print:bg-gray-50 gap-2"
+                                  className={`grid grid-cols-[1fr_auto] sm:flex sm:items-center sm:justify-between p-2 sm:p-3 rounded-lg gap-2 ${
+                                    isPassing 
+                                      ? "bg-slate-700/30 print:bg-gray-50" 
+                                      : "bg-red-900/20 border border-red-500/30 print:bg-red-50 print:border-red-200"
+                                  }`}
                                 >
                                   <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                                    <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 print:text-amber-600 flex-shrink-0" />
-                                    <span className="text-white print:text-gray-900 font-medium text-sm sm:text-base truncate">{subject.subjectName}</span>
+                                    <BookOpen className={`w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 ${isPassing ? "text-amber-500 print:text-amber-600" : "text-red-500 print:text-red-600"}`} />
+                                    <div className="min-w-0">
+                                      <span className="text-white print:text-gray-900 font-medium text-sm sm:text-base truncate block">{subject.subjectName}</span>
+                                      <span className="text-xs text-slate-500 print:text-gray-500">Pass: {passMarks}</span>
+                                    </div>
                                   </div>
                                   <div className="flex items-center gap-2 sm:gap-4 justify-end">
                                     <span className="text-slate-400 print:text-gray-600 text-xs sm:text-sm whitespace-nowrap">
                                       {subject.score} / {subject.maxScore}
                                     </span>
-                                    <span className={`font-bold text-sm sm:text-base ${getGradeColor(subjectPercentage)} print:text-gray-900 min-w-[3rem] text-right`}>
-                                      {subjectPercentage}%
-                                    </span>
+                                    <div className="text-right min-w-[4rem]">
+                                      <span className={`font-bold text-sm sm:text-base ${isPassing ? getGradeColor(subjectPercentage) : "text-red-500"} print:text-gray-900`}>
+                                        {subjectPercentage}%
+                                      </span>
+                                      {!isPassing && (
+                                        <span className="block text-xs text-red-400 print:text-red-600 font-medium">FAIL</span>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
                               )

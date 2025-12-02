@@ -6,8 +6,10 @@ import { ObjectId } from "mongodb"
 interface SubjectInput {
   name?: string
   maxScore?: number
+  passMarks?: number
   order?: number
   bookIds?: string[]
+  bookSettings?: { [bookId: string]: { maxScore: number, passMarks: number } }
 }
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -64,16 +66,24 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         .find({ _id: { $in: bookObjectIds } })
         .toArray()
 
-      const maxScore = data.maxScore || 100
-      const subjects = books.map((book, index) => ({
-        categoryId: id,
-        bookId: book._id.toString(),
-        name: book.title,
-        maxScore: maxScore,
-        order: index + 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }))
+      const defaultMaxScore = data.maxScore || 100
+      const defaultPassMarks = Math.round(defaultMaxScore * 0.25)
+      const subjects = books.map((book, index) => {
+        const bookId = book._id.toString()
+        const settings = data.bookSettings?.[bookId]
+        const maxScore = settings?.maxScore || defaultMaxScore
+        const passMarks = settings?.passMarks ?? Math.round(maxScore * 0.25)
+        return {
+          categoryId: id,
+          bookId: bookId,
+          name: book.title,
+          maxScore: maxScore,
+          passMarks: passMarks,
+          order: index + 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }
+      })
 
       if (subjects.length > 0) {
         await db.collection("examSubjects").insertMany(subjects)
@@ -88,10 +98,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const subjectCount = await db.collection("examSubjects").countDocuments({ categoryId: id })
 
+    const maxScore = Number(data.maxScore)
+    const passMarks = data.passMarks !== undefined ? Number(data.passMarks) : Math.round(maxScore * 0.25)
+    
     const subject = {
       categoryId: id,
       name: data.name.trim(),
-      maxScore: Number(data.maxScore),
+      maxScore: maxScore,
+      passMarks: passMarks,
       order: data.order ?? subjectCount + 1,
       createdAt: new Date(),
       updatedAt: new Date(),

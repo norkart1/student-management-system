@@ -10,6 +10,7 @@ interface Subject {
   _id: string
   name: string
   maxScore: number
+  passMarks?: number
 }
 
 interface ApprovedStudent {
@@ -246,7 +247,7 @@ export function EnterScoresDialog({
                       </div>
                       <div className="min-w-0">
                         <p className="font-medium text-slate-800 text-xs sm:text-sm truncate max-w-[80px] sm:max-w-none">{subject.name}</p>
-                        <p className="text-xs text-slate-500">Max: {subject.maxScore}</p>
+                        <p className="text-xs text-slate-500">Max: {subject.maxScore} | Pass: {subject.passMarks ?? Math.round(subject.maxScore * 0.25)}</p>
                       </div>
                       <div className="shrink-0 ml-auto hidden sm:block">
                         {subjectProgress.complete ? (
@@ -277,7 +278,7 @@ export function EnterScoresDialog({
                     </div>
                     <div className="min-w-0">
                       <p className="font-medium text-emerald-800 text-sm sm:text-base truncate">{selectedSubject.name}</p>
-                      <p className="text-xs sm:text-sm text-emerald-600">Max Score: {selectedSubject.maxScore}</p>
+                      <p className="text-xs sm:text-sm text-emerald-600">Max: {selectedSubject.maxScore} | Pass: {selectedSubject.passMarks ?? Math.round(selectedSubject.maxScore * 0.25)}</p>
                     </div>
                   </div>
                 </div>
@@ -290,33 +291,60 @@ export function EnterScoresDialog({
                 />
 
                 <div className="flex-1 overflow-y-auto space-y-2 min-h-0">
-                  {filteredStudents.map((student) => (
-                    <div key={student._id} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 border border-slate-200 rounded-xl">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden shrink-0">
-                        {student.studentImage ? (
-                          <img src={student.studentImage} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                          <User className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
-                        )}
+                  {filteredStudents.map((student) => {
+                    const scoreValue = allScores[student.studentId]?.[selectedSubject._id]
+                    const score = scoreValue !== undefined && scoreValue !== "" ? Number(scoreValue) : null
+                    const passMarks = selectedSubject.passMarks ?? Math.round(selectedSubject.maxScore * 0.25)
+                    const isFailing = score !== null && score < passMarks
+                    const isPassing = score !== null && score >= passMarks
+                    
+                    return (
+                      <div 
+                        key={student._id} 
+                        className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 border rounded-xl ${
+                          isFailing 
+                            ? "border-red-300 bg-red-50" 
+                            : isPassing 
+                              ? "border-emerald-300 bg-emerald-50/50" 
+                              : "border-slate-200"
+                        }`}
+                      >
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden shrink-0">
+                          {student.studentImage ? (
+                            <img src={student.studentImage} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <User className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-slate-800 text-xs sm:text-sm truncate">{student.studentName}</p>
+                          <p className="text-xs text-slate-500 truncate">{student.registrationNumber}</p>
+                        </div>
+                        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                          <Input
+                            type="number"
+                            min="0"
+                            max={selectedSubject.maxScore}
+                            placeholder="0"
+                            value={scoreValue || ""}
+                            onChange={(e) => handleScoreChange(student.studentId, selectedSubject._id, e.target.value)}
+                            className={`w-14 sm:w-20 text-center text-sm px-1 sm:px-2 ${
+                              isFailing 
+                                ? "border-red-400 bg-red-100 text-red-700 focus:border-red-500" 
+                                : isPassing 
+                                  ? "border-emerald-400 text-emerald-700 focus:border-emerald-500" 
+                                  : "border-slate-200 focus:border-emerald-500"
+                            }`}
+                          />
+                          <div className="text-right min-w-[3.5rem]">
+                            <span className="text-slate-500 text-xs sm:text-sm whitespace-nowrap">/ {selectedSubject.maxScore}</span>
+                            {isFailing && <span className="block text-xs text-red-600 font-medium">FAIL</span>}
+                            {isPassing && <span className="block text-xs text-emerald-600 font-medium">PASS</span>}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-slate-800 text-xs sm:text-sm truncate">{student.studentName}</p>
-                        <p className="text-xs text-slate-500 truncate">{student.registrationNumber}</p>
-                      </div>
-                      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-                        <Input
-                          type="number"
-                          min="0"
-                          max={selectedSubject.maxScore}
-                          placeholder="0"
-                          value={allScores[student.studentId]?.[selectedSubject._id] || ""}
-                          onChange={(e) => handleScoreChange(student.studentId, selectedSubject._id, e.target.value)}
-                          className="w-14 sm:w-20 text-center border-slate-200 focus:border-emerald-500 text-sm px-1 sm:px-2"
-                        />
-                        <span className="text-slate-500 text-xs sm:text-sm whitespace-nowrap">/ {selectedSubject.maxScore}</span>
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                   {filteredStudents.length === 0 && (
                     <p className="text-center text-slate-500 py-4 text-sm">No students found</p>
                   )}

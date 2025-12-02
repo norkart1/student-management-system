@@ -55,7 +55,9 @@ interface Subject {
   categoryId: string
   name: string
   maxScore: number
+  passMarks?: number
   order: number
+  bookId?: string
 }
 
 
@@ -91,6 +93,7 @@ export default function ExamsPage() {
   const [selectBooksDialogOpen, setSelectBooksDialogOpen] = useState(false)
   const [currentCategoryBookIds, setCurrentCategoryBookIds] = useState<string[]>([])
   const [currentMaxScore, setCurrentMaxScore] = useState(100)
+  const [currentExistingSubjects, setCurrentExistingSubjects] = useState<Subject[]>([])
   
   
   const [scoresDialogOpen, setScoresDialogOpen] = useState(false)
@@ -196,7 +199,7 @@ export default function ExamsPage() {
     }
   }
 
-  const handleSaveBooks = async (bookIds: string[], maxScore: number) => {
+  const handleSaveBooks = async (bookIds: string[], maxScore: number, bookSettings?: { [bookId: string]: { maxScore: number, passMarks: number } }) => {
     if (!selectedCategory) return
     const token = getAuthToken()
     try {
@@ -206,7 +209,7 @@ export default function ExamsPage() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ bookIds, maxScore }),
+        body: JSON.stringify({ bookIds, maxScore, bookSettings }),
       })
       if (response.ok) {
         await fetchCategoryDetails(selectedCategory._id)
@@ -227,6 +230,7 @@ export default function ExamsPage() {
     const maxScore = existingSubjects[0]?.maxScore || 100
     setCurrentCategoryBookIds(bookIds)
     setCurrentMaxScore(maxScore)
+    setCurrentExistingSubjects(existingSubjects)
     setSelectBooksDialogOpen(true)
   }
 
@@ -700,6 +704,7 @@ export default function ExamsPage() {
           categoryName={selectedCategory?.name || ""}
           selectedBookIds={currentCategoryBookIds}
           maxScore={currentMaxScore}
+          existingSubjects={currentExistingSubjects}
           onSave={handleSaveBooks}
         />
 

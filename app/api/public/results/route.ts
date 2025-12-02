@@ -124,6 +124,7 @@ export async function GET(request: NextRequest) {
             subjectId: result.subjectId,
             subjectName: subject?.name || "Unknown",
             maxScore: subject?.maxScore || 0,
+            passMarks: subject?.passMarks ?? Math.round((subject?.maxScore || 100) * 0.25),
             score: result.score,
             publishedAt: category?.publishedAt,
           }
@@ -145,6 +146,7 @@ export async function GET(request: NextRequest) {
           subjectId: result.subjectId,
           subjectName: result.subjectName,
           maxScore: result.maxScore,
+          passMarks: result.passMarks,
           score: result.score,
         })
         acc[result.categoryId].totalScore += result.score

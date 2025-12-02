@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { BookOpen, Hash } from "lucide-react"
+import { BookOpen, Hash, Target } from "lucide-react"
 
 interface AddSubjectDialogProps {
   open: boolean
@@ -20,6 +20,7 @@ export function AddSubjectDialog({ open, onOpenChange, onSubmit, categoryName, i
   const [formData, setFormData] = useState({
     name: "",
     maxScore: "100",
+    passMarks: "25",
   })
   const [loading, setLoading] = useState(false)
 
@@ -29,15 +30,27 @@ export function AddSubjectDialog({ open, onOpenChange, onSubmit, categoryName, i
         setFormData({
           name: initialData.name || "",
           maxScore: String(initialData.maxScore || 100),
+          passMarks: String(initialData.passMarks || Math.round((initialData.maxScore || 100) * 0.25)),
         })
       } else {
         setFormData({
           name: "",
           maxScore: "100",
+          passMarks: "25",
         })
       }
     }
   }, [initialData, open])
+
+  const handleMaxScoreChange = (value: string) => {
+    const maxScore = Number(value) || 100
+    const suggestedPassMarks = Math.round(maxScore * 0.25)
+    setFormData({ 
+      ...formData, 
+      maxScore: value,
+      passMarks: String(suggestedPassMarks)
+    })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,8 +59,9 @@ export function AddSubjectDialog({ open, onOpenChange, onSubmit, categoryName, i
       await onSubmit({
         ...formData,
         maxScore: Number(formData.maxScore),
+        passMarks: Number(formData.passMarks),
       })
-      setFormData({ name: "", maxScore: "100" })
+      setFormData({ name: "", maxScore: "100", passMarks: "25" })
       onOpenChange(false)
     } catch (error) {
       console.error("Error submitting form:", error)
@@ -83,22 +97,46 @@ export function AddSubjectDialog({ open, onOpenChange, onSubmit, categoryName, i
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="maxScore" className="text-slate-700 flex items-center gap-2">
-              <Hash className="w-4 h-4 text-emerald-600" />
-              Maximum Score
-            </Label>
-            <Input
-              id="maxScore"
-              type="number"
-              min="1"
-              placeholder="100"
-              value={formData.maxScore}
-              onChange={(e) => setFormData({ ...formData, maxScore: e.target.value })}
-              required
-              className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="maxScore" className="text-slate-700 flex items-center gap-2">
+                <Hash className="w-4 h-4 text-emerald-600" />
+                Maximum Score
+              </Label>
+              <Input
+                id="maxScore"
+                type="number"
+                min="1"
+                placeholder="100"
+                value={formData.maxScore}
+                onChange={(e) => handleMaxScoreChange(e.target.value)}
+                required
+                className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="passMarks" className="text-slate-700 flex items-center gap-2">
+                <Target className="w-4 h-4 text-emerald-600" />
+                Pass Marks
+              </Label>
+              <Input
+                id="passMarks"
+                type="number"
+                min="0"
+                max={formData.maxScore}
+                placeholder="25"
+                value={formData.passMarks}
+                onChange={(e) => setFormData({ ...formData, passMarks: e.target.value })}
+                required
+                className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+              />
+            </div>
           </div>
+
+          <p className="text-xs text-slate-500">
+            Pass marks auto-calculated as 25% of max score. Adjust as needed.
+          </p>
 
           <div className="flex gap-3 justify-end pt-4">
             <Button 

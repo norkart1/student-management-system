@@ -10,6 +10,7 @@ interface Subject {
   _id: string
   name: string
   maxScore: number
+  passMarks?: number
 }
 
 interface StudentResult {
@@ -138,7 +139,7 @@ export function ViewCategoryResultsDialog({
                 {subjects.map(subject => (
                   <th key={subject._id} className="text-center py-3 px-3 text-sm font-medium text-slate-600">
                     <div>{subject.name}</div>
-                    <div className="text-xs text-slate-400 font-normal">/{subject.maxScore}</div>
+                    <div className="text-xs text-slate-400 font-normal">Max: {subject.maxScore} | Pass: {subject.passMarks ?? Math.round(subject.maxScore * 0.25)}</div>
                   </th>
                 ))}
                 <th className="text-center py-3 px-4 text-sm font-medium text-slate-600">Total</th>
@@ -179,13 +180,23 @@ export function ViewCategoryResultsDialog({
                         </div>
                       </div>
                     </td>
-                    {subjects.map(subject => (
-                      <td key={subject._id} className="text-center py-3 px-3">
-                        <span className="font-medium text-slate-700">
-                          {result.scores[subject._id] ?? "-"}
-                        </span>
-                      </td>
-                    ))}
+                    {subjects.map(subject => {
+                      const score = result.scores[subject._id]
+                      const passMarks = subject.passMarks ?? Math.round(subject.maxScore * 0.25)
+                      const isPassing = score !== undefined && score >= passMarks
+                      const isFailing = score !== undefined && score < passMarks
+                      return (
+                        <td key={subject._id} className="text-center py-3 px-3">
+                          <span className={`font-medium ${
+                            score === undefined ? "text-slate-400" :
+                            isPassing ? "text-emerald-600" : "text-red-600"
+                          }`}>
+                            {score ?? "-"}
+                            {isFailing && <span className="text-xs ml-1">(F)</span>}
+                          </span>
+                        </td>
+                      )
+                    })}
                     <td className="text-center py-3 px-4">
                       <span className="font-bold text-slate-800">
                         {result.totalScore}/{result.maxTotalScore}
