@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { 
@@ -13,7 +13,9 @@ import {
   Lock,
   Building2,
   Search,
-  Award
+  Award,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -27,9 +29,46 @@ interface PublishedExam {
   resultCount: number
 }
 
+const schoolImages = [
+  {
+    src: "/school-images/students_in_modern_classroom.png",
+    alt: "Students learning in modern classroom",
+    caption: "Modern Learning Environment"
+  },
+  {
+    src: "/school-images/students_studying_in_library.png",
+    alt: "Students studying in library",
+    caption: "Well-Equipped Library"
+  },
+  {
+    src: "/school-images/modern_school_building_exterior.png",
+    alt: "Modern school building",
+    caption: "State-of-the-Art Campus"
+  },
+  {
+    src: "/school-images/science_lab_with_students.png",
+    alt: "Science laboratory",
+    caption: "Advanced Science Labs"
+  }
+]
+
 export default function LandingPage() {
   const [publishedExams, setPublishedExams] = useState<PublishedExam[]>([])
   const [loadingExams, setLoadingExams] = useState(true)
+  const [currentSlide, setCurrentSlide] = useState(0)
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % schoolImages.length)
+  }, [])
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev - 1 + schoolImages.length) % schoolImages.length)
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(nextSlide, 4000)
+    return () => clearInterval(interval)
+  }, [nextSlide])
 
   useEffect(() => {
     fetchPublishedExams()
@@ -111,57 +150,65 @@ export default function LandingPage() {
 
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button asChild size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium shadow-lg shadow-amber-500/25 px-8">
-                    <Link href="/login">
-                      Staff Portal
+                    <Link href="/results">
+                      View Results
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Link>
                   </Button>
                 </div>
               </div>
 
-              <div className="hidden lg:block">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-3xl blur-2xl" />
-                  <div className="relative bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
-                    <div className="text-center mb-6">
-                      <div className="w-20 h-20 mx-auto bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-amber-500/30">
-                        <GraduationCap className="w-10 h-10 text-white" />
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-3xl blur-2xl" />
+                <div className="relative bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden">
+                  <div className="relative aspect-video overflow-hidden">
+                    {schoolImages.map((image, index) => (
+                      <div
+                        key={index}
+                        className={`absolute inset-0 transition-opacity duration-700 ${
+                          index === currentSlide ? "opacity-100" : "opacity-0"
+                        }`}
+                      >
+                        <Image
+                          src={image.src}
+                          alt={image.alt}
+                          fill
+                          className="object-cover"
+                          priority={index === 0}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          <p className="text-white font-semibold text-lg">{image.caption}</p>
+                        </div>
                       </div>
-                      <h3 className="text-xl font-bold text-white">Staff Access Only</h3>
-                      <p className="text-slate-400 text-sm mt-1">Authorized personnel login required</p>
-                    </div>
+                    ))}
                     
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-4 p-4 bg-slate-700/30 rounded-xl border border-white/5">
-                        <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                          <Users className="w-5 h-5 text-blue-400" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-white">Student Management</div>
-                          <div className="text-sm text-slate-400">Records & profiles</div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-4 p-4 bg-slate-700/30 rounded-xl border border-white/5">
-                        <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                          <BookOpen className="w-5 h-5 text-emerald-400" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-white">Exam System</div>
-                          <div className="text-sm text-slate-400">Results & grading</div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-4 p-4 bg-slate-700/30 rounded-xl border border-white/5">
-                        <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                          <Calendar className="w-5 h-5 text-purple-400" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-white">Events & Library</div>
-                          <div className="text-sm text-slate-400">Calendar & books</div>
-                        </div>
-                      </div>
-                    </div>
+                    <button
+                      onClick={prevSlide}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-slate-900/60 hover:bg-slate-900/80 rounded-full flex items-center justify-center text-white transition-colors z-10"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <button
+                      onClick={nextSlide}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-slate-900/60 hover:bg-slate-900/80 rounded-full flex items-center justify-center text-white transition-colors z-10"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  </div>
+                  
+                  <div className="flex justify-center gap-2 py-3 bg-slate-800/80">
+                    {schoolImages.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentSlide(index)}
+                        className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                          index === currentSlide
+                            ? "bg-amber-500"
+                            : "bg-slate-600 hover:bg-slate-500"
+                        }`}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
