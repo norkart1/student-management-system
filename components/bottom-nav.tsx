@@ -108,7 +108,7 @@ export function BottomNav() {
                     href={item.href}
                     prefetch={true}
                     className={cn(
-                      "flex flex-col items-center justify-center gap-1.5 py-3 px-4 rounded-xl transition-all duration-200 min-w-[80px]",
+                      "flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 w-[72px]",
                       isActive 
                         ? "bg-gradient-to-br from-emerald-500 to-teal-500 shadow-md" 
                         : "hover:bg-slate-100 active:scale-95 bg-slate-50"
@@ -116,13 +116,13 @@ export function BottomNav() {
                   >
                     <Icon 
                       className={cn(
-                        "w-6 h-6 transition-all duration-200",
+                        "w-5 h-5 transition-all duration-200 flex-shrink-0",
                         isActive ? "text-white" : "text-slate-600"
                       )} 
                       strokeWidth={isActive ? 2.5 : 2}
                     />
                     <span className={cn(
-                      "text-xs font-medium transition-all duration-200",
+                      "text-[10px] font-medium transition-all duration-200 truncate w-full text-center",
                       isActive ? "text-white" : "text-slate-600"
                     )}>
                       {item.name}
