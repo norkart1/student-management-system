@@ -87,15 +87,10 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    const application = await db.collection("examApplications").findOne({
-      categoryId: data.categoryId,
-      studentId: data.studentId,
-      status: "approved"
-    })
-
-    if (!application) {
+    const selectedStudents = category.selectedStudents || []
+    if (!selectedStudents.includes(data.studentId)) {
       return NextResponse.json({ 
-        error: "Student is not approved for this exam" 
+        error: "Student is not selected for this exam" 
       }, { status: 400 })
     }
 

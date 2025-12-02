@@ -279,11 +279,16 @@ export default function ExamsPage() {
           scores,
         }),
       })
+      const data = await response.json()
       if (response.ok) {
         await fetchResultsForCategory(selectedCategory._id)
+        toast.success("Scores saved successfully!")
+      } else {
+        toast.error(data.error || "Failed to save scores")
       }
     } catch (error) {
       console.error("Error saving scores:", error)
+      toast.error("Failed to save scores. Please try again.")
     }
   }
 
