@@ -22,9 +22,20 @@ import {
   AlertCircle,
   UserCheck,
   School,
-  Search
+  Search,
+  Settings,
+  FileText,
+  ToggleLeft,
+  ToggleRight,
+  Calendar,
+  Edit,
+  Save,
+  X
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
 
 interface StudentUser {
   _id: string
@@ -38,6 +49,16 @@ interface StudentUser {
   createdAt: string
 }
 
+interface AdmissionSettings {
+  isOpen: boolean
+  academicYear: string
+  openClasses: number[]
+  description: string
+  requirements: string
+  startDate: string | null
+  endDate: string | null
+}
+
 const allClasses = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 export default function StudentAdmissionsPage() {
@@ -48,9 +69,30 @@ export default function StudentAdmissionsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedClass, setSelectedClass] = useState<{ [key: string]: number }>({})
   const [updating, setUpdating] = useState<string | null>(null)
+  
+  const [activeTab, setActiveTab] = useState<"applications" | "settings">("applications")
+  const [settings, setSettings] = useState<AdmissionSettings>({
+    isOpen: false,
+    academicYear: new Date().getFullYear().toString(),
+    openClasses: [],
+    description: "",
+    requirements: "",
+    startDate: null,
+    endDate: null
+  })
+  const [savingSettings, setSavingSettings] = useState(false)
+  const [settingsSaved, setSettingsSaved] = useState(false)
+  
+  const [editingStudent, setEditingStudent] = useState<string | null>(null)
+  const [editForm, setEditForm] = useState<{ fullName: string; phone: string; email: string }>({
+    fullName: "",
+    phone: "",
+    email: ""
+  })
 
   useEffect(() => {
     fetchStudents()
+    fetchSettings()
   }, [])
 
   const fetchStudents = async () => {
@@ -69,6 +111,91 @@ export default function StudentAdmissionsPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch("/api/admission-settings")
+      if (res.ok) {
+        const data = await res.json()
+        setSettings({
+          isOpen: data.isOpen || false,
+          academicYear: data.academicYear || new Date().getFullYear().toString(),
+          openClasses: data.openClasses || [],
+          description: data.description || "",
+          requirements: data.requirements || "",
+          startDate: data.startDate || null,
+          endDate: data.endDate || null
+        })
+      }
+    } catch (error) {
+      console.error("Failed to fetch admission settings:", error)
+    }
+  }
+
+  const saveSettings = async () => {
+    const token = getAuthToken()
+    setSavingSettings(true)
+    setSettingsSaved(false)
+
+    try {
+      const res = await fetch("/api/admission-settings", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(settings)
+      })
+
+      if (res.ok) {
+        setSettingsSaved(true)
+        setTimeout(() => setSettingsSaved(false), 3000)
+      }
+    } catch (error) {
+      console.error("Failed to save settings:", error)
+    } finally {
+      setSavingSettings(false)
+    }
+  }
+
+  const handleEditStudent = (student: StudentUser) => {
+    setEditingStudent(student._id)
+    setEditForm({
+      fullName: student.fullName,
+      phone: student.phone,
+      email: student.email
+    })
+  }
+
+  const handleSaveStudentEdit = async (studentId: string) => {
+    const token = getAuthToken()
+    setUpdating(studentId)
+
+    try {
+      const res = await fetch(`/api/student-users/${studentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(editForm)
+      })
+
+      if (res.ok) {
+        fetchStudents()
+        setEditingStudent(null)
+      }
+    } catch (error) {
+      console.error("Failed to update student:", error)
+    } finally {
+      setUpdating(null)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingStudent(null)
+    setEditForm({ fullName: "", phone: "", email: "" })
   }
 
   const handleUpdateStatus = async (studentId: string, status: string) => {

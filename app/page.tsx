@@ -43,6 +43,13 @@ interface Announcement {
   createdAt: string
 }
 
+interface AdmissionSettings {
+  isOpen: boolean
+  academicYear: string
+  openClasses: number[]
+  description?: string
+}
+
 const schoolImages = [
   {
     src: "/school-images/students_in_modern_classroom.png",
@@ -96,6 +103,7 @@ export default function LandingPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [loadingAnnouncements, setLoadingAnnouncements] = useState(true)
+  const [admissionSettings, setAdmissionSettings] = useState<AdmissionSettings | null>(null)
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % schoolImages.length)
@@ -113,7 +121,20 @@ export default function LandingPage() {
   useEffect(() => {
     fetchPublishedExams()
     fetchAnnouncements()
+    fetchAdmissionSettings()
   }, [])
+
+  const fetchAdmissionSettings = async () => {
+    try {
+      const res = await fetch("/api/admission-settings")
+      if (res.ok) {
+        const data = await res.json()
+        setAdmissionSettings(data)
+      }
+    } catch (err) {
+      console.error("Failed to fetch admission settings:", err)
+    }
+  }
 
   const fetchAnnouncements = async () => {
     try {
@@ -185,26 +206,28 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1 pt-16">
-        <Link
-          href="/student-register"
-          className="block bg-gradient-to-r from-emerald-500 to-teal-500 py-3 px-4 text-center hover:from-emerald-600 hover:to-teal-600 transition-all group"
-        >
-          <div className="max-w-[1600px] mx-auto flex items-center justify-center gap-3">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
-                <Bell className="w-4 h-4 text-white" />
+        {admissionSettings?.isOpen && (
+          <Link
+            href="/student-register"
+            className="block bg-gradient-to-r from-emerald-500 to-teal-500 py-3 px-4 text-center hover:from-emerald-600 hover:to-teal-600 transition-all group"
+          >
+            <div className="max-w-[1600px] mx-auto flex items-center justify-center gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
+                  <Bell className="w-4 h-4 text-white" />
+                </div>
+                <span className="font-bold text-white">NEW STUDENT ADMISSIONS OPEN!</span>
               </div>
-              <span className="font-bold text-white">NEW STUDENT ADMISSIONS OPEN!</span>
+              <span className="text-white/90 hidden sm:inline">Create your student account and apply now</span>
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-white/20 rounded-full text-white text-sm font-medium group-hover:bg-white/30 transition-colors">
+                Register Now
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </span>
             </div>
-            <span className="text-white/90 hidden sm:inline">Create your student account and apply now</span>
-            <span className="inline-flex items-center gap-1 px-3 py-1 bg-white/20 rounded-full text-white text-sm font-medium group-hover:bg-white/30 transition-colors">
-              Register Now
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </span>
-          </div>
-        </Link>
+          </Link>
+        )}
 
-        <section className="relative min-h-[calc(100vh-4rem-52px)] flex items-center overflow-hidden">
+        <section className={`relative ${admissionSettings?.isOpen ? 'min-h-[calc(100vh-4rem-52px)]' : 'min-h-[calc(100vh-4rem)]'} flex items-center overflow-hidden`}>
           <div className="absolute inset-0">
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/15 rounded-full blur-[128px]" />
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/15 rounded-full blur-[128px]" />
