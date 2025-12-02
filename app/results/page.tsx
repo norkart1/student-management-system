@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { GraduationCap, Search, ArrowLeft, Calendar, User, BookOpen, Award, ChevronDown, ChevronUp, X } from "lucide-react"
+import { GraduationCap, Search, ArrowLeft, Calendar, User, BookOpen, Award, ChevronDown, ChevronUp, X, Loader2 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -41,7 +41,7 @@ interface PublishedExam {
   resultCount: number
 }
 
-export default function ResultsPage() {
+function ResultsPageContent() {
   const searchParams = useSearchParams()
   const examId = searchParams.get("exam")
   
@@ -398,5 +398,38 @@ export default function ResultsPage() {
         )}
       </main>
     </div>
+  )
+}
+
+function ResultsPageFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <header className="border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+              <GraduationCap className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-white">Bright Future Academy</h1>
+              <p className="text-xs text-slate-400">Results Portal</p>
+            </div>
+          </Link>
+        </div>
+      </header>
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+        </div>
+      </main>
+    </div>
+  )
+}
+
+export default function ResultsPage() {
+  return (
+    <Suspense fallback={<ResultsPageFallback />}>
+      <ResultsPageContent />
+    </Suspense>
   )
 }
