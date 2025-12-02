@@ -10,14 +10,24 @@ function getJwtSecret(): string {
 
 const JWT_EXPIRES_IN = "7d"
 
-export interface TokenPayload {
+export interface AdminTokenPayload {
   adminId: string
   username: string
   iat?: number
   exp?: number
 }
 
-export function signToken(payload: { adminId: string; username: string }): string {
+export interface StudentTokenPayload {
+  studentId: string
+  email: string
+  role: "student"
+  iat?: number
+  exp?: number
+}
+
+export type TokenPayload = AdminTokenPayload | StudentTokenPayload
+
+export function signToken(payload: { adminId: string; username: string } | { studentId: string; email: string; role: "student" }): string {
   return jwt.sign(payload, getJwtSecret(), { expiresIn: JWT_EXPIRES_IN })
 }
 

@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { clearAuthToken } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, GraduationCap, BookOpen, Layers, LogOut, Calendar, ChevronRight, Settings, ClipboardList, UserPlus } from "lucide-react"
+import { LayoutDashboard, Users, GraduationCap, BookOpen, Layers, LogOut, Calendar, ChevronRight, Settings, ClipboardList, UserPlus, UserCheck } from "lucide-react"
 
 const menuItems = [
   { 
@@ -50,6 +50,12 @@ const menuItems = [
     href: "/dashboard/admissions", 
     icon: UserPlus,
     description: "Manage applications"
+  },
+  { 
+    name: "Student Accounts", 
+    href: "/dashboard/student-admissions", 
+    icon: UserCheck,
+    description: "Approve student signups"
   },
 ]
 

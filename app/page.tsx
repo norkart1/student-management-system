@@ -166,18 +166,45 @@ export default function LandingPage() {
                 <span className="text-xs text-slate-400 -mt-1">Private School</span>
               </div>
             </div>
-            <Button asChild className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium shadow-lg shadow-amber-500/20">
-              <Link href="/login">
-                <Lock className="w-4 h-4 mr-2" />
-                Staff Login
-              </Link>
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button asChild variant="outline" className="border-white/20 text-white hover:bg-white/10 font-medium hidden sm:flex">
+                <Link href="/student-login">
+                  <GraduationCap className="w-4 h-4 mr-2" />
+                  Student Login
+                </Link>
+              </Button>
+              <Button asChild className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium shadow-lg shadow-amber-500/20">
+                <Link href="/login">
+                  <Lock className="w-4 h-4 mr-2" />
+                  Staff Login
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="flex-1 pt-16">
-        <section className="relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
+        <Link
+          href="/student-register"
+          className="block bg-gradient-to-r from-emerald-500 to-teal-500 py-3 px-4 text-center hover:from-emerald-600 hover:to-teal-600 transition-all group"
+        >
+          <div className="max-w-[1600px] mx-auto flex items-center justify-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
+                <Bell className="w-4 h-4 text-white" />
+              </div>
+              <span className="font-bold text-white">NEW STUDENT ADMISSIONS OPEN!</span>
+            </div>
+            <span className="text-white/90 hidden sm:inline">Create your student account and apply now</span>
+            <span className="inline-flex items-center gap-1 px-3 py-1 bg-white/20 rounded-full text-white text-sm font-medium group-hover:bg-white/30 transition-colors">
+              Register Now
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </span>
+          </div>
+        </Link>
+
+        <section className="relative min-h-[calc(100vh-4rem-52px)] flex items-center overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/15 rounded-full blur-[128px]" />
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/15 rounded-full blur-[128px]" />
