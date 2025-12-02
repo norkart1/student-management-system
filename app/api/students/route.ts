@@ -4,26 +4,28 @@ import { type NextRequest, NextResponse } from "next/server"
 import { Db } from "mongodb"
 
 async function generateRegistrationNumber(db: Db): Promise<string> {
-  const year = new Date().getFullYear()
   const lastStudent = await db.collection("students")
-    .find({ registrationNumber: { $regex: `^STU${year}` } })
+    .find({ registrationNumber: { $regex: `^\\d{5}$` } })
     .sort({ registrationNumber: -1 })
     .limit(1)
     .toArray()
   
-  let nextNumber = 1
+  let nextNumber = 10001
   if (lastStudent.length > 0 && lastStudent[0].registrationNumber) {
-    const lastNum = parseInt(lastStudent[0].registrationNumber.slice(-4))
-    nextNumber = lastNum + 1
+    const lastNum = parseInt(lastStudent[0].registrationNumber)
+    if (!isNaN(lastNum)) {
+      nextNumber = lastNum + 1
+    }
   }
   
-  return `STU${year}${nextNumber.toString().padStart(4, '0')}`
+  return nextNumber.toString().padStart(5, '0')
 }
 
 interface StudentInput {
   fullName: string
   email: string
   phone: string
+  dateOfBirth: string
   registrationNumber?: string
   imageUrl?: string
 }
@@ -49,7 +51,7 @@ export async function POST(request: NextRequest) {
     const { db } = await connectToDatabase()
     const data: StudentInput = await request.json()
 
-    if (!data.fullName || !data.email || !data.phone) {
+    if (!data.fullName || !data.email || !data.phone || !data.dateOfBirth) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
@@ -59,6 +61,7 @@ export async function POST(request: NextRequest) {
       fullName: data.fullName.trim(),
       email: data.email.trim().toLowerCase(),
       phone: data.phone.trim(),
+      dateOfBirth: data.dateOfBirth,
       registrationNumber: registrationNumber,
       imageUrl: data.imageUrl || null,
       createdAt: new Date(),

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ImageUpload } from "@/components/image-upload"
-import { User, Mail, Phone } from "lucide-react"
+import { User, Mail, Phone, Calendar } from "lucide-react"
 import { toTitleCase } from "@/lib/text-utils"
 
 interface AddStudentDialogProps {
@@ -22,6 +22,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
     fullName: initialData?.fullName || "",
     email: initialData?.email || "",
     phone: initialData?.phone || "",
+    dateOfBirth: initialData?.dateOfBirth || "",
     imageUrl: initialData?.imageUrl || "",
   })
   const [loading, setLoading] = useState(false)
@@ -33,6 +34,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
           fullName: initialData.fullName || "",
           email: initialData.email || "",
           phone: initialData.phone || "",
+          dateOfBirth: initialData.dateOfBirth || "",
           imageUrl: initialData.imageUrl || "",
         })
       } else {
@@ -40,6 +42,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
           fullName: "",
           email: "",
           phone: "",
+          dateOfBirth: "",
           imageUrl: "",
         })
       }
@@ -55,6 +58,7 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
         fullName: "",
         email: "",
         phone: "",
+        dateOfBirth: "",
         imageUrl: "",
       })
       onOpenChange(false)

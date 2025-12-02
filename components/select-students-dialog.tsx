@@ -10,7 +10,7 @@ import { getAuthToken } from "@/lib/auth"
 
 interface Student {
   _id: string
-  name: string
+  fullName: string
   registrationNumber: string
   imageUrl?: string
 }
@@ -90,7 +90,7 @@ export function SelectStudentsDialog({
   }
 
   const filteredStudents = students.filter(student => 
-    student.name?.toLowerCase().includes(search.toLowerCase()) ||
+    student.fullName?.toLowerCase().includes(search.toLowerCase()) ||
     student.registrationNumber?.toLowerCase().includes(search.toLowerCase())
   )
 
@@ -161,7 +161,7 @@ export function SelectStudentsDialog({
                     )}
                   </div>
                   <div>
-                    <p className="font-medium text-slate-800">{student.name}</p>
+                    <p className="font-medium text-slate-800">{student.fullName}</p>
                     <div className="flex items-center gap-1 text-sm text-slate-500">
                       <Hash className="w-3 h-3" />
                       <span>{student.registrationNumber}</span>
