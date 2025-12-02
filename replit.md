@@ -117,6 +117,13 @@ The application runs automatically via the configured workflow:
 Database collections are automatically created on first run via `lib/init-db.ts`.
 
 ## Recent Changes
+- December 2, 2025: Redesigned Mobile Bottom Navigation
+  - **New Layout**: Simplified 3-section design (Home | Plus Menu | Profile & Settings)
+  - **Center Plus Button**: Floating button that expands to show Students, Exams, Teachers, Books
+  - **Quick Access**: Home on left, Profile and Settings on right for faster navigation
+  - **Expandable Menu**: 2x2 grid popup with smooth animations
+  - **New Profile Page**: Added dedicated profile page at /dashboard/profile
+
 - December 2, 2025: Individual Pass Marks per Subject
   - **Subject Creation**: Each subject now has both max score and pass marks fields
   - **Smart Defaults**: Pass marks auto-calculate to 25% of max score, but can be customized
