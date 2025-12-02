@@ -1,6 +1,8 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { 
   GraduationCap, 
   Users, 
@@ -9,11 +11,53 @@ import {
   Shield,
   ArrowRight,
   Lock,
-  Building2
+  Building2,
+  Search,
+  Award
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
+interface PublishedExam {
+  _id: string
+  name: string
+  description?: string
+  thumbnailUrl?: string
+  publishedAt: string
+  subjectCount: number
+  resultCount: number
+}
+
 export default function LandingPage() {
+  const [publishedExams, setPublishedExams] = useState<PublishedExam[]>([])
+  const [loadingExams, setLoadingExams] = useState(true)
+
+  useEffect(() => {
+    fetchPublishedExams()
+  }, [])
+
+  const fetchPublishedExams = async () => {
+    try {
+      const res = await fetch("/api/public/results")
+      if (res.ok) {
+        const data = await res.json()
+        if (data.type === "categories") {
+          setPublishedExams(data.data)
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch published exams:", err)
+    } finally {
+      setLoadingExams(false)
+    }
+  }
+
+  const isNewExam = (publishedAt: string) => {
+    const publishDate = new Date(publishedAt)
+    const now = new Date()
+    const diffDays = Math.floor((now.getTime() - publishDate.getTime()) / (1000 * 60 * 60 * 24))
+    return diffDays <= 7
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/90 backdrop-blur-xl border-b border-white/10">
@@ -124,6 +168,88 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        {!loadingExams && publishedExams.length > 0 && (
+          <section className="py-16 bg-slate-800/50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 backdrop-blur-sm rounded-full border border-amber-500/20 mb-4">
+                  <Award className="w-4 h-4 text-amber-400" />
+                  <span className="text-sm text-amber-300 font-medium">Exam Results Published</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+                  Latest Exam Results
+                </h2>
+                <p className="text-slate-400 max-w-2xl mx-auto">
+                  Click on any exam below to search and view your results
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {publishedExams.map((exam) => (
+                  <Link 
+                    key={exam._id} 
+                    href="/results"
+                    className="group relative bg-slate-800/50 rounded-2xl border border-white/10 overflow-hidden hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10"
+                  >
+                    {isNewExam(exam.publishedAt) && (
+                      <div className="absolute top-3 left-3 z-10">
+                        <span className="inline-block px-3 py-1 bg-red-500 text-white text-xs font-bold uppercase tracking-wide rounded shadow-lg transform -rotate-2">
+                          NEW
+                        </span>
+                      </div>
+                    )}
+                    
+                    <div className="aspect-video relative bg-gradient-to-br from-slate-700 to-slate-800 overflow-hidden">
+                      {exam.thumbnailUrl ? (
+                        <Image
+                          src={exam.thumbnailUrl}
+                          alt={exam.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+                            <BookOpen className="w-8 h-8 text-white" />
+                          </div>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
+                    </div>
+                    
+                    <div className="p-5">
+                      <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-amber-400 transition-colors">
+                        {exam.name}
+                      </h3>
+                      {exam.description && (
+                        <p className="text-sm text-slate-400 mb-3 line-clamp-2">{exam.description}</p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-slate-500">
+                          {exam.subjectCount} subject{exam.subjectCount !== 1 ? "s" : ""}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 text-amber-400 text-sm font-medium group-hover:gap-2 transition-all">
+                          <Search className="w-4 h-4" />
+                          Search Results
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              
+              <div className="text-center mt-8">
+                <Button asChild variant="outline" className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10 hover:text-amber-300">
+                  <Link href="/results">
+                    View All Results
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="py-16 bg-slate-800/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
