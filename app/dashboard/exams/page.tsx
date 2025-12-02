@@ -762,6 +762,12 @@ export default function ExamsPage() {
           approvedStudents={approvedStudents}
           existingResults={existingResults}
           onSaveScores={handleSaveScores}
+          onPublish={selectedCategory?.status === "scoring" ? async () => {
+            if (selectedCategory) {
+              await handleUpdateStatus(selectedCategory, "published")
+              setScoresDialogOpen(false)
+            }
+          } : undefined}
         />
 
         <ViewCategoryResultsDialog
