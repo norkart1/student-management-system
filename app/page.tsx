@@ -317,7 +317,7 @@ export default function LandingPage() {
                 {publishedExams.map((exam) => (
                   <Link 
                     key={exam._id} 
-                    href="/results"
+                    href={`/results?exam=${exam._id}`}
                     className="group relative bg-slate-800/50 rounded-2xl border border-white/10 overflow-hidden hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10"
                   >
                     {isNewExam(exam.publishedAt) && (

@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { GraduationCap, Search, ArrowLeft, Calendar, User, BookOpen, Award, ChevronDown, ChevronUp } from "lucide-react"
+import { GraduationCap, Search, ArrowLeft, Calendar, User, BookOpen, Award, ChevronDown, ChevronUp, X } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -41,6 +42,9 @@ interface PublishedExam {
 }
 
 export default function ResultsPage() {
+  const searchParams = useSearchParams()
+  const examId = searchParams.get("exam")
+  
   const [registrationNumber, setRegistrationNumber] = useState("")
   const [dateOfBirth, setDateOfBirth] = useState("")
   const [loading, setLoading] = useState(false)
@@ -50,10 +54,20 @@ export default function ResultsPage() {
   const [publishedExams, setPublishedExams] = useState<PublishedExam[]>([])
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
   const [searched, setSearched] = useState(false)
+  const [selectedExam, setSelectedExam] = useState<PublishedExam | null>(null)
 
   useEffect(() => {
     fetchPublishedExams()
   }, [])
+
+  useEffect(() => {
+    if (examId && publishedExams.length > 0) {
+      const exam = publishedExams.find(e => e._id === examId)
+      setSelectedExam(exam || null)
+    } else {
+      setSelectedExam(null)
+    }
+  }, [examId, publishedExams])
 
   const fetchPublishedExams = async () => {
     try {
@@ -76,9 +90,12 @@ export default function ResultsPage() {
     setSearched(true)
 
     try {
-      const res = await fetch(
-        `/api/public/results?registrationNumber=${encodeURIComponent(registrationNumber)}&dateOfBirth=${encodeURIComponent(dateOfBirth)}`
-      )
+      let url = `/api/public/results?registrationNumber=${encodeURIComponent(registrationNumber)}&dateOfBirth=${encodeURIComponent(dateOfBirth)}`
+      if (examId) {
+        url += `&categoryId=${encodeURIComponent(examId)}`
+      }
+      
+      const res = await fetch(url)
       const data = await res.json()
 
       if (!res.ok) {
@@ -151,8 +168,21 @@ export default function ResultsPage() {
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Exam Results</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            {selectedExam ? selectedExam.name : "Exam Results"}
+          </h1>
           <p className="text-slate-400">Enter your registration number and date of birth to view your results</p>
+          {selectedExam && (
+            <div className="mt-4">
+              <Link 
+                href="/results"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-sm rounded-full transition-colors"
+              >
+                <X className="w-4 h-4" />
+                Clear filter - View all exams
+              </Link>
+            </div>
+          )}
         </div>
 
         <Card className="bg-slate-800/50 border-slate-700 mb-8">
