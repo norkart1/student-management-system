@@ -23,12 +23,21 @@ A comprehensive Next.js-based School Management System for Bright Future Academy
 ├── app/                    # Next.js App Router
 │   ├── api/               # API routes
 │   │   ├── admin/        # Admin-related endpoints
-│   │   ├── auth/         # Authentication endpoints
+│   │   ├── auth/         # Admin authentication endpoints
+│   │   ├── student-auth/ # Student authentication endpoints
+│   │   ├── teacher-auth/ # Teacher authentication endpoints
+│   │   ├── dashboard-settings/ # Dashboard customization API
+│   │   ├── students/     # Student management
+│   │   ├── teachers/     # Teacher management
 │   │   ├── books/        # Library book management
 │   │   ├── events/       # Event management
 │   │   └── upload/       # Image upload (Cloudinary)
-│   ├── dashboard/        # Main dashboard pages
-│   ├── login/            # Login page
+│   ├── dashboard/        # Admin dashboard pages
+│   ├── student-dashboard/ # Student portal
+│   ├── teacher-dashboard/ # Teacher portal
+│   ├── login/            # Admin login page
+│   ├── student-login/    # Student login page
+│   ├── teacher-login/    # Teacher login page
 │   └── profile/          # User profile pages
 ├── components/            # React components
 │   └── ui/               # Reusable UI components
@@ -36,7 +45,8 @@ A comprehensive Next.js-based School Management System for Bright Future Academy
 ├── lib/                   # Utility functions
 │   ├── db.ts            # MongoDB connection
 │   ├── auth.ts          # Authentication logic
-│   ├── jwt.ts           # JWT utilities
+│   ├── auth-middleware.ts # API authorization middleware
+│   ├── jwt.ts           # JWT utilities (admin, student, teacher tokens)
 │   └── init-db.ts       # Database initialization
 └── public/               # Static assets
 ```
@@ -118,6 +128,19 @@ The application runs automatically via the configured workflow:
 Database collections are automatically created on first run via `lib/init-db.ts`.
 
 ## Recent Changes
+- December 2, 2025: Teacher Authentication & Dashboard Customization
+  - **Teacher Login Portal**: New /teacher-login page for teacher authentication
+  - **Teacher Dashboard**: New /teacher-dashboard with student viewing and editing capabilities
+  - **Teacher Profile Management**: View profile, logout functionality
+  - **Password Security**: Teacher passwords stored with bcrypt hashing
+  - **JWT Support**: Extended JWT to support admin, student, and teacher token types
+  - **Authorization Middleware**: New validateTeacherAuth and validateTeacherOrAdminAuth functions
+  - **Student Editing**: Teachers can edit student information but cannot delete students
+  - **Dashboard Customization**: Admin settings page with widget toggles and school branding options
+  - **New APIs**: /api/teacher-auth/login, /api/teacher-auth/profile, /api/dashboard-settings
+  - **Homepage Update**: Added Teacher Login option alongside Student and Staff Login
+  - **Role-based Access**: Different permissions for admin (full access), teacher (view/edit), student (view only)
+
 - December 2, 2025: Student Self-Registration & Admission System
   - **Student Registration**: Students can create their own accounts from the home page
   - **Registration Form**: Full name, profile photo upload, email, phone number, and password

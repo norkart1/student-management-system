@@ -25,9 +25,18 @@ export interface StudentTokenPayload {
   exp?: number
 }
 
-export type TokenPayload = AdminTokenPayload | StudentTokenPayload
+export interface TeacherTokenPayload {
+  teacherId: string
+  email: string
+  fullName: string
+  role: "teacher"
+  iat?: number
+  exp?: number
+}
 
-export function signToken(payload: { adminId: string; username: string } | { studentId: string; email: string; role: "student" }): string {
+export type TokenPayload = AdminTokenPayload | StudentTokenPayload | TeacherTokenPayload
+
+export function signToken(payload: { adminId: string; username: string } | { studentId: string; email: string; role: "student" } | { teacherId: string; email: string; fullName: string; role: "teacher" }): string {
   return jwt.sign(payload, getJwtSecret(), { expiresIn: JWT_EXPIRES_IN })
 }
 

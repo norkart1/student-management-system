@@ -15,7 +15,7 @@ import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialo
 import { ReportDropdown } from "@/components/report-dropdown"
 import { Spinner } from "@/components/spinner"
 import { ImageUpload } from "@/components/image-upload"
-import { Users, User, Mail, Phone } from "lucide-react"
+import { Users, User, Mail, Phone, Lock, Eye, EyeOff } from "lucide-react"
 import { toTitleCase } from "@/lib/text-utils"
 
 export default function TeachersPage() {
@@ -32,8 +32,10 @@ export default function TeachersPage() {
     email: "",
     phone: "",
     imageUrl: "",
+    password: "",
   })
   const [teacherToEdit, setTeacherToEdit] = useState<any>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     fetchTeachers()
@@ -98,8 +100,10 @@ export default function TeachersPage() {
       email: "",
       phone: "",
       imageUrl: "",
+      password: "",
     })
     setTeacherToEdit(null)
+    setShowPassword(false)
   }
 
   const handleEditClick = (teacher: any) => {
@@ -109,6 +113,7 @@ export default function TeachersPage() {
       email: teacher.email || "",
       phone: teacher.phone || "",
       imageUrl: teacher.imageUrl || "",
+      password: "",
     })
     setDialogOpen(true)
   }
@@ -268,6 +273,33 @@ export default function TeachersPage() {
                   required
                   className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-slate-700 flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-emerald-600" />
+                  {teacherToEdit ? "Set/Update Password (optional)" : "Login Password (optional)"}
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder={teacherToEdit ? "Leave blank to keep current password" : "Set password for teacher login"}
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500">
+                  Set a password to allow this teacher to login and manage students
+                </p>
               </div>
 
               <div className="flex gap-3 justify-end pt-4">

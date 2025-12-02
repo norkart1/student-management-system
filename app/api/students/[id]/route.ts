@@ -1,5 +1,5 @@
 import { connectToDatabase } from "@/lib/db"
-import { validateAuth, unauthorizedResponse } from "@/lib/auth-middleware"
+import { validateAuth, validateTeacherOrAdminAuth, unauthorizedResponse } from "@/lib/auth-middleware"
 import { type NextRequest, NextResponse } from "next/server"
 import { ObjectId } from "mongodb"
 
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = validateAuth(request)
+  const auth = validateTeacherOrAdminAuth(request)
   if (!auth.valid) {
     return unauthorizedResponse(auth.error)
   }

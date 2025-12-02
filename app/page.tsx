@@ -194,6 +194,12 @@ export default function LandingPage() {
                   Student Login
                 </Link>
               </Button>
+              <Button asChild variant="outline" className="border-white/20 text-white hover:bg-white/10 font-medium hidden sm:flex">
+                <Link href="/teacher-login">
+                  <Users className="w-4 h-4 mr-2" />
+                  Teacher Login
+                </Link>
+              </Button>
               <Button asChild className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium shadow-lg shadow-amber-500/20">
                 <Link href="/login">
                   <Lock className="w-4 h-4 mr-2" />

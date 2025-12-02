@@ -26,8 +26,16 @@ import {
   Monitor,
   Tablet,
   Clock,
-  Trash2
+  Trash2,
+  Palette,
+  LayoutDashboard,
+  BarChart3,
+  Users,
+  GraduationCap,
+  BookOpen,
+  Save
 } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface AdminProfile {
   id: string
@@ -51,6 +59,18 @@ interface Device {
   lastActive: string
   firstLogin: string
   loginCount: number
+}
+
+interface DashboardSettings {
+  showStudentStats: boolean
+  showTeacherStats: boolean
+  showBookStats: boolean
+  showWeeklyChart: boolean
+  showActivityChart: boolean
+  primaryColor: string
+  accentColor: string
+  schoolName: string
+  schoolTagline: string
 }
 
 export default function SettingsPage() {
@@ -79,11 +99,25 @@ export default function SettingsPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  const [dashboardSettings, setDashboardSettings] = useState<DashboardSettings>({
+    showStudentStats: true,
+    showTeacherStats: true,
+    showBookStats: true,
+    showWeeklyChart: true,
+    showActivityChart: true,
+    primaryColor: "emerald",
+    accentColor: "amber",
+    schoolName: "Bright Future Academy",
+    schoolTagline: "Private School"
+  })
+  const [savingDashboard, setSavingDashboard] = useState(false)
 
   useEffect(() => {
     fetchProfile()
     fetchStatus()
     fetchDevices()
+    fetchDashboardSettings()
   }, [])
 
   const fetchProfile = async () => {
@@ -140,6 +174,56 @@ export default function SettingsPage() {
       console.error("Error fetching devices:", error)
     } finally {
       setDevicesLoading(false)
+    }
+  }
+
+  const fetchDashboardSettings = async () => {
+    try {
+      const response = await fetch("/api/dashboard-settings")
+      if (response.ok) {
+        const data = await response.json()
+        setDashboardSettings({
+          showStudentStats: data.showStudentStats ?? true,
+          showTeacherStats: data.showTeacherStats ?? true,
+          showBookStats: data.showBookStats ?? true,
+          showWeeklyChart: data.showWeeklyChart ?? true,
+          showActivityChart: data.showActivityChart ?? true,
+          primaryColor: data.primaryColor || "emerald",
+          accentColor: data.accentColor || "amber",
+          schoolName: data.schoolName || "Bright Future Academy",
+          schoolTagline: data.schoolTagline || "Private School"
+        })
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard settings:", error)
+    }
+  }
+
+  const handleDashboardSettingsSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSavingDashboard(true)
+    setMessage(null)
+    
+    try {
+      const token = getAuthToken()
+      const response = await fetch("/api/dashboard-settings", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(dashboardSettings)
+      })
+      
+      if (response.ok) {
+        setMessage({ type: "success", text: "Dashboard settings saved successfully!" })
+      } else {
+        setMessage({ type: "error", text: "Failed to save dashboard settings" })
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "An error occurred while saving settings" })
+    } finally {
+      setSavingDashboard(false)
     }
   }
 
@@ -635,6 +719,122 @@ export default function SettingsPage() {
                 <p className="text-slate-800">MongoDB Atlas</p>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-slate-200 bg-white shadow-sm rounded-2xl overflow-hidden">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-5">
+            <div className="flex items-center gap-3">
+              <LayoutDashboard className="w-5 h-5 text-emerald-600" />
+              <div>
+                <CardTitle className="text-slate-800 text-lg">Dashboard Customization</CardTitle>
+                <CardDescription className="text-slate-500">Customize your dashboard appearance and widgets</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6">
+            <form onSubmit={handleDashboardSettingsSubmit} className="space-y-6">
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="schoolName" className="text-slate-700 flex items-center gap-2">
+                      <GraduationCap className="w-4 h-4 text-emerald-600" />
+                      School Name
+                    </Label>
+                    <Input
+                      id="schoolName"
+                      value={dashboardSettings.schoolName}
+                      onChange={(e) => setDashboardSettings({ ...dashboardSettings, schoolName: e.target.value })}
+                      placeholder="Enter school name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="schoolTagline" className="text-slate-700 flex items-center gap-2">
+                      <Palette className="w-4 h-4 text-emerald-600" />
+                      School Tagline
+                    </Label>
+                    <Input
+                      id="schoolTagline"
+                      value={dashboardSettings.schoolTagline}
+                      onChange={(e) => setDashboardSettings({ ...dashboardSettings, schoolTagline: e.target.value })}
+                      placeholder="Enter tagline"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <Label className="text-slate-700 flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-emerald-600" />
+                    Dashboard Widgets
+                  </Label>
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                      <Checkbox
+                        checked={dashboardSettings.showStudentStats}
+                        onCheckedChange={(checked) => setDashboardSettings({ ...dashboardSettings, showStudentStats: !!checked })}
+                      />
+                      <div className="flex items-center gap-2">
+                        <GraduationCap className="w-4 h-4 text-slate-500" />
+                        <span className="text-sm text-slate-700">Show Student Statistics</span>
+                      </div>
+                    </label>
+                    <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                      <Checkbox
+                        checked={dashboardSettings.showTeacherStats}
+                        onCheckedChange={(checked) => setDashboardSettings({ ...dashboardSettings, showTeacherStats: !!checked })}
+                      />
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-slate-500" />
+                        <span className="text-sm text-slate-700">Show Teacher Statistics</span>
+                      </div>
+                    </label>
+                    <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                      <Checkbox
+                        checked={dashboardSettings.showBookStats}
+                        onCheckedChange={(checked) => setDashboardSettings({ ...dashboardSettings, showBookStats: !!checked })}
+                      />
+                      <div className="flex items-center gap-2">
+                        <BookOpen className="w-4 h-4 text-slate-500" />
+                        <span className="text-sm text-slate-700">Show Book Statistics</span>
+                      </div>
+                    </label>
+                    <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                      <Checkbox
+                        checked={dashboardSettings.showWeeklyChart}
+                        onCheckedChange={(checked) => setDashboardSettings({ ...dashboardSettings, showWeeklyChart: !!checked })}
+                      />
+                      <div className="flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-slate-500" />
+                        <span className="text-sm text-slate-700">Show Weekly Chart</span>
+                      </div>
+                    </label>
+                    <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                      <Checkbox
+                        checked={dashboardSettings.showActivityChart}
+                        onCheckedChange={(checked) => setDashboardSettings({ ...dashboardSettings, showActivityChart: !!checked })}
+                      />
+                      <div className="flex items-center gap-2">
+                        <Activity className="w-4 h-4 text-slate-500" />
+                        <span className="text-sm text-slate-700">Show Activity Chart</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <Button 
+                type="submit" 
+                disabled={savingDashboard}
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
+              >
+                {savingDashboard ? "Saving..." : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Dashboard Settings
+                  </>
+                )}
+              </Button>
+            </form>
           </CardContent>
         </Card>
       </div>

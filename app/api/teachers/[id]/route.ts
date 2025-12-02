@@ -2,12 +2,15 @@ import { connectToDatabase } from "@/lib/db"
 import { validateAuth, unauthorizedResponse } from "@/lib/auth-middleware"
 import { type NextRequest, NextResponse } from "next/server"
 import { ObjectId } from "mongodb"
+import bcrypt from "bcryptjs"
 
 interface TeacherUpdateInput {
   fullName?: string
   email?: string
   phone?: string
   imageUrl?: string
+  password?: string
+  canLogin?: boolean
 }
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -56,6 +59,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (data.email) updateData.email = data.email.trim().toLowerCase()
     if (data.phone) updateData.phone = data.phone.trim()
     if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl || null
+    if (data.canLogin !== undefined) updateData.canLogin = data.canLogin
+    
+    if (data.password) {
+      const salt = await bcrypt.genSalt(10)
+      updateData.password = await bcrypt.hash(data.password, salt)
+      updateData.canLogin = true
+    }
 
     const result = await db
       .collection("teachers")
