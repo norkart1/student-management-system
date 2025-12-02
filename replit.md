@@ -73,10 +73,11 @@ The application runs automatically via the configured workflow:
 2. **Teacher Management**: Manage teacher profiles and assignments
 3. **Exam Category System**: 
    - Create categories (First Sem, Second Sem) with thumbnail images
-   - Add subjects with max scores
+   - Add subjects with individual max scores AND pass marks per subject
+   - Pass marks default to 25% of max score but can be customized
    - Admin selects which students participate in each exam (no student applications)
-   - Enter per-subject scores for selected students
-   - Publish results when ready
+   - Enter per-subject scores with real-time pass/fail visual feedback
+   - Results display pass/fail status with color coding (green=pass, red=fail)
    - Simplified workflow: draft → scoring → published
 4. **Public Result Search**: Students can search results by registration number AND date of birth on home page (enhanced security)
 5. **Announcements**: Display important announcements on home page
@@ -116,6 +117,15 @@ The application runs automatically via the configured workflow:
 Database collections are automatically created on first run via `lib/init-db.ts`.
 
 ## Recent Changes
+- December 2, 2025: Individual Pass Marks per Subject
+  - **Subject Creation**: Each subject now has both max score and pass marks fields
+  - **Smart Defaults**: Pass marks auto-calculate to 25% of max score, but can be customized
+  - **Select Books Dialog**: Improved UX with expandable per-book settings and default value propagation
+  - **Manual Override Tracking**: Tracks which subjects have custom settings vs defaults
+  - **Real-time Pass/Fail Feedback**: Score entry shows green (pass) or red (fail) as you type
+  - **Results Display**: All results views show pass/fail status with color coding
+  - **Public Results**: Students see pass/fail status when searching their results
+
 - December 2, 2025: Enhanced Student Management with Birth Date
   - **Add Student Dialog**: Added date of birth input field (required)
   - **Student List**: Now displays Registration Number, Full Name, Birth Date, and Phone
