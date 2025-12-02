@@ -23,6 +23,7 @@ import {
   X
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { AdmissionApplicationForm } from "@/components/admission-application-form"
 
 interface PublishedExam {
   _id: string
@@ -255,6 +256,10 @@ export default function LandingPage() {
                       />
                     ))}
                   </div>
+                </div>
+
+                <div className="mt-6">
+                  <AdmissionApplicationForm />
                 </div>
 
                 {!loadingAnnouncements && announcements.length > 0 && (

@@ -14,7 +14,8 @@ import {
   ClipboardList,
   User,
   Settings,
-  School
+  School,
+  UserPlus
 } from "lucide-react"
 
 const expandedNavItems = [
@@ -42,6 +43,11 @@ const expandedNavItems = [
     name: "Books", 
     href: "/dashboard/books", 
     icon: BookOpen,
+  },
+  { 
+    name: "Admissions", 
+    href: "/dashboard/admissions", 
+    icon: UserPlus,
   },
 ]
 
