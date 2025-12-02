@@ -20,7 +20,7 @@ import { toTitleCase } from "@/lib/text-utils"
 
 export default function BooksPage() {
   const router = useRouter()
-  const [books, setBooks] = useState([])
+  const [books, setBooks] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -41,10 +41,21 @@ export default function BooksPage() {
   const fetchBooks = async () => {
     try {
       const response = await fetch("/api/books")
+      if (!response.ok) {
+        console.error("Failed to fetch books:", response.status)
+        setBooks([])
+        return
+      }
       const data = await response.json()
-      setBooks(data)
+      if (Array.isArray(data)) {
+        setBooks(data)
+      } else {
+        console.error("Invalid books data:", data)
+        setBooks([])
+      }
     } catch (error) {
       console.error("Error fetching books:", error)
+      setBooks([])
     } finally {
       setLoading(false)
     }
