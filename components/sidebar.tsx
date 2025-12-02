@@ -66,12 +66,12 @@ export function Sidebar() {
       >
         <div className="p-6 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/25">
-              <Layers className="w-6 h-6 text-white" strokeWidth={2} />
+            <div className="w-11 h-11 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/25">
+              <GraduationCap className="w-6 h-6 text-white" strokeWidth={2} />
             </div>
             <div>
-              <h1 className="font-bold text-slate-800 text-lg tracking-tight">School SMS</h1>
-              <p className="text-xs text-slate-500">Management System</p>
+              <h1 className="font-bold text-slate-800 text-lg tracking-tight">Bright Future</h1>
+              <p className="text-xs text-slate-500">Academy Portal</p>
             </div>
           </div>
         </div>

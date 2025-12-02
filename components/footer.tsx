@@ -12,13 +12,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">SMS</span>
+              <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">BF</span>
               </div>
-              Student Management
+              Bright Future Academy
             </h3>
             <p className="text-gray-400 text-sm mb-4">
-              Comprehensive platform for managing students, teachers, and academic resources efficiently.
+              Private school management portal for staff and administrators.
             </p>
             <div className="flex gap-4">
               <Link 
@@ -94,7 +94,7 @@ export function Footer() {
                 <div className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center">
                   <Mail className="w-4 h-4" />
                 </div>
-                <span>info@sms.edu</span>
+                <span>info@brightfuture.edu</span>
               </li>
               <li className="flex items-center gap-3 text-gray-400">
                 <div className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center">
@@ -114,7 +114,7 @@ export function Footer() {
 
         <div className="border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-400 text-sm">
-            © {currentYear} Student Management System. All rights reserved.
+            © {currentYear} Bright Future Academy. All rights reserved.
           </p>
           <p className="text-gray-400 text-sm flex items-center gap-1">
             Made with <Heart className="w-4 h-4 text-red-500 fill-red-500" /> for education

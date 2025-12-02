@@ -48,23 +48,23 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#CFF4D2] via-white to-[#7BE495]/30 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl shadow-[#329D9C]/20 overflow-hidden border border-[#CFF4D2]">
+        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl shadow-amber-500/10 overflow-hidden border border-amber-100">
           <div className="p-8 md:p-10">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#205072] to-[#329D9C] mb-4 shadow-lg shadow-[#329D9C]/30">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 mb-4 shadow-lg shadow-amber-500/30">
                 <GraduationCap className="w-10 h-10 text-white" strokeWidth={2} />
               </div>
-              <h1 className="text-2xl font-bold text-[#205072] mb-2">Welcome Back!</h1>
-              <p className="text-sm text-[#329D9C]">Login to access your student portal</p>
+              <h1 className="text-2xl font-bold text-slate-800 mb-1">Bright Future Academy</h1>
+              <p className="text-sm text-slate-500">Staff Portal Login</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[#205072]">Username</label>
+                <label className="text-sm font-medium text-slate-700">Username</label>
                 <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#329D9C]">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-amber-500">
                     <User className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <Input
@@ -74,15 +74,15 @@ export default function LoginForm() {
                     onChange={(e) => setUsername(e.target.value)}
                     disabled={loading}
                     autoComplete="username"
-                    className="pl-12 h-12 rounded-xl border-[#CFF4D2] bg-[#CFF4D2]/30 text-[#205072] placeholder:text-[#329D9C]/60 focus-visible:ring-2 focus-visible:ring-[#329D9C] focus-visible:border-transparent transition-all"
+                    className="pl-12 h-12 rounded-xl border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:border-transparent transition-all"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[#205072]">Password</label>
+                <label className="text-sm font-medium text-slate-700">Password</label>
                 <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#329D9C]">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-amber-500">
                     <Lock className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <Input
@@ -92,12 +92,12 @@ export default function LoginForm() {
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={loading}
                     autoComplete="current-password"
-                    className="pl-12 pr-12 h-12 rounded-xl border-[#CFF4D2] bg-[#CFF4D2]/30 text-[#205072] placeholder:text-[#329D9C]/60 focus-visible:ring-2 focus-visible:ring-[#329D9C] focus-visible:border-transparent transition-all"
+                    className="pl-12 pr-12 h-12 rounded-xl border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:border-transparent transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#329D9C] hover:text-[#205072] transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="w-5 h-5" strokeWidth={2} />
@@ -114,11 +114,11 @@ export default function LoginForm() {
                     id="remember"
                     checked={rememberMe}
                     onCheckedChange={(checked: boolean | "indeterminate") => setRememberMe(checked === true)}
-                    className="border-[#CFF4D2] data-[state=checked]:bg-[#329D9C] data-[state=checked]:border-[#329D9C]"
+                    className="border-slate-300 data-[state=checked]:bg-amber-500 data-[state=checked]:border-amber-500"
                   />
                   <label
                     htmlFor="remember"
-                    className="text-sm text-[#329D9C] cursor-pointer select-none"
+                    className="text-sm text-slate-600 cursor-pointer select-none"
                   >
                     Remember me
                   </label>
@@ -134,9 +134,9 @@ export default function LoginForm() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 rounded-xl text-base font-semibold shadow-lg shadow-[#329D9C]/30 hover:shadow-xl transition-all duration-300 mt-6 bg-gradient-to-r from-[#329D9C] to-[#56C596] text-white hover:opacity-90"
+                className="w-full h-12 rounded-xl text-base font-semibold shadow-lg shadow-amber-500/25 hover:shadow-xl transition-all duration-300 mt-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600"
               >
-                {loading ? "Logging in..." : "Get Started"}
+                {loading ? "Logging in..." : "Sign In"}
               </Button>
             </form>
           </div>

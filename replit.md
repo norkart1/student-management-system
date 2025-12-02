@@ -1,10 +1,11 @@
-# Student Management System
+# Bright Future Academy - School Management System
 
 ## Overview
-A comprehensive Next.js-based Student Management System for educational institutions. The platform provides a unified interface for managing students, teachers, library books, and events.
+A comprehensive Next.js-based School Management System for Bright Future Academy, a private educational institution. The platform provides a unified interface for managing students, teachers, library books, and events. This is a **private staff portal** - not for public use.
 
+**School Name**: Bright Future Academy
 **Status**: Successfully imported and running on Replit
-**Last Updated**: December 1, 2025
+**Last Updated**: December 2, 2025
 
 ## Project Architecture
 
