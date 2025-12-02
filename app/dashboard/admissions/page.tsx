@@ -12,7 +12,8 @@ import { Spinner } from "@/components/spinner"
 import { 
   GraduationCap, 
   Settings2, 
-  Users, 
+  Users,
+  User, 
   Clock, 
   CheckCircle2, 
   XCircle,
