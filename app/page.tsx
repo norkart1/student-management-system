@@ -15,7 +15,12 @@ import {
   Search,
   Award,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Bell,
+  Megaphone,
+  AlertTriangle,
+  Info,
+  X
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -27,6 +32,14 @@ interface PublishedExam {
   publishedAt: string
   subjectCount: number
   resultCount: number
+}
+
+interface Announcement {
+  _id: string
+  title: string
+  content: string
+  type: "general" | "exam" | "event" | "urgent"
+  createdAt: string
 }
 
 const schoolImages = [
@@ -52,10 +65,36 @@ const schoolImages = [
   }
 ]
 
+const getAnnouncementStyle = (type: string) => {
+  switch (type) {
+    case "urgent":
+      return { bg: "bg-red-500", text: "text-white", label: "Urgent" }
+    case "exam":
+      return { bg: "bg-amber-500", text: "text-white", label: "Exam" }
+    case "event":
+      return { bg: "bg-blue-500", text: "text-white", label: "Event" }
+    default:
+      return { bg: "bg-emerald-500", text: "text-white", label: "General" }
+  }
+}
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  })
+}
+
 export default function LandingPage() {
   const [publishedExams, setPublishedExams] = useState<PublishedExam[]>([])
   const [loadingExams, setLoadingExams] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [announcements, setAnnouncements] = useState<Announcement[]>([])
+  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true)
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % schoolImages.length)
@@ -72,7 +111,22 @@ export default function LandingPage() {
 
   useEffect(() => {
     fetchPublishedExams()
+    fetchAnnouncements()
   }, [])
+
+  const fetchAnnouncements = async () => {
+    try {
+      const res = await fetch("/api/announcements")
+      if (res.ok) {
+        const data = await res.json()
+        setAnnouncements(data.slice(0, 5))
+      }
+    } catch (err) {
+      console.error("Failed to fetch announcements:", err)
+    } finally {
+      setLoadingAnnouncements(false)
+    }
+  }
 
   const fetchPublishedExams = async () => {
     try {
@@ -144,18 +198,9 @@ export default function LandingPage() {
                   </span>
                 </h1>
                 
-                <p className="text-lg text-slate-400 max-w-lg mb-8 leading-relaxed">
+                <p className="text-lg text-slate-400 max-w-lg leading-relaxed">
                   Empowering young minds with quality education. Our comprehensive school management system helps staff manage students, teachers, exams, and more efficiently.
                 </p>
-
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button asChild size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium shadow-lg shadow-amber-500/25 px-8">
-                    <Link href="/results">
-                      View Results
-                      <ArrowRight className="w-5 h-5 ml-2" />
-                    </Link>
-                  </Button>
-                </div>
               </div>
 
               <div className="relative">
@@ -211,6 +256,42 @@ export default function LandingPage() {
                     ))}
                   </div>
                 </div>
+
+                {!loadingAnnouncements && announcements.length > 0 && (
+                  <div className="mt-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
+                    <div className="flex items-center gap-2 px-4 py-3 bg-slate-800/80 border-b border-white/10">
+                      <Bell className="w-5 h-5 text-amber-400" />
+                      <h3 className="text-lg font-semibold text-white">Notifications</h3>
+                    </div>
+                    <div className="divide-y divide-white/5 max-h-[300px] overflow-y-auto">
+                      {announcements.map((announcement) => {
+                        const style = getAnnouncementStyle(announcement.type)
+                        return (
+                          <div key={announcement._id} className="p-4 hover:bg-white/5 transition-colors">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${style.bg} ${style.text}`}>
+                                    {style.label}
+                                  </span>
+                                </div>
+                                <h4 className="text-white font-medium text-sm mb-1 line-clamp-1">
+                                  {announcement.title}
+                                </h4>
+                                <p className="text-slate-400 text-xs line-clamp-2">
+                                  {announcement.content}
+                                </p>
+                              </div>
+                              <span className="text-slate-500 text-xs whitespace-nowrap">
+                                {formatDate(announcement.createdAt)}
+                              </span>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
