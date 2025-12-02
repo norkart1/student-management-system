@@ -1,41 +1,20 @@
 import { connectToDatabase } from "@/lib/db"
+import { validateStudentAuth, unauthorizedResponse } from "@/lib/auth-middleware"
 import { type NextRequest, NextResponse } from "next/server"
 import { ObjectId } from "mongodb"
-import { verifyToken } from "@/lib/jwt"
-
-function getStudentFromToken(request: NextRequest) {
-  const authHeader = request.headers.get("authorization")
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return null
-  }
-  
-  const token = authHeader.split(" ")[1]
-  try {
-    const decoded = verifyToken(token) as any
-    if (decoded && decoded.studentId && decoded.role === "student") {
-      return decoded
-    }
-    return null
-  } catch {
-    return null
-  }
-}
 
 export async function GET(request: NextRequest) {
   try {
-    const studentAuth = getStudentFromToken(request)
+    const auth = validateStudentAuth(request)
     
-    if (!studentAuth) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      )
+    if (!auth.valid || !auth.studentId) {
+      return unauthorizedResponse(auth.error)
     }
 
     const { db } = await connectToDatabase()
     
     const student = await db.collection("studentUsers").findOne(
-      { _id: new ObjectId(studentAuth.studentId) },
+      { _id: new ObjectId(auth.studentId) },
       { projection: { password: 0 } }
     )
 
@@ -77,13 +56,10 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const studentAuth = getStudentFromToken(request)
+    const auth = validateStudentAuth(request)
     
-    if (!studentAuth) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      )
+    if (!auth.valid || !auth.studentId) {
+      return unauthorizedResponse(auth.error)
     }
 
     const { db } = await connectToDatabase()
@@ -104,7 +80,7 @@ export async function PUT(request: NextRequest) {
     allowedUpdates.updatedAt = new Date()
 
     await db.collection("studentUsers").updateOne(
-      { _id: new ObjectId(studentAuth.studentId) },
+      { _id: new ObjectId(auth.studentId) },
       { $set: allowedUpdates }
     )
 

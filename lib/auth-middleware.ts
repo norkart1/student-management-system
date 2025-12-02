@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { verifyToken, TokenPayload } from "./jwt"
+import { verifyToken, TokenPayload, AdminTokenPayload, StudentTokenPayload } from "./jwt"
 
 export interface AuthenticatedRequest extends NextRequest {
   admin?: TokenPayload
@@ -13,7 +13,15 @@ export function extractToken(request: NextRequest): string | null {
   return authHeader.replace("Bearer ", "")
 }
 
-export function validateAuth(request: NextRequest): { valid: boolean; payload?: TokenPayload; error?: string } {
+function isAdminToken(payload: TokenPayload): payload is AdminTokenPayload {
+  return 'adminId' in payload && 'username' in payload
+}
+
+function isStudentToken(payload: TokenPayload): payload is StudentTokenPayload {
+  return 'studentId' in payload && 'role' in payload && payload.role === 'student'
+}
+
+export function validateAuth(request: NextRequest): { valid: boolean; payload?: TokenPayload; adminId?: string; error?: string } {
   const token = extractToken(request)
   
   if (!token) {
@@ -26,7 +34,31 @@ export function validateAuth(request: NextRequest): { valid: boolean; payload?: 
     return { valid: false, error: "Invalid or expired token" }
   }
   
+  if (isAdminToken(payload)) {
+    return { valid: true, payload, adminId: payload.adminId }
+  }
+  
   return { valid: true, payload }
+}
+
+export function validateStudentAuth(request: NextRequest): { valid: boolean; payload?: StudentTokenPayload; studentId?: string; error?: string } {
+  const token = extractToken(request)
+  
+  if (!token) {
+    return { valid: false, error: "No authorization token provided" }
+  }
+  
+  const payload = verifyToken(token)
+  
+  if (!payload) {
+    return { valid: false, error: "Invalid or expired token" }
+  }
+  
+  if (!isStudentToken(payload)) {
+    return { valid: false, error: "Not a student token" }
+  }
+  
+  return { valid: true, payload, studentId: payload.studentId }
 }
 
 export function unauthorizedResponse(message: string = "Unauthorized") {

@@ -118,6 +118,19 @@ The application runs automatically via the configured workflow:
 Database collections are automatically created on first run via `lib/init-db.ts`.
 
 ## Recent Changes
+- December 2, 2025: Student Self-Registration & Admission System
+  - **Student Registration**: Students can create their own accounts from the home page
+  - **Registration Form**: Full name, profile photo upload, email, phone number, and password
+  - **Student Login**: Separate student login portal at /student-login
+  - **Student Dashboard**: Shows admission status, class info, books, and announcements
+  - **Admission Banner**: Prominent notification banner on home page linking to registration
+  - **Admin Approval**: New "Student Accounts" page in admin dashboard for approving student registrations
+  - **Class Assignment**: Admins assign approved students to specific classes (1-10)
+  - **Status Tracking**: Pending → Approved → Enrolled workflow
+  - **New APIs**: /api/student-auth/register, /api/student-auth/login, /api/student-auth/profile, /api/student-users
+  - **JWT Support**: Extended JWT to support both admin and student token types
+  - **New Collections**: studentUsers (for student accounts with hashed passwords)
+
 - December 2, 2025: Classes Registration System
   - **Class Management**: Create classes (e.g., "9th Class", "10th Class - A") with sections and academic year
   - **Student Assignment**: Assign multiple students to a class with search and multi-select
