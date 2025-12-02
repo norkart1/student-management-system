@@ -13,24 +13,30 @@ import {
   X,
   ClipboardList,
   User,
-  Settings
+  Settings,
+  School
 } from "lucide-react"
 
 const expandedNavItems = [
+  { 
+    name: "Classes", 
+    href: "/dashboard/classes", 
+    icon: School,
+  },
   { 
     name: "Students", 
     href: "/dashboard/students", 
     icon: GraduationCap,
   },
   { 
-    name: "Exams", 
-    href: "/dashboard/exams", 
-    icon: ClipboardList,
-  },
-  { 
     name: "Teachers", 
     href: "/dashboard/teachers", 
     icon: Users,
+  },
+  { 
+    name: "Exams", 
+    href: "/dashboard/exams", 
+    icon: ClipboardList,
   },
   { 
     name: "Books", 
@@ -85,7 +91,7 @@ export function BottomNav() {
           )}
         >
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-3">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {expandedNavItems.map((item) => {
                 const isActive = pathname === item.href
                 const Icon = item.icon

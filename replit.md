@@ -106,6 +106,7 @@ The application runs automatically via the configured workflow:
 ### MongoDB Collections
 - `students` - Student records (indexed on email, registrationNumber, dateOfBirth)
 - `teachers` - Teacher records (indexed on email)
+- `classes` - Class registrations with assigned students and teachers
 - `books` - Library book inventory (indexed on ISBN)
 - `examCategories` - Exam categories with status workflow (draft/scoring/published) and selectedStudents array
 - `examSubjects` - Subjects within categories with maxScore
@@ -117,11 +118,20 @@ The application runs automatically via the configured workflow:
 Database collections are automatically created on first run via `lib/init-db.ts`.
 
 ## Recent Changes
+- December 2, 2025: Classes Registration System
+  - **Class Management**: Create classes (e.g., "9th Class", "10th Class - A") with sections and academic year
+  - **Student Assignment**: Assign multiple students to a class with search and multi-select
+  - **Teacher Assignment**: Assign multiple teachers to a class
+  - **Dashboard Page**: Grid view of all classes with student/teacher counts
+  - **New APIs**: /api/classes (CRUD operations with aggregation for member counts)
+  - **UI Components**: AddClassDialog, AssignMembersDialog with search and checkbox selection
+  - **Bottom Navigation**: Added Classes to the expandable menu
+
 - December 2, 2025: Redesigned Mobile Bottom Navigation
   - **New Layout**: Simplified 3-section design (Home | Plus Menu | Profile & Settings)
-  - **Center Plus Button**: Floating button that expands to show Students, Exams, Teachers, Books
+  - **Center Plus Button**: Floating button that expands to show Classes, Students, Teachers, Exams, Books
   - **Quick Access**: Home on left, Profile and Settings on right for faster navigation
-  - **Expandable Menu**: 2x2 grid popup with smooth animations
+  - **Expandable Menu**: 3-column grid popup with smooth animations
   - **New Profile Page**: Added dedicated profile page at /dashboard/profile
 
 - December 2, 2025: Individual Pass Marks per Subject
