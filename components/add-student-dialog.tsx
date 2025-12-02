@@ -133,6 +133,22 @@ export function AddStudentDialog({ open, onOpenChange, onSubmit, initialData }: 
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="dateOfBirth" className="text-slate-700 flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-emerald-600" />
+              Date of Birth
+            </Label>
+            <Input
+              id="dateOfBirth"
+              type="date"
+              placeholder="Select date of birth"
+              value={formData.dateOfBirth}
+              onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+              required
+              className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+            />
+          </div>
+
           <div className="flex gap-3 justify-end pt-4">
             <Button 
               type="button" 

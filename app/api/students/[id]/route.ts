@@ -7,6 +7,7 @@ interface StudentUpdateInput {
   fullName?: string
   email?: string
   phone?: string
+  dateOfBirth?: string
   imageUrl?: string
 }
 
@@ -55,6 +56,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (data.fullName) updateData.fullName = data.fullName.trim()
     if (data.email) updateData.email = data.email.trim().toLowerCase()
     if (data.phone) updateData.phone = data.phone.trim()
+    if (data.dateOfBirth) updateData.dateOfBirth = data.dateOfBirth
     if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl || null
 
     const result = await db

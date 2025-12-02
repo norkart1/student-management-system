@@ -121,8 +121,9 @@ export default function StudentsPage() {
 
   const columns = [
     { key: "imageUrl", label: "Photo", type: "image" as const },
+    { key: "registrationNumber", label: "Reg No." },
     { key: "fullName", label: "Full Name" },
-    { key: "email", label: "Email" },
+    { key: "dateOfBirth", label: "Birth Date" },
     { key: "phone", label: "Phone" },
   ]
 

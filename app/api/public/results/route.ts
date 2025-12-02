@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
     const { db } = await connectToDatabase()
     const { searchParams } = new URL(request.url)
     const registrationNumber = searchParams.get("registrationNumber")
+    const dateOfBirth = searchParams.get("dateOfBirth")
     const categoryId = searchParams.get("categoryId")
 
     if (!registrationNumber && !categoryId) {
@@ -39,13 +40,20 @@ export async function GET(request: NextRequest) {
     }
 
     if (registrationNumber) {
+      if (!dateOfBirth) {
+        return NextResponse.json({ 
+          error: "Date of birth is required" 
+        }, { status: 400 })
+      }
+
       const student = await db.collection("students").findOne({ 
-        registrationNumber: registrationNumber.toUpperCase() 
+        registrationNumber: registrationNumber.toUpperCase(),
+        dateOfBirth: dateOfBirth
       })
 
       if (!student) {
         return NextResponse.json({ 
-          error: "No student found with this registration number" 
+          error: "No student found with this registration number and date of birth" 
         }, { status: 404 })
       }
 
@@ -113,6 +121,7 @@ export async function GET(request: NextRequest) {
           return {
             categoryId: result.categoryId,
             categoryName: category?.name || "Unknown",
+            subjectId: result.subjectId,
             subjectName: subject?.name || "Unknown",
             maxScore: subject?.maxScore || 0,
             score: result.score,
@@ -133,6 +142,7 @@ export async function GET(request: NextRequest) {
           }
         }
         acc[result.categoryId].subjects.push({
+          subjectId: result.subjectId,
           subjectName: result.subjectName,
           maxScore: result.maxScore,
           score: result.score,

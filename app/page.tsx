@@ -80,6 +80,7 @@ export default function LandingPage() {
   const [publishedExams, setPublishedExams] = useState<PublishedExam[]>([])
   
   const [searchRegNo, setSearchRegNo] = useState("")
+  const [searchDateOfBirth, setSearchDateOfBirth] = useState("")
   const [searching, setSearching] = useState(false)
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null)
   const [searchError, setSearchError] = useState("")
@@ -120,14 +121,14 @@ export default function LandingPage() {
   }, [])
 
   const handleSearch = async () => {
-    if (!searchRegNo.trim()) return
+    if (!searchRegNo.trim() || !searchDateOfBirth) return
     
     setSearching(true)
     setSearchError("")
     setSearchResult(null)
     
     try {
-      const response = await fetch(`/api/public/results?registrationNumber=${encodeURIComponent(searchRegNo.trim())}`)
+      const response = await fetch(`/api/public/results?registrationNumber=${encodeURIComponent(searchRegNo.trim())}&dateOfBirth=${encodeURIComponent(searchDateOfBirth)}`)
       const data = await response.json()
       
       if (!response.ok) {
@@ -250,26 +251,37 @@ export default function LandingPage() {
                 Search Your Results
               </h2>
               <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-                Enter your registration number to view your exam results
+                Enter your registration number and date of birth to view your exam results
               </p>
             </div>
 
-            <div className="max-w-xl mx-auto">
+            <div className="max-w-2xl mx-auto">
               <div className="bg-gray-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <div className="relative flex-1">
                     <Hash className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
                     <Input
-                      placeholder="Enter Registration Number"
+                      placeholder="Registration Number"
                       value={searchRegNo}
                       onChange={(e) => setSearchRegNo(e.target.value.toUpperCase())}
                       onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                       className="pl-12 h-14 bg-gray-900/50 border-white/10 text-white placeholder:text-gray-500 focus:border-emerald-500 focus:ring-emerald-500/20 text-lg"
                     />
                   </div>
+                  <div className="relative flex-1">
+                    <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                    <Input
+                      type="date"
+                      placeholder="Date of Birth"
+                      value={searchDateOfBirth}
+                      onChange={(e) => setSearchDateOfBirth(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      className="pl-12 h-14 bg-gray-900/50 border-white/10 text-white placeholder:text-gray-500 focus:border-emerald-500 focus:ring-emerald-500/20 text-lg [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
+                    />
+                  </div>
                   <Button
                     onClick={handleSearch}
-                    disabled={searching || !searchRegNo.trim()}
+                    disabled={searching || !searchRegNo.trim() || !searchDateOfBirth}
                     className="h-14 px-8 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-medium"
                   >
                     {searching ? (
