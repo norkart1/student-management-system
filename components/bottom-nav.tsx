@@ -97,10 +97,13 @@ export function BottomNav() {
           )}
         >
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-3">
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-1">
               {expandedNavItems.map((item) => {
                 const isActive = pathname === item.href
                 const Icon = item.icon
+                const shortName = item.name === "Admissions" ? "Admit" : 
+                                  item.name === "Students" ? "Student" : 
+                                  item.name === "Teachers" ? "Teacher" : item.name
 
                 return (
                   <Link
@@ -108,7 +111,7 @@ export function BottomNav() {
                     href={item.href}
                     prefetch={true}
                     className={cn(
-                      "flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 w-[72px]",
+                      "flex flex-col items-center justify-center gap-1 py-2.5 px-1 rounded-xl transition-all duration-200 min-w-[60px] max-w-[70px]",
                       isActive 
                         ? "bg-gradient-to-br from-emerald-500 to-teal-500 shadow-md" 
                         : "hover:bg-slate-100 active:scale-95 bg-slate-50"
@@ -122,10 +125,10 @@ export function BottomNav() {
                       strokeWidth={isActive ? 2.5 : 2}
                     />
                     <span className={cn(
-                      "text-[10px] font-medium transition-all duration-200 truncate w-full text-center",
+                      "text-[9px] font-medium transition-all duration-200 text-center leading-tight",
                       isActive ? "text-white" : "text-slate-600"
                     )}>
-                      {item.name}
+                      {shortName}
                     </span>
                   </Link>
                 )

@@ -308,20 +308,20 @@ export default function AdmissionsPage() {
                 <CardDescription className="text-slate-500">Configure admission open/close status</CardDescription>
               </CardHeader>
               <CardContent className="p-6 space-y-6">
-                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
-                  <div>
+                <div className="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-xl">
+                  <div className="flex-1 min-w-0">
                     <p className="font-medium text-slate-800">Admission Status</p>
                     <p className="text-sm text-slate-500">Enable or disable new admissions</p>
                   </div>
                   <button
                     onClick={() => setSettings({ ...settings, isOpen: !settings.isOpen })}
-                    className={`relative w-14 h-7 rounded-full transition-colors ${
+                    className={`relative flex-shrink-0 w-12 h-6 rounded-full transition-colors ${
                       settings.isOpen ? "bg-emerald-500" : "bg-slate-300"
                     }`}
                   >
                     <span 
-                      className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                        settings.isOpen ? "translate-x-8" : "translate-x-1"
+                      className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                        settings.isOpen ? "translate-x-6" : "translate-x-0.5"
                       }`} 
                     />
                   </button>
