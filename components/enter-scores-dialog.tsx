@@ -34,6 +34,7 @@ interface EnterScoresDialogProps {
   approvedStudents: ApprovedStudent[]
   existingResults: Map<string, ExistingResult[]>
   onSaveScores: (studentId: string, scores: Array<{ subjectId: string; score: number }>) => Promise<void>
+  onRefresh?: () => Promise<void>
   onPublish?: () => Promise<void>
 }
 
@@ -46,6 +47,7 @@ export function EnterScoresDialog({
   approvedStudents,
   existingResults,
   onSaveScores,
+  onRefresh,
   onPublish,
 }: EnterScoresDialogProps) {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null)
@@ -53,6 +55,7 @@ export function EnterScoresDialog({
   const [saving, setSaving] = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     if (open) {
@@ -71,6 +74,7 @@ export function EnterScoresDialog({
       setAllScores(initialScores)
       setSelectedSubject(subjects.length > 0 ? subjects[0] : null)
       setSearchTerm("")
+      setSaved(false)
     }
   }, [open, subjects, approvedStudents, existingResults])
 
@@ -82,6 +86,7 @@ export function EnterScoresDialog({
         [subjectId]: value
       }
     }))
+    setSaved(false)
   }
 
   const handleSaveAll = async () => {
@@ -100,6 +105,10 @@ export function EnterScoresDialog({
           await onSaveScores(student.studentId, scoresArray)
         }
       }
+      if (onRefresh) {
+        await onRefresh()
+      }
+      setSaved(true)
     } catch (error) {
       console.error("Error saving scores:", error)
     } finally {
@@ -160,7 +169,29 @@ export function EnterScoresDialog({
     }
   }
 
+  const getServerSavedProgress = () => {
+    let totalRequired = subjects.length * approvedStudents.length
+    let totalSaved = 0
+    
+    approvedStudents.forEach(student => {
+      const studentResults = existingResults.get(student.studentId) || []
+      subjects.forEach(subject => {
+        const hasResult = studentResults.some(r => r.subjectId === subject._id)
+        if (hasResult) {
+          totalSaved++
+        }
+      })
+    })
+    
+    return {
+      saved: totalSaved,
+      total: totalRequired,
+      allSaved: totalSaved === totalRequired && totalRequired > 0
+    }
+  }
+
   const progress = getAllProgress()
+  const serverProgress = getServerSavedProgress()
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -313,16 +344,22 @@ export function EnterScoresDialog({
             <Button 
               onClick={handleSaveAll}
               disabled={saving}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md"
+              className={`${
+                saved 
+                  ? "bg-emerald-600 hover:bg-emerald-600" 
+                  : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
+              } text-white shadow-md`}
             >
               {saving ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving All...</>
+              ) : saved ? (
+                <><CheckCircle className="w-4 h-4 mr-2" /> All Scores Saved</>
               ) : (
                 <><Save className="w-4 h-4 mr-2" /> Save All Scores</>
               )}
             </Button>
             
-            {onPublish && progress.complete && (
+            {onPublish && serverProgress.allSaved && (
               <Button 
                 onClick={handlePublish}
                 disabled={publishing}

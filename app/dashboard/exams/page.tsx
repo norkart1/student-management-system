@@ -762,6 +762,11 @@ export default function ExamsPage() {
           approvedStudents={approvedStudents}
           existingResults={existingResults}
           onSaveScores={handleSaveScores}
+          onRefresh={async () => {
+            if (selectedCategory) {
+              await fetchResultsForCategory(selectedCategory._id)
+            }
+          }}
           onPublish={selectedCategory?.status === "scoring" ? async () => {
             if (selectedCategory) {
               await handleUpdateStatus(selectedCategory, "published")
