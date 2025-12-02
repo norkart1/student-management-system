@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AddCategoryDialog } from "@/components/add-category-dialog"
-import { AddSubjectDialog } from "@/components/add-subject-dialog"
+import { SelectBooksDialog } from "@/components/select-books-dialog"
 import { EnterScoresDialog } from "@/components/enter-scores-dialog"
 import { ViewCategoryResultsDialog } from "@/components/view-category-results-dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
@@ -88,7 +88,9 @@ export default function ExamsPage() {
   
   const [selectedCategory, setSelectedCategory] = useState<ExamCategory | null>(null)
   const [subjects, setSubjects] = useState<Subject[]>([])
-  const [addSubjectDialogOpen, setAddSubjectDialogOpen] = useState(false)
+  const [selectBooksDialogOpen, setSelectBooksDialogOpen] = useState(false)
+  const [currentCategoryBookIds, setCurrentCategoryBookIds] = useState<string[]>([])
+  const [currentMaxScore, setCurrentMaxScore] = useState(100)
   
   
   const [scoresDialogOpen, setScoresDialogOpen] = useState(false)
@@ -194,7 +196,7 @@ export default function ExamsPage() {
     }
   }
 
-  const handleAddSubject = async (formData: any) => {
+  const handleSaveBooks = async (bookIds: string[], maxScore: number) => {
     if (!selectedCategory) return
     const token = getAuthToken()
     try {
@@ -204,35 +206,28 @@ export default function ExamsPage() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ bookIds, maxScore }),
       })
       if (response.ok) {
         await fetchCategoryDetails(selectedCategory._id)
         fetchCategories()
+        toast.success("Books saved as subjects!")
       }
     } catch (error) {
-      console.error("Error saving subject:", error)
+      console.error("Error saving books:", error)
+      toast.error("Failed to save books")
     }
   }
 
-  const handleDeleteSubject = async (subjectId: string) => {
-    if (!selectedCategory) return
-    const token = getAuthToken()
-    try {
-      const response = await fetch(
-        `/api/exam-categories/${selectedCategory._id}/subjects?subjectId=${subjectId}`, 
-        {
-          method: "DELETE",
-          headers: { "Authorization": `Bearer ${token}` },
-        }
-      )
-      if (response.ok) {
-        await fetchCategoryDetails(selectedCategory._id)
-        fetchCategories()
-      }
-    } catch (error) {
-      console.error("Error deleting subject:", error)
-    }
+  const openSelectBooksDialog = async (category: ExamCategory) => {
+    setSelectedCategory(category)
+    const categoryData = await fetchCategoryDetails(category._id)
+    const existingSubjects = categoryData?.subjects || []
+    const bookIds = existingSubjects.map((s: any) => s.bookId).filter(Boolean)
+    const maxScore = existingSubjects[0]?.maxScore || 100
+    setCurrentCategoryBookIds(bookIds)
+    setCurrentMaxScore(maxScore)
+    setSelectBooksDialogOpen(true)
   }
 
   const handleUpdateStatus = async (category: ExamCategory, newStatus: string) => {
@@ -603,15 +598,11 @@ export default function ExamsPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={async () => {
-                                  setSelectedCategory(category)
-                                  await fetchCategoryDetails(category._id)
-                                  setAddSubjectDialogOpen(true)
-                                }}
+                                onClick={() => openSelectBooksDialog(category)}
                                 className="gap-1.5 text-xs border-slate-200"
                               >
                                 <BookOpen className="w-3.5 h-3.5" />
-                                Subjects
+                                Books ({category.subjectCount})
                               </Button>
 
                               <Button
@@ -694,50 +685,6 @@ export default function ExamsPage() {
           </CardContent>
         </Card>
 
-        {selectedCategory && subjects.length > 0 && (
-          <Card className="border border-slate-200 bg-white shadow-sm rounded-2xl">
-            <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-slate-800 text-base">Subjects in "{selectedCategory.name}"</CardTitle>
-                </div>
-                <Button
-                  size="sm"
-                  onClick={() => setAddSubjectDialogOpen(true)}
-                  className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Subject
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {subjects.map((subject) => (
-                  <div key={subject._id} className="flex items-center justify-between p-3 border border-slate-200 rounded-xl">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-emerald-100 rounded-lg flex items-center justify-center">
-                        <BookOpen className="w-4 h-4 text-emerald-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-slate-700">{subject.name}</p>
-                        <p className="text-xs text-slate-500">Max: {subject.maxScore}</p>
-                      </div>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={() => handleDeleteSubject(subject._id)}
-                      className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600 rounded-lg"
-                    >
-                      <Trash2 className="w-4 h-4 text-slate-400" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         <AddCategoryDialog 
           open={addCategoryDialogOpen} 
@@ -746,11 +693,14 @@ export default function ExamsPage() {
           initialData={categoryToEdit}
         />
 
-        <AddSubjectDialog
-          open={addSubjectDialogOpen}
-          onOpenChange={setAddSubjectDialogOpen}
-          onSubmit={handleAddSubject}
-          categoryName={selectedCategory?.name}
+        <SelectBooksDialog
+          open={selectBooksDialogOpen}
+          onOpenChange={setSelectBooksDialogOpen}
+          categoryId={selectedCategory?._id || ""}
+          categoryName={selectedCategory?.name || ""}
+          selectedBookIds={currentCategoryBookIds}
+          maxScore={currentMaxScore}
+          onSave={handleSaveBooks}
         />
 
         <EnterScoresDialog

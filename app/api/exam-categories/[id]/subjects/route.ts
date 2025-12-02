@@ -4,9 +4,10 @@ import { type NextRequest, NextResponse } from "next/server"
 import { ObjectId } from "mongodb"
 
 interface SubjectInput {
-  name: string
-  maxScore: number
+  name?: string
+  maxScore?: number
   order?: number
+  bookIds?: string[]
 }
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -42,13 +43,47 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const { db } = await connectToDatabase()
     const data: SubjectInput = await request.json()
 
-    if (!data.name || !data.maxScore) {
-      return NextResponse.json({ error: "Subject name and max score are required" }, { status: 400 })
-    }
-
     const category = await db.collection("examCategories").findOne({ _id: new ObjectId(id) })
     if (!category) {
       return NextResponse.json({ error: "Category not found" }, { status: 404 })
+    }
+
+    if (data.bookIds && Array.isArray(data.bookIds)) {
+      await db.collection("examSubjects").deleteMany({ categoryId: id })
+      await db.collection("examResults").deleteMany({ categoryId: id })
+
+      if (data.bookIds.length === 0) {
+        return NextResponse.json({ success: true, subjects: [] })
+      }
+
+      const bookObjectIds = data.bookIds
+        .filter(bookId => ObjectId.isValid(bookId))
+        .map(bookId => new ObjectId(bookId))
+      
+      const books = await db.collection("books")
+        .find({ _id: { $in: bookObjectIds } })
+        .toArray()
+
+      const maxScore = data.maxScore || 100
+      const subjects = books.map((book, index) => ({
+        categoryId: id,
+        bookId: book._id.toString(),
+        name: book.title,
+        maxScore: maxScore,
+        order: index + 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }))
+
+      if (subjects.length > 0) {
+        await db.collection("examSubjects").insertMany(subjects)
+      }
+
+      return NextResponse.json({ success: true, subjects }, { status: 201 })
+    }
+
+    if (!data.name || !data.maxScore) {
+      return NextResponse.json({ error: "Subject name and max score are required" }, { status: 400 })
     }
 
     const subjectCount = await db.collection("examSubjects").countDocuments({ categoryId: id })
