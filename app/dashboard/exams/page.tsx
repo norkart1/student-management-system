@@ -13,6 +13,7 @@ import { ViewCategoryResultsDialog } from "@/components/view-category-results-di
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
 import { SelectStudentsDialog } from "@/components/select-students-dialog"
 import { Spinner } from "@/components/spinner"
+import { toast } from "sonner"
 import { 
   FolderOpen, 
   Plus, 
@@ -245,11 +246,20 @@ export default function ExamsPage() {
         },
         body: JSON.stringify({ status: newStatus }),
       })
+      const data = await response.json()
       if (response.ok) {
+        if (newStatus === "published") {
+          toast.success("Results published successfully!")
+        } else if (newStatus === "scoring") {
+          toast.success("Scoring started!")
+        }
         fetchCategories()
+      } else {
+        toast.error(data.error || "Failed to update status")
       }
     } catch (error) {
       console.error("Error updating status:", error)
+      toast.error("Failed to update status. Please try again.")
     }
   }
 
