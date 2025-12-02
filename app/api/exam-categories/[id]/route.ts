@@ -160,6 +160,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       updateData.status = data.status
       if (data.status === "published") {
         updateData.publishedAt = new Date()
+        
+        await db.collection("announcements").insertOne({
+          title: `${category.name} - Results Announced`,
+          content: `The results for ${category.name} have been published. Students can now check their results on the home page using their registration number and date of birth.`,
+          type: "exam",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
       }
     }
 
