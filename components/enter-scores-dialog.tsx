@@ -195,20 +195,20 @@ export function EnterScoresDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="text-slate-800 text-xl font-bold">
+      <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl w-[95vw] max-w-4xl max-h-[85vh] overflow-hidden flex flex-col p-4 sm:p-6">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-slate-800 text-lg sm:text-xl font-bold">
             Enter Exam Scores
           </DialogTitle>
-          <DialogDescription className="text-slate-500">
+          <DialogDescription className="text-slate-500 text-sm">
             Enter scores for "{categoryName}" - Select a subject, then enter scores for all students
           </DialogDescription>
         </DialogHeader>
 
         <div className="bg-slate-50 rounded-xl p-3 mb-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-600">Overall Progress</span>
-            <span className="text-sm font-medium text-emerald-600">
+            <span className="text-xs sm:text-sm text-slate-600">Overall Progress</span>
+            <span className="text-xs sm:text-sm font-medium text-emerald-600">
               {progress.entered} / {progress.total} scores ({progress.percentage}%)
             </span>
           </div>
@@ -220,41 +220,43 @@ export function EnterScoresDialog({
           </div>
         </div>
 
-        <div className="flex-1 overflow-hidden flex gap-4">
-          <div className="w-1/3 border-r border-slate-200 pr-4 flex flex-col">
-            <p className="text-sm font-medium text-slate-700 mb-3">Subjects</p>
-            <div className="flex-1 overflow-y-auto space-y-2">
+        <div className="flex-1 overflow-hidden flex flex-col md:flex-row gap-3 md:gap-4 min-h-0">
+          <div className="md:w-1/3 md:border-r border-slate-200 md:pr-4 flex flex-col shrink-0">
+            <p className="text-sm font-medium text-slate-700 mb-2">Subjects</p>
+            <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible md:overflow-y-auto pb-2 md:pb-0 md:flex-1">
               {subjects.map((subject) => {
                 const subjectProgress = getSubjectProgress(subject._id)
                 return (
                   <div
                     key={subject._id}
                     onClick={() => setSelectedSubject(subject)}
-                    className={`p-3 rounded-xl cursor-pointer border transition-all ${
+                    className={`p-2 sm:p-3 rounded-xl cursor-pointer border transition-all shrink-0 ${
                       selectedSubject?._id === subject._id
                         ? "border-emerald-500 bg-emerald-50"
                         : "border-slate-200 hover:bg-slate-50"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 ${
                         subjectProgress.complete ? "bg-emerald-100" : "bg-slate-100"
                       }`}>
-                        <GraduationCap className={`w-5 h-5 ${
+                        <GraduationCap className={`w-4 h-4 sm:w-5 sm:h-5 ${
                           subjectProgress.complete ? "text-emerald-600" : "text-slate-400"
                         }`} />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-slate-800 text-sm truncate">{subject.name}</p>
+                      <div className="min-w-0">
+                        <p className="font-medium text-slate-800 text-xs sm:text-sm truncate max-w-[80px] sm:max-w-none">{subject.name}</p>
                         <p className="text-xs text-slate-500">Max: {subject.maxScore}</p>
                       </div>
-                      {subjectProgress.complete ? (
-                        <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                      ) : (
-                        <span className="text-xs text-slate-400 flex-shrink-0">
-                          {subjectProgress.entered}/{subjectProgress.total}
-                        </span>
-                      )}
+                      <div className="shrink-0 ml-auto hidden sm:block">
+                        {subjectProgress.complete ? (
+                          <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
+                        ) : (
+                          <span className="text-xs text-slate-400">
+                            {subjectProgress.entered}/{subjectProgress.total}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )
@@ -265,17 +267,17 @@ export function EnterScoresDialog({
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col overflow-hidden min-h-0">
             {selectedSubject ? (
               <>
-                <div className="bg-emerald-50 rounded-xl p-3 mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-                      <GraduationCap className="w-5 h-5 text-emerald-600" />
+                <div className="bg-emerald-50 rounded-xl p-2 sm:p-3 mb-2 sm:mb-3 shrink-0">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white flex items-center justify-center shrink-0">
+                      <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
                     </div>
-                    <div>
-                      <p className="font-medium text-emerald-800">{selectedSubject.name}</p>
-                      <p className="text-sm text-emerald-600">Max Score: {selectedSubject.maxScore}</p>
+                    <div className="min-w-0">
+                      <p className="font-medium text-emerald-800 text-sm sm:text-base truncate">{selectedSubject.name}</p>
+                      <p className="text-xs sm:text-sm text-emerald-600">Max Score: {selectedSubject.maxScore}</p>
                     </div>
                   </div>
                 </div>
@@ -284,24 +286,24 @@ export function EnterScoresDialog({
                   placeholder="Search students..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="mb-3 border-slate-200 focus:border-emerald-500"
+                  className="mb-2 sm:mb-3 border-slate-200 focus:border-emerald-500 text-sm shrink-0"
                 />
 
-                <div className="flex-1 overflow-y-auto space-y-2">
+                <div className="flex-1 overflow-y-auto space-y-2 min-h-0">
                   {filteredStudents.map((student) => (
-                    <div key={student._id} className="flex items-center gap-3 p-3 border border-slate-200 rounded-xl">
-                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <div key={student._id} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 border border-slate-200 rounded-xl">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden shrink-0">
                         {student.studentImage ? (
                           <img src={student.studentImage} alt="" className="w-full h-full object-cover" />
                         ) : (
-                          <User className="w-5 h-5 text-slate-400" />
+                          <User className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-slate-800 text-sm truncate">{student.studentName}</p>
-                        <p className="text-xs text-slate-500">{student.registrationNumber}</p>
+                        <p className="font-medium text-slate-800 text-xs sm:text-sm truncate">{student.studentName}</p>
+                        <p className="text-xs text-slate-500 truncate">{student.registrationNumber}</p>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                         <Input
                           type="number"
                           min="0"
@@ -309,9 +311,9 @@ export function EnterScoresDialog({
                           placeholder="0"
                           value={allScores[student.studentId]?.[selectedSubject._id] || ""}
                           onChange={(e) => handleScoreChange(student.studentId, selectedSubject._id, e.target.value)}
-                          className="w-20 text-center border-slate-200 focus:border-emerald-500"
+                          className="w-14 sm:w-20 text-center border-slate-200 focus:border-emerald-500 text-sm px-1 sm:px-2"
                         />
-                        <span className="text-slate-500 text-sm w-12">/ {selectedSubject.maxScore}</span>
+                        <span className="text-slate-500 text-xs sm:text-sm whitespace-nowrap">/ {selectedSubject.maxScore}</span>
                       </div>
                     </div>
                   ))}
@@ -323,24 +325,24 @@ export function EnterScoresDialog({
             ) : (
               <div className="flex-1 flex items-center justify-center text-slate-400">
                 <div className="text-center">
-                  <GraduationCap className="w-12 h-12 mx-auto mb-2" />
-                  <p>Select a subject to enter scores</p>
+                  <GraduationCap className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2" />
+                  <p className="text-sm">Select a subject to enter scores</p>
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-4 border-t border-slate-100 gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between pt-3 sm:pt-4 border-t border-slate-100 gap-2 sm:gap-3 shrink-0">
           <Button 
             variant="outline" 
             onClick={() => onOpenChange(false)}
-            className="border-slate-200 text-slate-600 hover:bg-slate-50"
+            className="border-slate-200 text-slate-600 hover:bg-slate-50 order-2 sm:order-1"
           >
             Close
           </Button>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 order-1 sm:order-2">
             <Button 
               onClick={handleSaveAll}
               disabled={saving}
@@ -348,12 +350,12 @@ export function EnterScoresDialog({
                 saved 
                   ? "bg-emerald-600 hover:bg-emerald-600" 
                   : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-              } text-white shadow-md`}
+              } text-white shadow-md text-sm sm:text-base`}
             >
               {saving ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving All...</>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
               ) : saved ? (
-                <><CheckCircle className="w-4 h-4 mr-2" /> All Scores Saved</>
+                <><CheckCircle className="w-4 h-4 mr-2" /> Saved</>
               ) : (
                 <><Save className="w-4 h-4 mr-2" /> Save All Scores</>
               )}
@@ -363,7 +365,7 @@ export function EnterScoresDialog({
               <Button 
                 onClick={handlePublish}
                 disabled={publishing}
-                className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-md"
+                className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-md text-sm sm:text-base"
               >
                 {publishing ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Publishing...</>
