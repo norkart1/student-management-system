@@ -77,7 +77,7 @@ The application runs automatically via the configured workflow:
    - Enter per-subject scores for selected students
    - Publish results when ready
    - Simplified workflow: draft → scoring → published
-4. **Public Result Search**: Students can search results by registration number on home page
+4. **Public Result Search**: Students can search results by registration number AND date of birth on home page (enhanced security)
 5. **Announcements**: Display important announcements on home page
 6. **Library System**: Track books, loans, and returns
 7. **Event Calendar**: Schedule and manage school events
@@ -102,7 +102,7 @@ The application runs automatically via the configured workflow:
 ## Database
 
 ### MongoDB Collections
-- `students` - Student records (indexed on email, registrationNumber)
+- `students` - Student records (indexed on email, registrationNumber, dateOfBirth)
 - `teachers` - Teacher records (indexed on email)
 - `books` - Library book inventory (indexed on ISBN)
 - `examCategories` - Exam categories with status workflow (draft/scoring/published) and selectedStudents array
@@ -115,6 +115,13 @@ The application runs automatically via the configured workflow:
 Database collections are automatically created on first run via `lib/init-db.ts`.
 
 ## Recent Changes
+- December 2, 2025: Enhanced Student Management with Birth Date
+  - **Add Student Dialog**: Added date of birth input field (required)
+  - **Student List**: Now displays Registration Number, Full Name, Birth Date, and Phone
+  - **Student API**: PUT route now supports updating dateOfBirth field
+  - **Public Results Search**: Now requires both registration number AND date of birth for enhanced security
+  - **Home Page Search**: Updated search form with two fields (Registration Number + Date of Birth)
+
 - December 1, 2025: Comprehensive Exam Category System Redesign
   - **Exam Categories**: Create categories like "First Semester", "Second Semester" with thumbnail images (1280x720)
   - **Subject Management**: Add subjects to categories with max scores (scores only, no grades)
