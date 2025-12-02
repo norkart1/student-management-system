@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { GraduationCap, Search, ArrowLeft, Calendar, User, BookOpen, Award, ChevronDown, ChevronUp, X, Loader2 } from "lucide-react"
+import { GraduationCap, Search, ArrowLeft, Calendar, User, BookOpen, Award, ChevronDown, ChevronUp, X, Loader2, Printer, Download } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -144,20 +144,38 @@ function ResultsPageContent() {
     return "text-red-600"
   }
 
+  const handlePrint = () => {
+    window.print()
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <header className="border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 print:bg-white print:min-h-0">
+      <style jsx global>{`
+        @media print {
+          body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .print\\:hidden {
+            display: none !important;
+          }
+          .print\\:block {
+            display: block !important;
+          }
+        }
+      `}</style>
+      <header className="border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50 print:static print:bg-white print:border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20 print:shadow-none">
               <GraduationCap className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white">Bright Future Academy</h1>
-              <p className="text-xs text-slate-400">Results Portal</p>
+              <h1 className="text-lg font-bold text-white print:text-gray-900">Bright Future Academy</h1>
+              <p className="text-xs text-slate-400 print:text-gray-600">Results Portal</p>
             </div>
           </Link>
-          <Link href="/">
+          <Link href="/" className="print:hidden">
             <Button variant="outline" size="sm" className="border-slate-600 text-slate-300 hover:bg-slate-700">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Home
@@ -166,8 +184,8 @@ function ResultsPageContent() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="text-center mb-8">
+      <main className="max-w-4xl mx-auto px-4 py-8 print:py-4 print:px-0">
+        <div className="text-center mb-8 print:mb-4 print:hidden">
           <h1 className="text-3xl font-bold text-white mb-2">
             {selectedExam ? selectedExam.name : "Exam Results"}
           </h1>
@@ -184,8 +202,15 @@ function ResultsPageContent() {
             </div>
           )}
         </div>
+        
+        <div className="hidden print:block text-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">
+            {selectedExam ? selectedExam.name : "Exam Results"}
+          </h1>
+          <p className="text-gray-600 text-sm mt-1">Bright Future Academy - Official Results</p>
+        </div>
 
-        <Card className="bg-slate-800/50 border-slate-700 mb-8">
+        <Card className="bg-slate-800/50 border-slate-700 mb-8 print:hidden">
           <CardContent className="pt-6">
             <form onSubmit={handleSearch} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -244,27 +269,36 @@ function ResultsPageContent() {
         )}
 
         {student && searched && (
-          <div className="space-y-6">
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-4">
+          <div className="space-y-6 print:space-y-4" id="results-content">
+            <Card className="bg-slate-800/50 border-slate-700 print:bg-white print:border-gray-200">
+              <CardContent className="pt-6 print:pt-4">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
                   {student.imageUrl ? (
                     <Image
                       src={student.imageUrl}
                       alt={student.fullName}
                       width={80}
                       height={80}
-                      className="w-20 h-20 rounded-xl object-cover border-2 border-amber-500/30"
+                      className="w-20 h-20 rounded-xl object-cover border-2 border-amber-500/30 print:border-gray-300 flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                    <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0 print:bg-amber-500">
                       <User className="w-10 h-10 text-white" />
                     </div>
                   )}
-                  <div>
-                    <h2 className="text-xl font-bold text-white">{student.fullName}</h2>
-                    <p className="text-slate-400">Registration No: {student.registrationNumber}</p>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-xl font-bold text-white print:text-gray-900">{student.fullName}</h2>
+                    <p className="text-slate-400 print:text-gray-600">Registration No: {student.registrationNumber}</p>
                   </div>
+                  <Button
+                    onClick={handlePrint}
+                    variant="outline"
+                    size="sm"
+                    className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10 print:hidden mt-2 sm:mt-0"
+                  >
+                    <Printer className="w-4 h-4 mr-2" />
+                    Print Results
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -279,66 +313,68 @@ function ResultsPageContent() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-4 print:space-y-2">
                 {results.map((result) => {
                   const percentage = calculatePercentage(result.totalScore, result.totalMaxScore)
                   const isExpanded = expandedCategories.has(result.categoryId)
                   
                   return (
-                    <Card key={result.categoryId} className="bg-slate-800/50 border-slate-700 overflow-hidden">
+                    <Card key={result.categoryId} className="bg-slate-800/50 border-slate-700 overflow-hidden print:bg-white print:border-gray-200 print:break-inside-avoid">
                       <CardHeader 
-                        className="cursor-pointer hover:bg-slate-700/30 transition-colors"
+                        className="cursor-pointer hover:bg-slate-700/30 transition-colors print:cursor-default print:hover:bg-transparent p-4 sm:p-6"
                         onClick={() => toggleCategory(result.categoryId)}
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                              <Award className="w-6 h-6 text-white" />
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0 print:bg-amber-500">
+                              <Award className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                             </div>
-                            <div>
-                              <CardTitle className="text-white">{result.categoryName}</CardTitle>
-                              <p className="text-sm text-slate-400">
+                            <div className="flex-1 min-w-0">
+                              <CardTitle className="text-white print:text-gray-900 text-base sm:text-lg leading-tight">{result.categoryName}</CardTitle>
+                              <p className="text-xs sm:text-sm text-slate-400 print:text-gray-600">
                                 {result.subjects.length} subject{result.subjects.length !== 1 ? "s" : ""}
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-4">
-                            <div className="text-right">
-                              <p className={`text-2xl font-bold ${getGradeColor(percentage)}`}>
+                          <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 pl-13 sm:pl-0">
+                            <div className="text-left sm:text-right">
+                              <p className={`text-xl sm:text-2xl font-bold ${getGradeColor(percentage)} print:text-gray-900`}>
                                 {percentage}%
                               </p>
-                              <p className="text-sm text-slate-400">
+                              <p className="text-xs sm:text-sm text-slate-400 print:text-gray-600">
                                 {result.totalScore} / {result.totalMaxScore}
                               </p>
                             </div>
-                            {isExpanded ? (
-                              <ChevronUp className="w-5 h-5 text-slate-400" />
-                            ) : (
-                              <ChevronDown className="w-5 h-5 text-slate-400" />
-                            )}
+                            <div className="print:hidden">
+                              {isExpanded ? (
+                                <ChevronUp className="w-5 h-5 text-slate-400" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-slate-400" />
+                              )}
+                            </div>
                           </div>
                         </div>
                       </CardHeader>
                       
                       {isExpanded && (
-                        <CardContent className="border-t border-slate-700">
-                          <div className="space-y-3 pt-4">
+                        <CardContent className="border-t border-slate-700 print:border-gray-200">
+                          <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4">
                             {result.subjects.map((subject) => {
                               const subjectPercentage = calculatePercentage(subject.score, subject.maxScore)
                               return (
                                 <div
                                   key={subject.subjectId}
-                                  className="flex items-center justify-between p-3 rounded-lg bg-slate-700/30"
+                                  className="grid grid-cols-[1fr_auto] sm:flex sm:items-center sm:justify-between p-2 sm:p-3 rounded-lg bg-slate-700/30 print:bg-gray-50 gap-2"
                                 >
-                                  <div className="flex items-center gap-3">
-                                    <BookOpen className="w-5 h-5 text-amber-500" />
-                                    <span className="text-white font-medium">{subject.subjectName}</span>
+                                  <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                                    <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 print:text-amber-600 flex-shrink-0" />
+                                    <span className="text-white print:text-gray-900 font-medium text-sm sm:text-base truncate">{subject.subjectName}</span>
                                   </div>
-                                  <div className="flex items-center gap-4">
-                                    <span className="text-slate-400">
+                                  <div className="flex items-center gap-2 sm:gap-4 justify-end">
+                                    <span className="text-slate-400 print:text-gray-600 text-xs sm:text-sm whitespace-nowrap">
                                       {subject.score} / {subject.maxScore}
                                     </span>
-                                    <span className={`font-bold ${getGradeColor(subjectPercentage)}`}>
+                                    <span className={`font-bold text-sm sm:text-base ${getGradeColor(subjectPercentage)} print:text-gray-900 min-w-[3rem] text-right`}>
                                       {subjectPercentage}%
                                     </span>
                                   </div>
