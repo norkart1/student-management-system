@@ -96,11 +96,21 @@ export default function TeacherDashboardPage() {
   }
 
   const fetchStudents = async () => {
+    const token = localStorage.getItem("teacher_token")
+    if (!token) {
+      handleLogout()
+      return
+    }
+    
     try {
-      const res = await fetch("/api/students")
+      const res = await fetch("/api/teachers/my-students", {
+        headers: { Authorization: `Bearer ${token}` }
+      })
       if (res.ok) {
         const data = await res.json()
         setStudents(data)
+      } else if (res.status === 401) {
+        handleLogout()
       }
     } catch (error) {
       console.error("Failed to fetch students:", error)
@@ -255,8 +265,8 @@ export default function TeacherDashboardPage() {
                     <GraduationCap className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg text-slate-800">Student Management</CardTitle>
-                    <p className="text-sm text-slate-500">{students.length} students</p>
+                    <CardTitle className="text-lg text-slate-800">My Students</CardTitle>
+                    <p className="text-sm text-slate-500">{students.length} students in your classes</p>
                   </div>
                 </div>
               </div>
@@ -276,7 +286,14 @@ export default function TeacherDashboardPage() {
                 {filteredStudents.length === 0 ? (
                   <div className="text-center py-12">
                     <GraduationCap className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                    <p className="text-slate-500">No students found</p>
+                    <p className="text-slate-500">
+                      {searchQuery ? "No students found" : "No students in your assigned classes"}
+                    </p>
+                    {!searchQuery && (
+                      <p className="text-xs text-slate-400 mt-1">
+                        Students will appear here once you are assigned to a class
+                      </p>
+                    )}
                   </div>
                 ) : (
                   filteredStudents.map((student) => {
