@@ -5,7 +5,7 @@ A comprehensive Next.js-based School Management System for Bright Future Academy
 
 **School Name**: Bright Future Academy
 **Status**: Successfully imported and running on Replit
-**Last Updated**: December 2, 2025
+**Last Updated**: December 3, 2025
 
 ## Project Architecture
 
@@ -115,7 +115,7 @@ The application runs automatically via the configured workflow:
 
 ### MongoDB Collections
 - `students` - Student records (indexed on email, registrationNumber, dateOfBirth)
-- `teachers` - Teacher records (indexed on email)
+- `teachers` - Teacher records (indexed on email, username)
 - `classes` - Class registrations with assigned students and teachers
 - `books` - Library book inventory (indexed on ISBN)
 - `examCategories` - Exam categories with status workflow (draft/scoring/published) and selectedStudents array
@@ -128,6 +128,15 @@ The application runs automatically via the configured workflow:
 Database collections are automatically created on first run via `lib/init-db.ts`.
 
 ## Recent Changes
+- December 3, 2025: Teacher Username-Based Login & Credential Management
+  - **Username Login**: Teachers now log in with username instead of email
+  - **Admin Credential Setup**: Admin sets username and password when creating teacher accounts
+  - **Teacher Profile Credentials**: Teachers can view their assigned username and password in their profile
+  - **Unique Usernames**: Username uniqueness enforced on creation and update
+  - **Profile Page**: New /teacher-dashboard/profile page with login credentials display
+  - **Dashboard Enhancement**: Added "My Account" card with quick profile access
+  - **Note**: Viewable passwords stored for managed credential systems (internal school use)
+
 - December 2, 2025: Teacher Authentication & Dashboard Customization
   - **Teacher Login Portal**: New /teacher-login page for teacher authentication
   - **Teacher Dashboard**: New /teacher-dashboard with student viewing and editing capabilities
