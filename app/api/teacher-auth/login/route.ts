@@ -5,20 +5,20 @@ import bcrypt from "bcryptjs"
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json()
+    const { username, password } = await request.json()
 
-    if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 })
+    if (!username || !password) {
+      return NextResponse.json({ error: "Username and password are required" }, { status: 400 })
     }
 
     const { db } = await connectToDatabase()
     
     const teacher = await db.collection("teachers").findOne({ 
-      email: email.trim().toLowerCase() 
+      username: username.trim().toLowerCase() 
     })
 
     if (!teacher) {
-      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
+      return NextResponse.json({ error: "Invalid username or password" }, { status: 401 })
     }
 
     if (!teacher.password) {
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     const isValidPassword = await bcrypt.compare(password, teacher.password)
     if (!isValidPassword) {
-      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
+      return NextResponse.json({ error: "Invalid username or password" }, { status: 401 })
     }
 
     const token = signToken({
@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
         id: teacher._id.toString(),
         fullName: teacher.fullName,
         email: teacher.email,
+        username: teacher.username,
         imageUrl: teacher.imageUrl
       }
     })

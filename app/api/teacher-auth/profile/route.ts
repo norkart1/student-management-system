@@ -26,6 +26,8 @@ export async function GET(request: NextRequest) {
       fullName: teacher.fullName,
       email: teacher.email,
       phone: teacher.phone,
+      username: teacher.username,
+      plainPassword: teacher.plainPassword,
       imageUrl: teacher.imageUrl
     })
   } catch (error) {

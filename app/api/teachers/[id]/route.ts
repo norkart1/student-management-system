@@ -9,6 +9,7 @@ interface TeacherUpdateInput {
   email?: string
   phone?: string
   imageUrl?: string
+  username?: string
   password?: string
   canLogin?: boolean
 }
@@ -61,9 +62,21 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl || null
     if (data.canLogin !== undefined) updateData.canLogin = data.canLogin
     
+    if (data.username) {
+      const existingTeacher = await db.collection("teachers").findOne({ 
+        username: data.username.trim().toLowerCase(),
+        _id: { $ne: new ObjectId(id) }
+      })
+      if (existingTeacher) {
+        return NextResponse.json({ error: "Username already exists" }, { status: 400 })
+      }
+      updateData.username = data.username.trim().toLowerCase()
+    }
+    
     if (data.password) {
       const salt = await bcrypt.genSalt(10)
       updateData.password = await bcrypt.hash(data.password, salt)
+      updateData.plainPassword = data.password
       updateData.canLogin = true
     }
 

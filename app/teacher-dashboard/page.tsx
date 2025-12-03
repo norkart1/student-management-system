@@ -32,6 +32,9 @@ interface TeacherData {
   id: string
   fullName: string
   email: string
+  phone: string
+  username: string
+  plainPassword: string
   imageUrl: string | null
 }
 
@@ -198,8 +201,11 @@ export default function TeacherDashboardPage() {
                 <p className="text-xs text-slate-500">Bright Future Academy</p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              <Link
+                href="/teacher-dashboard/profile"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              >
                 <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
                   {teacher?.imageUrl ? (
                     <Image
@@ -218,7 +224,7 @@ export default function TeacherDashboardPage() {
                 <span className="text-sm font-medium text-slate-700 hidden sm:block">
                   {teacher?.fullName}
                 </span>
-              </div>
+              </Link>
               <Button
                 variant="ghost"
                 size="sm"
@@ -440,6 +446,37 @@ export default function TeacherDashboardPage() {
           </Card>
 
           <div className="space-y-6">
+            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-sm rounded-2xl">
+              <CardHeader className="border-b border-blue-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                    <User className="w-5 h-5 text-white" />
+                  </div>
+                  <CardTitle className="text-lg text-slate-800">My Account</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="w-4 h-4 text-slate-400" />
+                    <span className="text-slate-600">{teacher?.email}</span>
+                  </div>
+                  {teacher?.username && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <User className="w-4 h-4 text-slate-400" />
+                      <span className="text-slate-600">@{teacher.username}</span>
+                    </div>
+                  )}
+                </div>
+                <Link
+                  href="/teacher-dashboard/profile"
+                  className="mt-4 block w-full text-center py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                  View My Profile
+                </Link>
+              </CardContent>
+            </Card>
+
             <Card className="border-slate-200 bg-white shadow-sm rounded-2xl">
               <CardHeader className="border-b border-slate-100 pb-4">
                 <div className="flex items-center gap-3">
