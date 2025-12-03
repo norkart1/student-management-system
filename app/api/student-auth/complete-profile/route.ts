@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 })
     }
 
-    if (decoded.type !== "student") {
+    if (decoded.role !== "student") {
       return NextResponse.json({ error: "Invalid token type" }, { status: 401 })
     }
 
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const studentId = new ObjectId(decoded.id)
+    const studentId = new ObjectId(decoded.studentId)
     
     const updateResult = await db.collection("studentUsers").findOneAndUpdate(
       { _id: studentId },
