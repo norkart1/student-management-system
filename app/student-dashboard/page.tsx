@@ -69,15 +69,20 @@ interface ExamResult {
   passed: boolean
 }
 
+interface SubjectResult {
+  subjectId?: string
+  subjectName: string
+  score: number
+  maxScore: number
+  passMarks?: number
+  passed: boolean
+}
+
 interface ExamCategory {
   categoryId: string
   categoryName: string
-  subjects: {
-    subjectName: string
-    score: number
-    maxScore: number
-    passed: boolean
-  }[]
+  publishedAt?: string
+  subjects: SubjectResult[]
   totalScore: number
   totalMaxScore: number
   percentage: number
@@ -149,8 +154,37 @@ export default function StudentDashboardPage() {
       const res = await fetch(`/api/public/results?registrationNumber=${encodeURIComponent(registrationNumber)}&dateOfBirth=${encodeURIComponent(dateOfBirth)}`)
       if (res.ok) {
         const data = await res.json()
-        if (data.type === "results" && data.data) {
-          setExamResults(data.data)
+        if (data.type === "results" && data.data && Array.isArray(data.data)) {
+          const transformedResults: ExamCategory[] = data.data.map((category: any) => {
+            const subjects: SubjectResult[] = (category.subjects || []).map((subject: any) => {
+              const passMarks = subject.passMarks ?? Math.round(subject.maxScore * 0.25)
+              return {
+                subjectId: subject.subjectId,
+                subjectName: subject.subjectName,
+                score: subject.score,
+                maxScore: subject.maxScore,
+                passMarks,
+                passed: subject.score >= passMarks
+              }
+            })
+            
+            const totalScore = category.totalScore || subjects.reduce((sum: number, s: SubjectResult) => sum + s.score, 0)
+            const totalMaxScore = category.totalMaxScore || subjects.reduce((sum: number, s: SubjectResult) => sum + s.maxScore, 0)
+            const percentage = totalMaxScore > 0 ? (totalScore / totalMaxScore) * 100 : 0
+            const overallPassed = subjects.every((s: SubjectResult) => s.passed)
+            
+            return {
+              categoryId: category.categoryId,
+              categoryName: category.categoryName,
+              publishedAt: category.publishedAt,
+              subjects,
+              totalScore,
+              totalMaxScore,
+              percentage,
+              overallPassed
+            }
+          })
+          setExamResults(transformedResults)
         }
       }
     } catch (error) {

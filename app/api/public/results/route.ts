@@ -46,12 +46,28 @@ export async function GET(request: NextRequest) {
         }, { status: 400 })
       }
 
-      const student = await db.collection("students").findOne({ 
+      let student = await db.collection("students").findOne({ 
         registrationNumber: registrationNumber.toUpperCase(),
         dateOfBirth: dateOfBirth
       })
 
+      let studentUser = null
       if (!student) {
+        studentUser = await db.collection("studentUsers").findOne({ 
+          registrationNumber: registrationNumber.toUpperCase(),
+          dateOfBirth: dateOfBirth
+        })
+        
+        if (studentUser) {
+          student = await db.collection("students").findOne({ 
+            registrationNumber: registrationNumber.toUpperCase()
+          })
+        }
+      }
+
+      const displayStudent = student || studentUser
+      
+      if (!displayStudent) {
         return NextResponse.json({ 
           error: "No student found with this registration number and date of birth" 
         }, { status: 404 })
@@ -65,9 +81,9 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           type: "results",
           student: {
-            fullName: student.fullName,
-            registrationNumber: student.registrationNumber,
-            imageUrl: student.imageUrl,
+            fullName: displayStudent.fullName,
+            registrationNumber: displayStudent.registrationNumber,
+            imageUrl: displayStudent.imageUrl,
           },
           data: [],
         })
@@ -84,9 +100,9 @@ export async function GET(request: NextRequest) {
           return NextResponse.json({
             type: "results",
             student: {
-              fullName: student.fullName,
-              registrationNumber: student.registrationNumber,
-              imageUrl: student.imageUrl,
+              fullName: displayStudent.fullName,
+              registrationNumber: displayStudent.registrationNumber,
+              imageUrl: displayStudent.imageUrl,
             },
             data: [],
           })
@@ -94,9 +110,13 @@ export async function GET(request: NextRequest) {
         filteredCategoryIds = [categoryId]
       }
 
+      const studentIdsToSearch = []
+      if (student) studentIdsToSearch.push(student._id.toString())
+      if (studentUser) studentIdsToSearch.push(studentUser._id.toString())
+
       const results = await db.collection("examResults")
         .find({ 
-          studentId: student._id.toString(),
+          studentId: { $in: studentIdsToSearch },
           categoryId: { $in: filteredCategoryIds }
         })
         .toArray()
@@ -105,9 +125,9 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           type: "results",
           student: {
-            fullName: student.fullName,
-            registrationNumber: student.registrationNumber,
-            imageUrl: student.imageUrl,
+            fullName: displayStudent.fullName,
+            registrationNumber: displayStudent.registrationNumber,
+            imageUrl: displayStudent.imageUrl,
           },
           data: [],
         })
@@ -157,9 +177,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         type: "results",
         student: {
-          fullName: student.fullName,
-          registrationNumber: student.registrationNumber,
-          imageUrl: student.imageUrl,
+          fullName: displayStudent.fullName,
+          registrationNumber: displayStudent.registrationNumber,
+          imageUrl: displayStudent.imageUrl,
         },
         data: Object.values(groupedResults),
       })
