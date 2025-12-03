@@ -55,7 +55,7 @@ export function AddClassDialog({ open, onOpenChange, onSubmit, editData }: AddCl
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
       <DialogContent className="sm:max-w-md border-slate-200 bg-white rounded-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-slate-800">

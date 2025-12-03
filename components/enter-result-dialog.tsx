@@ -103,7 +103,7 @@ export function EnterResultDialog({
   if (!exam) return null
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
       <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-slate-800 text-xl font-bold">

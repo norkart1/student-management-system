@@ -73,7 +73,7 @@ export function AddEventDialog({ open, onOpenChange, selectedDate, onEventAdded 
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
       <DialogContent className="sm:max-w-md border-[#CFF4D2]">
         <DialogHeader>
           <div className="flex items-center justify-between">

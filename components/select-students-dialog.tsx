@@ -95,7 +95,7 @@ export function SelectStudentsDialog({
   )
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
       <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-slate-800 text-xl font-bold flex items-center gap-2">

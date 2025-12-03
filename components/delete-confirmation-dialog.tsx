@@ -30,7 +30,7 @@ export function DeleteConfirmationDialog({
   loading = false,
 }: DeleteConfirmationDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
       <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-md w-[calc(100%-2rem)] mx-auto p-0 overflow-hidden">
         <div className="p-6">
           <DialogHeader className="space-y-4">

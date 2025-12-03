@@ -71,7 +71,7 @@ export function ViewCategoryResultsDialog({
   }, [results])
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
       <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-4xl max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-slate-800 text-xl font-bold">

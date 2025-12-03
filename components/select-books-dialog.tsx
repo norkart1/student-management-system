@@ -231,7 +231,7 @@ export function SelectBooksDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
       <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl w-[95vw] max-w-lg max-h-[85vh] overflow-hidden flex flex-col p-4 sm:p-6">
         <DialogHeader className="pb-2">
           <DialogTitle className="text-slate-800 text-lg sm:text-xl font-bold">

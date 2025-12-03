@@ -56,6 +56,7 @@ Do not modify the core authentication logic in `lib/auth.ts` or `lib/jwt.ts` wit
 - **Server-side Validation**: Implemented for critical actions like exam status transitions, class assignments, and admission details to ensure data integrity and security.
 - **Middleware**: API authorization middleware (`auth-middleware.ts`) for enforcing role-based access control.
 - **Environment Variables**: All sensitive configurations are managed via Replit secrets, ensuring secure handling of credentials.
+- **Mobile Dialog Handling**: All dialog components use `modal={false}` to prevent scroll-locking issues on mobile Android devices. This avoids the white-screen bug caused by Radix's default modal scroll-lock behavior conflicting with the `h-screen` flex layout of the ProtectedLayout component.
 
 ## External Dependencies
 - **MongoDB**: Primary database for all application data.
