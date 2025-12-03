@@ -32,8 +32,20 @@ import {
   Home,
   Trophy,
   FileText,
-  Award
+  Award,
+  Megaphone,
+  CalendarDays
 } from "lucide-react"
+
+interface Notification {
+  _id: string
+  title: string
+  content: string
+  type: "general" | "exam" | "event" | "urgent"
+  pinned: boolean
+  createdAt: string
+  isNew: boolean
+}
 
 interface StudentData {
   _id?: string
@@ -95,7 +107,7 @@ export default function StudentDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [classes, setClasses] = useState<any[]>([])
   const [books, setBooks] = useState<any[]>([])
-  const [announcements, setAnnouncements] = useState<any[]>([])
+  const [notifications, setNotifications] = useState<Notification[]>([])
   const [examResults, setExamResults] = useState<ExamCategory[]>([])
   const [loadingExams, setLoadingExams] = useState(false)
   const [selectedClass, setSelectedClass] = useState<number | null>(null)
