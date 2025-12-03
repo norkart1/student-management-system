@@ -16,19 +16,20 @@ export async function GET() {
   try {
     const { db } = await connectToDatabase()
     
-    let settings = await db.collection("admissionSettings").findOne({ active: true })
+    const settings = await db.collection("admissionSettings").findOne({ active: true })
     
     if (!settings) {
-      settings = {
+      const defaultSettings = {
         isOpen: false,
         academicYear: new Date().getFullYear().toString(),
-        openClasses: [],
+        openClasses: [] as string[],
         description: "",
         requirements: "",
         startDate: null,
         endDate: null,
         active: true
       }
+      return NextResponse.json(defaultSettings)
     }
     
     return NextResponse.json(settings)

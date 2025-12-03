@@ -96,8 +96,8 @@ export async function PUT(
       
       const student = {
         fullName: currentApplication.studentName,
-        email: currentApplication.parentEmail || "",
-        phone: currentApplication.parentPhone || "",
+        email: currentApplication.email || currentApplication.parentEmail || "",
+        phone: currentApplication.phone || currentApplication.parentPhone || "",
         dateOfBirth: currentApplication.dateOfBirth,
         registrationNumber: registrationNumber,
         class: currentApplication.applyingForClass,
@@ -106,19 +106,52 @@ export async function PUT(
         gender: currentApplication.gender,
         previousSchool: currentApplication.previousSchool,
         admissionApplicationId: currentApplication._id,
+        studentUserId: currentApplication.studentUserId || null,
         academicYear: currentApplication.academicYear,
         imageUrl: currentApplication.photoUrl || null,
         createdAt: new Date(),
         updatedAt: new Date(),
       }
 
-      await db.collection("students").insertOne(student)
+      const insertedStudent = await db.collection("students").insertOne(student)
 
       // Update the application with the student registration number
       await db.collection("admissionApplications").updateOne(
         { _id: new ObjectId(id) },
         { $set: { studentRegistrationNumber: registrationNumber } }
       )
+
+      // If there's a linked studentUser, update their admission status
+      if (currentApplication.studentUserId) {
+        await db.collection("studentUsers").updateOne(
+          { _id: currentApplication.studentUserId },
+          { 
+            $set: { 
+              admissionStatus: "approved",
+              approvedClass: currentApplication.applyingForClass,
+              approvedAt: new Date(),
+              registrationNumber: registrationNumber,
+              studentId: insertedStudent.insertedId,
+              updatedAt: new Date()
+            } 
+          }
+        )
+      }
+    }
+
+    // If status changed to rejected, update the studentUser
+    if (data.status === "rejected" && currentApplication.status !== "rejected") {
+      if (currentApplication.studentUserId) {
+        await db.collection("studentUsers").updateOne(
+          { _id: currentApplication.studentUserId },
+          { 
+            $set: { 
+              admissionStatus: "rejected",
+              updatedAt: new Date()
+            } 
+          }
+        )
+      }
     }
 
     const updatedApplication = await db.collection("admissionApplications").findOne({ 
