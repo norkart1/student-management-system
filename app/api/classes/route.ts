@@ -31,9 +31,18 @@ export async function GET() {
           }
         },
         {
+          $lookup: {
+            from: "books",
+            localField: "bookIds",
+            foreignField: "_id",
+            as: "books"
+          }
+        },
+        {
           $addFields: {
             studentCount: { $size: "$students" },
-            teacherCount: { $size: "$teachers" }
+            teacherCount: { $size: "$teachers" },
+            bookCount: { $size: { $ifNull: ["$books", []] } }
           }
         },
         {
@@ -78,6 +87,7 @@ export async function POST(request: NextRequest) {
       section: data.section?.trim() || null,
       studentIds: [],
       teacherIds: [],
+      bookIds: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     }

@@ -72,6 +72,10 @@ export async function PUT(
     if (data.teacherIds !== undefined) {
       updateData.teacherIds = data.teacherIds.map((id: string) => new ObjectId(id))
     }
+    
+    if (data.bookIds !== undefined) {
+      updateData.bookIds = data.bookIds.map((id: string) => new ObjectId(id))
+    }
 
     const result = await db.collection("classes").updateOne(
       { _id: new ObjectId(id) },

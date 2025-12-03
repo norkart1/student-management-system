@@ -27,9 +27,65 @@ export async function GET(request: NextRequest) {
 
     let classDetails = null
     if (student.approvedClass) {
-      classDetails = await db.collection("classes").findOne(
-        { classNumber: student.approvedClass }
-      )
+      try {
+        let classData = null
+        
+        if (typeof student.approvedClass === 'string' && ObjectId.isValid(student.approvedClass)) {
+          classData = await db.collection("classes").findOne({ _id: new ObjectId(student.approvedClass) })
+        } else if (student.approvedClass instanceof ObjectId) {
+          classData = await db.collection("classes").findOne({ _id: student.approvedClass })
+        }
+        
+        if (!classData) {
+          classData = await db.collection("classes").findOne({ 
+            name: String(student.approvedClass) 
+          })
+        }
+        
+        if (!classData) {
+          classData = await db.collection("classes").findOne({ 
+            classNumber: student.approvedClass 
+          })
+        }
+        
+        if (!classData && typeof student.approvedClass === 'string' && !isNaN(Number(student.approvedClass))) {
+          classData = await db.collection("classes").findOne({ 
+            classNumber: Number(student.approvedClass) 
+          })
+        }
+        
+        if (!classData && typeof student.approvedClass === 'number') {
+          classData = await db.collection("classes").findOne({ 
+            name: String(student.approvedClass) 
+          })
+        }
+        
+        if (!classData && typeof student.approvedClass === 'number') {
+          classData = await db.collection("classes").findOne({ 
+            classNumber: String(student.approvedClass) 
+          })
+        }
+        
+        if (classData) {
+          const classBooks = classData.bookIds && classData.bookIds.length > 0
+            ? await db.collection("books")
+                .find({ _id: { $in: classData.bookIds.map((id: any) => 
+                  typeof id === 'string' ? new ObjectId(id) : id
+                )}})
+                .toArray()
+            : []
+          
+          classDetails = {
+            _id: classData._id,
+            classNumber: classData.name || classData.classNumber || String(student.approvedClass),
+            section: classData.section,
+            academicYear: classData.academicYear,
+            books: classBooks
+          }
+        }
+      } catch (e) {
+        console.log("Error fetching class details:", e)
+      }
     }
 
     let enrolledBooks: any[] = []

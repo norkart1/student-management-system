@@ -304,10 +304,18 @@ export default function StudentDashboardPage() {
                   <School className="w-6 h-6" />
                 </div>
                 <div>
-                  {student.approvedClass ? (
+                  {student.classDetails ? (
                     <>
                       <p className="text-xl font-bold text-slate-800">
-                        Class {student.approvedClass}
+                        {student.classDetails.classNumber}
+                        {student.classDetails.section && ` - ${student.classDetails.section}`}
+                      </p>
+                      <p className="text-sm text-slate-500">Enrolled class</p>
+                    </>
+                  ) : student.approvedClass ? (
+                    <>
+                      <p className="text-xl font-bold text-slate-800">
+                        Assigned
                       </p>
                       <p className="text-sm text-slate-500">Enrolled class</p>
                     </>
@@ -325,7 +333,7 @@ export default function StudentDashboardPage() {
           <Card className="border-0 shadow-md bg-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-slate-500">
-                Available Books
+                Class Books
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -334,9 +342,11 @@ export default function StudentDashboardPage() {
                   <BookOpen className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xl font-bold text-slate-800">{myClassBooks.length}</p>
+                  <p className="text-xl font-bold text-slate-800">
+                    {student.classDetails?.books?.length || 0}
+                  </p>
                   <p className="text-sm text-slate-500">
-                    {student.approvedClass ? "For your class" : "Books available"}
+                    {student.classDetails ? "For your class" : "Books available"}
                   </p>
                 </div>
               </div>
@@ -386,7 +396,7 @@ export default function StudentDashboardPage() {
 
         {student.admissionStatus === "approved" && (
           <div className="grid gap-6 lg:grid-cols-2">
-            {student.approvedClass && myClassBooks.length > 0 && (
+            {student.classDetails?.books && student.classDetails.books.length > 0 && (
               <Card className="border-0 shadow-md bg-white">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
@@ -396,7 +406,7 @@ export default function StudentDashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {myClassBooks.slice(0, 5).map((book) => (
+                    {student.classDetails.books.slice(0, 5).map((book: any) => (
                       <div
                         key={book._id}
                         className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl"
@@ -406,13 +416,13 @@ export default function StudentDashboardPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-slate-800 truncate">{book.title}</p>
-                          <p className="text-xs text-slate-500">{book.subject || "General"}</p>
+                          <p className="text-xs text-slate-500">{book.author || "Unknown Author"}</p>
                         </div>
                       </div>
                     ))}
-                    {myClassBooks.length > 5 && (
+                    {student.classDetails.books.length > 5 && (
                       <p className="text-sm text-slate-500 text-center pt-2">
-                        +{myClassBooks.length - 5} more books
+                        +{student.classDetails.books.length - 5} more books
                       </p>
                     )}
                   </div>

@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { AddClassDialog } from "@/components/add-class-dialog"
 import { AssignMembersDialog } from "@/components/assign-members-dialog"
+import { AssignBooksDialog } from "@/components/assign-books-dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
 import { Spinner } from "@/components/spinner"
 import { 
@@ -18,7 +19,8 @@ import {
   Trash2,
   Calendar,
   MoreVertical,
-  UserPlus
+  UserPlus,
+  BookOpen
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -36,10 +38,13 @@ interface ClassData {
   section: string | null
   studentIds: string[]
   teacherIds: string[]
+  bookIds: string[]
   students: any[]
   teachers: any[]
+  books: any[]
   studentCount: number
   teacherCount: number
+  bookCount: number
   createdAt: string
 }
 
@@ -59,6 +64,7 @@ export default function ClassesPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [assignStudentsOpen, setAssignStudentsOpen] = useState(false)
   const [assignTeachersOpen, setAssignTeachersOpen] = useState(false)
+  const [assignBooksOpen, setAssignBooksOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [classToDelete, setClassToDelete] = useState<ClassData | null>(null)
   const [classToEdit, setClassToEdit] = useState<ClassData | null>(null)
@@ -225,6 +231,35 @@ export default function ClassesPage() {
     setAssignTeachersOpen(true)
   }
 
+  const openAssignBooks = (classData: ClassData) => {
+    setSelectedClass(classData)
+    setAssignBooksOpen(true)
+  }
+
+  const handleAssignBooks = async (bookIds: string[]) => {
+    if (!selectedClass) return
+    
+    const token = getAuthToken()
+    setSaving(true)
+    try {
+      const response = await fetch(`/api/classes/${selectedClass._id}`, {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ bookIds }),
+      })
+      if (response.ok) {
+        fetchData()
+      }
+    } catch (error) {
+      console.error("Error assigning books:", error)
+    } finally {
+      setSaving(false)
+    }
+  }
+
   if (loading) {
     return (
       <ProtectedLayout>
@@ -316,6 +351,10 @@ export default function ClassesPage() {
                           <Users className="w-4 h-4" />
                           Manage Teachers
                         </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => openAssignBooks(classData)} className="gap-2">
+                          <BookOpen className="w-4 h-4" />
+                          Manage Books
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem 
                           onSelect={() => handleDeleteClick(classData)} 
@@ -333,33 +372,44 @@ export default function ClassesPage() {
                     <p className="text-sm text-slate-500 mb-4 line-clamp-2">{classData.description}</p>
                   )}
                   
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={() => openAssignStudents(classData)}
-                      className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors group"
+                      className="flex items-center gap-2 p-2 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors group"
                     >
-                      <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-                        <GraduationCap className="w-4 h-4 text-white" />
+                      <div className="w-7 h-7 bg-emerald-500 rounded-lg flex items-center justify-center">
+                        <GraduationCap className="w-3.5 h-3.5 text-white" />
                       </div>
                       <div className="text-left">
-                        <p className="text-lg font-bold text-emerald-700">{classData.studentCount || 0}</p>
+                        <p className="text-base font-bold text-emerald-700">{classData.studentCount || 0}</p>
                         <p className="text-xs text-emerald-600">Students</p>
                       </div>
-                      <UserPlus className="w-4 h-4 text-emerald-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                     </button>
                     
                     <button
                       onClick={() => openAssignTeachers(classData)}
-                      className="flex items-center gap-2 p-3 bg-teal-50 rounded-xl hover:bg-teal-100 transition-colors group"
+                      className="flex items-center gap-2 p-2 bg-teal-50 rounded-xl hover:bg-teal-100 transition-colors group"
                     >
-                      <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
-                        <Users className="w-4 h-4 text-white" />
+                      <div className="w-7 h-7 bg-teal-500 rounded-lg flex items-center justify-center">
+                        <Users className="w-3.5 h-3.5 text-white" />
                       </div>
                       <div className="text-left">
-                        <p className="text-lg font-bold text-teal-700">{classData.teacherCount || 0}</p>
+                        <p className="text-base font-bold text-teal-700">{classData.teacherCount || 0}</p>
                         <p className="text-xs text-teal-600">Teachers</p>
                       </div>
-                      <UserPlus className="w-4 h-4 text-teal-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </button>
+
+                    <button
+                      onClick={() => openAssignBooks(classData)}
+                      className="flex items-center gap-2 p-2 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors group"
+                    >
+                      <div className="w-7 h-7 bg-purple-500 rounded-lg flex items-center justify-center">
+                        <BookOpen className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-base font-bold text-purple-700">{classData.bookCount || 0}</p>
+                        <p className="text-xs text-purple-600">Books</p>
+                      </div>
                     </button>
                   </div>
                 </CardContent>
@@ -405,6 +455,15 @@ export default function ClassesPage() {
         title="Delete Class"
         description={`Are you sure you want to delete "${classToDelete?.name}"? This will remove all student and teacher assignments but won't delete the actual students or teachers.`}
         loading={deleting}
+      />
+
+      <AssignBooksDialog
+        open={assignBooksOpen}
+        onOpenChange={setAssignBooksOpen}
+        title={`Assign Books to ${selectedClass?.name || "Class"}`}
+        selectedBookIds={selectedClass?.bookIds?.map(id => id.toString()) || []}
+        onSubmit={handleAssignBooks}
+        loading={saving}
       />
     </ProtectedLayout>
   )
