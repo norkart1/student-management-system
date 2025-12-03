@@ -75,8 +75,9 @@ export default function CompleteProfilePage() {
       return
     }
 
-    fetchAdmissionSettings()
-    setLoading(false)
+    fetchAdmissionSettings().finally(() => {
+      setLoading(false)
+    })
   }, [router])
 
   const fetchAdmissionSettings = async () => {
