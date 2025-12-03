@@ -126,9 +126,9 @@ export default function StudentRegisterPage() {
             <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="w-10 h-10 text-emerald-400" />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">Registration Successful!</h1>
+            <h1 className="text-2xl font-bold text-white mb-2">Account Created!</h1>
             <p className="text-slate-400 mb-6">
-              Your account has been created. Please wait for admission approval from the school administration.
+              Your account has been created successfully. Please login to complete your admission application.
             </p>
             <div className="space-y-3">
               <Button
@@ -136,7 +136,7 @@ export default function StudentRegisterPage() {
                 className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
               >
                 <Link href="/student-login">
-                  Go to Login
+                  Login to Complete Application
                 </Link>
               </Button>
               <Button
@@ -177,7 +177,7 @@ export default function StudentRegisterPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Student Registration</h1>
-              <p className="text-slate-400 text-sm">Create your student account</p>
+              <p className="text-slate-400 text-sm">Step 1: Create your account</p>
             </div>
           </div>
 
