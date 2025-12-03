@@ -25,8 +25,8 @@ export function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-[#f0fdf4]">
       <Sidebar />
-      <main className="flex-1 overflow-auto pb-20 md:pb-0 md:ml-0">
-        {children}
+      <main className="flex-1 overflow-auto pb-20 md:pb-0 md:ml-0 flex flex-col">
+        <div className="flex-1">{children}</div>
       </main>
       <BottomNav />
     </div>
