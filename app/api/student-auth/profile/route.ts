@@ -75,12 +75,44 @@ export async function GET(request: NextRequest) {
                 .toArray()
             : []
           
+          let teacherName = null
+          let teachers: any[] = []
+          if (classData.teacherIds && classData.teacherIds.length > 0) {
+            try {
+              teachers = await db.collection("teachers")
+                .find({ _id: { $in: classData.teacherIds.map((id: any) => 
+                  typeof id === 'string' ? new ObjectId(id) : id
+                )}})
+                .project({ fullName: 1, email: 1, imageUrl: 1 })
+                .toArray()
+              
+              if (teachers.length > 0) {
+                teacherName = teachers[0].fullName
+              }
+            } catch (e) {
+              console.log("Error fetching teacher details:", e)
+            }
+          }
+
+          const studentCount = await db.collection("studentUsers").countDocuments({
+            $or: [
+              { approvedClass: classData._id },
+              { approvedClass: classData._id.toString() },
+              { approvedClass: classData.name },
+              { approvedClass: classData.classNumber }
+            ],
+            admissionStatus: "approved"
+          })
+          
           classDetails = {
             _id: classData._id,
             classNumber: classData.name || classData.classNumber || String(student.approvedClass),
             section: classData.section,
             academicYear: classData.academicYear,
-            books: classBooks
+            books: classBooks,
+            teacherName,
+            teachers,
+            studentCount
           }
         }
       } catch (e) {

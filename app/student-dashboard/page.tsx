@@ -29,8 +29,7 @@ import {
   UserCheck,
   Hash,
   Heart,
-  Home,
-  Building
+  Home
 } from "lucide-react"
 
 interface StudentData {
@@ -501,15 +500,6 @@ export default function StudentDashboardPage() {
                       <p className="text-sm font-semibold text-[#205072]">{student.address || "N/A"}</p>
                     </div>
 
-                    {student.previousSchool && (
-                      <div className="p-4 bg-gradient-to-br from-[#CFF4D2]/30 to-[#7BE495]/20 rounded-xl sm:col-span-2">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Building className="w-4 h-4 text-[#329D9C]" />
-                          <span className="text-xs font-medium text-[#205072]/60">Previous School</span>
-                        </div>
-                        <p className="text-sm font-semibold text-[#205072]">{student.previousSchool}</p>
-                      </div>
-                    )}
                   </div>
                 </div>
               </CardContent>
