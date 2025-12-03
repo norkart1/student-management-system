@@ -198,7 +198,7 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd, onView, repo
                             <Eye className="w-4 h-4 text-emerald-500" />
                           </Button>
                         )}
-                        <DropdownMenu>
+                        <DropdownMenu modal={false}>
                           <DropdownMenuTrigger asChild>
                             <Button 
                               size="sm" 
@@ -211,11 +211,11 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd, onView, repo
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem onClick={() => handlePrintSingle(item)} className="gap-2 cursor-pointer">
+                            <DropdownMenuItem onSelect={() => handlePrintSingle(item)} className="gap-2 cursor-pointer">
                               <Printer className="w-4 h-4" />
                               Print
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDownloadSingle(item)} className="gap-2 cursor-pointer">
+                            <DropdownMenuItem onSelect={() => handleDownloadSingle(item)} className="gap-2 cursor-pointer">
                               <FileDown className="w-4 h-4" />
                               Download PDF
                             </DropdownMenuItem>
@@ -327,7 +327,7 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd, onView, repo
                         <span>View</span>
                       </Button>
                     )}
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
                         <Button 
                           size="sm" 
@@ -340,11 +340,11 @@ export function DataTable({ columns, data, onEdit, onDelete, onAdd, onView, repo
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuItem onClick={() => handlePrintSingle(item)} className="gap-2 cursor-pointer">
+                        <DropdownMenuItem onSelect={() => handlePrintSingle(item)} className="gap-2 cursor-pointer">
                           <Printer className="w-4 h-4" />
                           Print
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDownloadSingle(item)} className="gap-2 cursor-pointer">
+                        <DropdownMenuItem onSelect={() => handleDownloadSingle(item)} className="gap-2 cursor-pointer">
                           <FileDown className="w-4 h-4" />
                           Download PDF
                         </DropdownMenuItem>

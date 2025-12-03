@@ -93,7 +93,7 @@ export function ReportDropdown({ data, columns, type, title, selectedItem }: Rep
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button 
           variant="outline" 
@@ -108,11 +108,11 @@ export function ReportDropdown({ data, columns, type, title, selectedItem }: Rep
         <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wide">
           All Records ({data.length})
         </div>
-        <DropdownMenuItem onClick={handlePrintAll} className="gap-2 cursor-pointer">
+        <DropdownMenuItem onSelect={handlePrintAll} className="gap-2 cursor-pointer">
           <Printer className="w-4 h-4 text-slate-500" />
           Print All {title}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleDownloadAll} className="gap-2 cursor-pointer">
+        <DropdownMenuItem onSelect={handleDownloadAll} className="gap-2 cursor-pointer">
           <FileDown className="w-4 h-4 text-slate-500" />
           Download All as PDF
         </DropdownMenuItem>
@@ -123,11 +123,11 @@ export function ReportDropdown({ data, columns, type, title, selectedItem }: Rep
             <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wide">
               Selected: {selectedItem.fullName || selectedItem.title}
             </div>
-            <DropdownMenuItem onClick={() => handlePrintSingle(selectedItem)} className="gap-2 cursor-pointer">
+            <DropdownMenuItem onSelect={() => handlePrintSingle(selectedItem)} className="gap-2 cursor-pointer">
               <FileText className="w-4 h-4 text-slate-500" />
               Print Profile
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleDownloadSingle(selectedItem)} className="gap-2 cursor-pointer">
+            <DropdownMenuItem onSelect={() => handleDownloadSingle(selectedItem)} className="gap-2 cursor-pointer">
               <FileDown className="w-4 h-4 text-slate-500" />
               Download Profile PDF
             </DropdownMenuItem>

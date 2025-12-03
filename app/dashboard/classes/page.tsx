@@ -297,28 +297,28 @@ export default function ClassesPage() {
                         </CardDescription>
                       </div>
                     </div>
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600">
                           <MoreVertical className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem onClick={() => handleEditClick(classData)} className="gap-2">
+                        <DropdownMenuItem onSelect={() => handleEditClick(classData)} className="gap-2">
                           <Edit3 className="w-4 h-4" />
                           Edit Class
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openAssignStudents(classData)} className="gap-2">
+                        <DropdownMenuItem onSelect={() => openAssignStudents(classData)} className="gap-2">
                           <GraduationCap className="w-4 h-4" />
                           Manage Students
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openAssignTeachers(classData)} className="gap-2">
+                        <DropdownMenuItem onSelect={() => openAssignTeachers(classData)} className="gap-2">
                           <Users className="w-4 h-4" />
                           Manage Teachers
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem 
-                          onClick={() => handleDeleteClick(classData)} 
+                          onSelect={() => handleDeleteClick(classData)} 
                           className="gap-2 text-red-600 focus:text-red-600"
                         >
                           <Trash2 className="w-4 h-4" />
