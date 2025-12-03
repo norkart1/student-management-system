@@ -33,7 +33,7 @@ Do not modify the core authentication logic in `lib/auth.ts` or `lib/jwt.ts` wit
 - **User Roles**: Admin, Teacher, and Student with distinct access levels and dashboards.
 - **Authentication**: Secure, role-based authentication using JWTs, supporting username-based login for teachers and email/registration number for students/admins. Passwords are hashed using bcrypt.
 - **Student Management**: Comprehensive student records, including birth date and registration number. Features self-registration, admin approval, and class assignment.
-- **Teacher Management**: Profiles, assignments, and credential management (username-based login). Teachers can view/edit student information based on permissions.
+- **Teacher Management**: Profiles, assignments, and credential management (username-based login). Teachers can only view/edit students from their assigned classes, ensuring proper data isolation between class teachers.
 - **Exam Category System**:
     - Creation of exam categories (e.g., "First Semester") with thumbnail images.
     - Subjects within categories with configurable max scores and individual pass marks (defaulting to 25% of max score, but customizable).
