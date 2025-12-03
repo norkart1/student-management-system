@@ -16,8 +16,12 @@ const getAllowedOrigins = () => {
     origins.push(process.env.REPLIT_DEV_DOMAIN)
   }
   if (process.env.REPLIT_DOMAINS) {
-    origins.push(process.env.REPLIT_DOMAINS.split(',')[0])
+    process.env.REPLIT_DOMAINS.split(',').forEach(domain => {
+      origins.push(domain.trim())
+    })
   }
+  origins.push('*.replit.dev')
+  origins.push('*.repl.co')
   
   return origins.filter(Boolean)
 }
