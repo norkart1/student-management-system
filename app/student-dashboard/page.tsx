@@ -31,6 +31,7 @@ interface StudentData {
   email: string
   phone: string
   imageUrl: string | null
+  profileCompleted: boolean
   admissionStatus: "pending" | "approved" | "rejected"
   approvedClass: number | null
   classDetails?: any
@@ -71,6 +72,13 @@ export default function StudentDashboardPage() {
 
       if (res.ok) {
         const data = await res.json()
+        
+        if (!data.profileCompleted) {
+          localStorage.setItem("student_data", JSON.stringify(data))
+          router.push("/student-dashboard/complete-profile")
+          return
+        }
+        
         setStudent(data)
         localStorage.setItem("student_data", JSON.stringify(data))
       } else if (res.status === 401) {
