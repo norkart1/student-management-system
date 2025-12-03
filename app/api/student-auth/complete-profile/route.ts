@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken"
 interface ProfileData {
   dateOfBirth: string
   gender: string
-  applyingForClass: number
+  applyingForClass: string
   parentName: string
   parentPhone: string
   parentEmail: string
@@ -45,9 +45,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (data.applyingForClass < 1 || data.applyingForClass > 12) {
+    if (!data.applyingForClass || data.applyingForClass.length === 0) {
       return NextResponse.json(
         { error: "Invalid class selection" },
+        { status: 400 }
+      )
+    }
+
+    const settings = await db.collection("admissionSettings").findOne({ active: true })
+    
+    if (!settings || !settings.isOpen) {
+      return NextResponse.json(
+        { error: "Admissions are currently closed" },
+        { status: 400 }
+      )
+    }
+
+    if (!settings.openClasses.includes(data.applyingForClass)) {
+      return NextResponse.json(
+        { error: "This class is not open for admission" },
         { status: 400 }
       )
     }

@@ -1,16 +1,20 @@
 # Bright Future Academy - School Management System
 
 ## Overview
-A comprehensive Next.js-based School Management System for Bright Future Academy, a private educational institution. The platform provides a unified interface for managing students, teachers, library books, and events. This is a **private staff portal** - not for public use.
+This project is a comprehensive Next.js-based School Management System for Bright Future Academy, a private educational institution. It serves as a private staff portal, providing a unified interface for managing students, teachers, library books, and events. The system aims to streamline administrative tasks and enhance communication within the academy. Key capabilities include student and teacher management, an advanced exam category system with public result search, a library system, event management, and secure authentication for different user roles. The vision is to provide a robust, all-in-one solution for the academy's operational needs.
 
-**School Name**: Bright Future Academy
-**Status**: Successfully imported and running on Replit
-**Last Updated**: December 3, 2025
+## User Preferences
+I prefer simple language and clear instructions.
+I like an iterative development approach, where features are built and reviewed in stages.
+Please ask before making major architectural changes or significant code refactors.
+I prefer detailed explanations for complex implementations.
+Do not make changes to the `public/` folder unless explicitly instructed.
+Do not modify the core authentication logic in `lib/auth.ts` or `lib/jwt.ts` without prior discussion.
 
-## Project Architecture
+## System Architecture
 
 ### Technology Stack
-- **Framework**: Next.js 15.5.6 (React 18.3.1)
+- **Framework**: Next.js (React)
 - **Language**: TypeScript
 - **Database**: MongoDB
 - **Styling**: Tailwind CSS
@@ -18,213 +22,43 @@ A comprehensive Next.js-based School Management System for Bright Future Academy
 - **Image Management**: Cloudinary
 - **Authentication**: JWT (JSON Web Tokens)
 
-### Project Structure
-```
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   │   ├── admin/        # Admin-related endpoints
-│   │   ├── auth/         # Admin authentication endpoints
-│   │   ├── student-auth/ # Student authentication endpoints
-│   │   ├── teacher-auth/ # Teacher authentication endpoints
-│   │   ├── dashboard-settings/ # Dashboard customization API
-│   │   ├── students/     # Student management
-│   │   ├── teachers/     # Teacher management
-│   │   ├── books/        # Library book management
-│   │   ├── events/       # Event management
-│   │   └── upload/       # Image upload (Cloudinary)
-│   ├── dashboard/        # Admin dashboard pages
-│   ├── student-dashboard/ # Student portal
-│   ├── teacher-dashboard/ # Teacher portal
-│   ├── login/            # Admin login page
-│   ├── student-login/    # Student login page
-│   ├── teacher-login/    # Teacher login page
-│   └── profile/          # User profile pages
-├── components/            # React components
-│   └── ui/               # Reusable UI components
-├── hooks/                 # Custom React hooks
-├── lib/                   # Utility functions
-│   ├── db.ts            # MongoDB connection
-│   ├── auth.ts          # Authentication logic
-│   ├── auth-middleware.ts # API authorization middleware
-│   ├── jwt.ts           # JWT utilities (admin, student, teacher tokens)
-│   └── init-db.ts       # Database initialization
-└── public/               # Static assets
-```
+### UI/UX Decisions
+- **Dashboard Design**: Separate dashboards for Admin, Student, and Teacher roles.
+- **Mobile Navigation**: Redesigned mobile bottom navigation with a simplified 3-section layout (Home | Plus Menu | Profile & Settings) and a center floating "Plus" button for quick access to core modules.
+- **Form Workflows**: Multi-step student registration flow, streamlined exam scoring with real-time pass/fail feedback.
+- **Visual Feedback**: Color-coded results (green for pass, red for fail) for immediate understanding.
+- **Branding**: Customizable dashboard settings for school branding.
 
-## Environment Configuration
+### Technical Implementations & Feature Specifications
+- **User Roles**: Admin, Teacher, and Student with distinct access levels and dashboards.
+- **Authentication**: Secure, role-based authentication using JWTs, supporting username-based login for teachers and email/registration number for students/admins. Passwords are hashed using bcrypt.
+- **Student Management**: Comprehensive student records, including birth date and registration number. Features self-registration, admin approval, and class assignment.
+- **Teacher Management**: Profiles, assignments, and credential management (username-based login). Teachers can view/edit student information based on permissions.
+- **Exam Category System**:
+    - Creation of exam categories (e.g., "First Semester") with thumbnail images.
+    - Subjects within categories with configurable max scores and individual pass marks (defaulting to 25% of max score, but customizable).
+    - Admin-selected student participation for each exam.
+    - Workflow: `draft` → `scoring` → `published` with server-side validation.
+    - Score entry with real-time pass/fail visual feedback.
+    - Public result search requiring both registration number and date of birth for enhanced security.
+- **Classes Registration System**: Management of classes with sections and academic years, allowing assignment of multiple students and teachers.
+- **Library System**: Tracking of books, loans, and returns.
+- **Event Calendar**: Scheduling and management of school events.
+- **Announcements**: Display of important announcements on the home page, categorized (general/exam/event/urgent).
+- **Image Uploads**: Integration with Cloudinary for handling profile pictures and other media.
+- **QR Code Generation**: For student/teacher IDs.
+- **PDF Report Export**: Capability to generate reports for records.
+- **API Structure**: Organized API routes for different modules (admin, auth, student, teacher, books, events, etc.).
+- **Database Initialization**: Automatic creation of MongoDB collections on first run.
 
-### Required Environment Variables (Secrets)
-All sensitive credentials are stored as Replit secrets:
+### System Design Choices
+- **Next.js App Router**: Utilizes the latest Next.js features for routing and data fetching.
+- **Server-side Validation**: Implemented for critical actions like exam status transitions, class assignments, and admission details to ensure data integrity and security.
+- **Middleware**: API authorization middleware (`auth-middleware.ts`) for enforcing role-based access control.
+- **Environment Variables**: All sensitive configurations are managed via Replit secrets, ensuring secure handling of credentials.
 
-- `JWT_SECRET` - Secret key for JWT token signing
-- `MONGODB_URI` - MongoDB connection string
-- `ADMIN_USERNAME` - Administrator username
-- `ADMIN_PASSWORD` - Administrator password
-- `ADMIN_EMAIL` - Administrator email (optional)
-- `CLOUDINARY_CLOUD_NAME` - Cloudinary cloud name for image uploads
-- `CLOUDINARY_API_KEY` - Cloudinary API key
-- `CLOUDINARY_API_SECRET` - Cloudinary API secret
-
-### Auto-configured Variables
-- `REPLIT_DEV_DOMAIN` - Auto-populated by Replit
-- `REPL_ID` - Auto-populated by Replit
-
-## Development
-
-### Running the Application
-The application runs automatically via the configured workflow:
-- **Workflow**: Next.js Development Server
-- **Command**: `npm run dev`
-- **Port**: 5000
-- **Host**: 0.0.0.0 (configured for Replit proxy)
-
-### Key Features
-1. **Student Management**: Add, edit, and track student records with registration numbers
-2. **Teacher Management**: Manage teacher profiles and assignments
-3. **Exam Category System**: 
-   - Create categories (First Sem, Second Sem) with thumbnail images
-   - Add subjects with individual max scores AND pass marks per subject
-   - Pass marks default to 25% of max score but can be customized
-   - Admin selects which students participate in each exam (no student applications)
-   - Enter per-subject scores with real-time pass/fail visual feedback
-   - Results display pass/fail status with color coding (green=pass, red=fail)
-   - Simplified workflow: draft → scoring → published
-4. **Public Result Search**: Students can search results by registration number AND date of birth on home page (enhanced security)
-5. **Announcements**: Display important announcements on home page
-6. **Library System**: Track books, loans, and returns
-7. **Event Calendar**: Schedule and manage school events
-8. **Authentication**: Secure admin and user authentication
-9. **Image Uploads**: Profile pictures and media via Cloudinary
-10. **QR Code Generation**: For student/teacher IDs
-11. **PDF Report Export**: Generate reports for records
-
-## Deployment
-
-### Configuration
-- **Target**: Autoscale (stateless web application)
-- **Build Command**: `npm run build`
-- **Start Command**: `npm start`
-- **Port**: 5000
-
-### Notes
-- The application is configured to work with Replit's proxy system
-- Host header verification is bypassed for development (configured in next.config.mjs)
-- WebSocket support for hot module reload in development
-
-## Database
-
-### MongoDB Collections
-- `students` - Student records (indexed on email, registrationNumber, dateOfBirth)
-- `teachers` - Teacher records (indexed on email, username)
-- `classes` - Class registrations with assigned students and teachers
-- `books` - Library book inventory (indexed on ISBN)
-- `examCategories` - Exam categories with status workflow (draft/scoring/published) and selectedStudents array
-- `examSubjects` - Subjects within categories with maxScore
-- `examResults` - Per-subject scores for selected students
-- `announcements` - Home page announcements (general/exam/event/urgent)
-- Additional collections for events and other data
-
-### Initialization
-Database collections are automatically created on first run via `lib/init-db.ts`.
-
-## Recent Changes
-- December 3, 2025: Multi-Step Student Registration Flow
-  - **Removed Admission Banner**: Removed the orange "NEW STUDENT ADMISSIONS OPEN!" header banner
-  - **Simplified Admission Card**: "New Admission" card now links directly to registration
-  - **Step 1 - Account Creation**: Students create account with basic info (name, email, phone, password)
-  - **Step 2 - Profile Completion**: After login, students complete admission details (DOB, gender, class, parent info)
-  - **Profile Completion Check**: Dashboard redirects incomplete profiles to /student-dashboard/complete-profile
-  - **New API**: /api/student-auth/complete-profile for saving admission details
-  - **Database Schema**: Added profileCompleted flag and admission fields to studentUsers
-
-- December 3, 2025: Teacher Username-Based Login & Credential Management
-  - **Username Login**: Teachers now log in with username instead of email
-  - **Admin Credential Setup**: Admin sets username and password when creating teacher accounts
-  - **Teacher Profile Credentials**: Teachers can view their assigned username and password in their profile
-  - **Unique Usernames**: Username uniqueness enforced on creation and update
-  - **Profile Page**: New /teacher-dashboard/profile page with login credentials display
-  - **Dashboard Enhancement**: Added "My Account" card with quick profile access
-  - **Note**: Viewable passwords stored for managed credential systems (internal school use)
-
-- December 2, 2025: Teacher Authentication & Dashboard Customization
-  - **Teacher Login Portal**: New /teacher-login page for teacher authentication
-  - **Teacher Dashboard**: New /teacher-dashboard with student viewing and editing capabilities
-  - **Teacher Profile Management**: View profile, logout functionality
-  - **Password Security**: Teacher passwords stored with bcrypt hashing
-  - **JWT Support**: Extended JWT to support admin, student, and teacher token types
-  - **Authorization Middleware**: New validateTeacherAuth and validateTeacherOrAdminAuth functions
-  - **Student Editing**: Teachers can edit student information but cannot delete students
-  - **Dashboard Customization**: Admin settings page with widget toggles and school branding options
-  - **New APIs**: /api/teacher-auth/login, /api/teacher-auth/profile, /api/dashboard-settings
-  - **Homepage Update**: Added Teacher Login option alongside Student and Staff Login
-  - **Role-based Access**: Different permissions for admin (full access), teacher (view/edit), student (view only)
-
-- December 2, 2025: Student Self-Registration & Admission System
-  - **Student Registration**: Students can create their own accounts from the home page
-  - **Registration Form**: Full name, profile photo upload, email, phone number, and password
-  - **Student Login**: Separate student login portal at /student-login
-  - **Student Dashboard**: Shows admission status, class info, books, and announcements
-  - **Admission Banner**: Prominent notification banner on home page linking to registration
-  - **Admin Approval**: New "Student Accounts" page in admin dashboard for approving student registrations
-  - **Class Assignment**: Admins assign approved students to specific classes (1-10)
-  - **Status Tracking**: Pending → Approved → Enrolled workflow
-  - **New APIs**: /api/student-auth/register, /api/student-auth/login, /api/student-auth/profile, /api/student-users
-  - **JWT Support**: Extended JWT to support both admin and student token types
-  - **New Collections**: studentUsers (for student accounts with hashed passwords)
-
-- December 2, 2025: Classes Registration System
-  - **Class Management**: Create classes (e.g., "9th Class", "10th Class - A") with sections and academic year
-  - **Student Assignment**: Assign multiple students to a class with search and multi-select
-  - **Teacher Assignment**: Assign multiple teachers to a class
-  - **Dashboard Page**: Grid view of all classes with student/teacher counts
-  - **New APIs**: /api/classes (CRUD operations with aggregation for member counts)
-  - **UI Components**: AddClassDialog, AssignMembersDialog with search and checkbox selection
-  - **Bottom Navigation**: Added Classes to the expandable menu
-
-- December 2, 2025: Redesigned Mobile Bottom Navigation
-  - **New Layout**: Simplified 3-section design (Home | Plus Menu | Profile & Settings)
-  - **Center Plus Button**: Floating button that expands to show Classes, Students, Teachers, Exams, Books
-  - **Quick Access**: Home on left, Profile and Settings on right for faster navigation
-  - **Expandable Menu**: 3-column grid popup with smooth animations
-  - **New Profile Page**: Added dedicated profile page at /dashboard/profile
-
-- December 2, 2025: Individual Pass Marks per Subject
-  - **Subject Creation**: Each subject now has both max score and pass marks fields
-  - **Smart Defaults**: Pass marks auto-calculate to 25% of max score, but can be customized
-  - **Select Books Dialog**: Improved UX with expandable per-book settings and default value propagation
-  - **Manual Override Tracking**: Tracks which subjects have custom settings vs defaults
-  - **Real-time Pass/Fail Feedback**: Score entry shows green (pass) or red (fail) as you type
-  - **Results Display**: All results views show pass/fail status with color coding
-  - **Public Results**: Students see pass/fail status when searching their results
-
-- December 2, 2025: Enhanced Student Management with Birth Date
-  - **Add Student Dialog**: Added date of birth input field (required)
-  - **Student List**: Now displays Registration Number, Full Name, Birth Date, and Phone
-  - **Student API**: PUT route now supports updating dateOfBirth field
-  - **Public Results Search**: Now requires both registration number AND date of birth for enhanced security
-  - **Home Page Search**: Updated search form with two fields (Registration Number + Date of Birth)
-
-- December 1, 2025: Comprehensive Exam Category System Redesign
-  - **Exam Categories**: Create categories like "First Semester", "Second Semester" with thumbnail images (1280x720)
-  - **Subject Management**: Add subjects to categories with max scores (scores only, no grades)
-  - **Admin Selection**: Admin manually selects which students participate in each exam (no student applications)
-  - **Status Lifecycle**: draft → scoring → published (with server-side enforcement)
-  - **Score Entry**: Enter per-subject scores for selected students only
-  - **Result Publishing**: Results visible only after category is published
-  - **Home Page Updates**: Added announcements section and result search by registration number
-  - **Security**: Status transitions validated server-side, scores require selected students
-  - New APIs: /api/announcements, /api/public/results, /api/exam-results, /api/exam-results/bulk
-  - New Collections: examCategories, examSubjects, examResults, announcements
-
-- December 1, 2025: Imported from GitHub and configured for Replit environment
-  - Installed all dependencies
-  - Configured environment variables
-  - Set up Next.js development workflow on port 5000
-  - Configured deployment settings for autoscale
-  - Verified application is running successfully
-
-## Notes
-- The project already had proper Next.js configuration for Replit (port 5000, host 0.0.0.0)
-- All environment variables were pre-configured as secrets
-- The application uses MongoDB as its primary database
-- Cloudinary integration is configured for image management
+## External Dependencies
+- **MongoDB**: Primary database for all application data.
+- **Cloudinary**: Cloud-based image and video management service for handling uploads.
+- **JWT (JSON Web Tokens)**: For secure authentication and authorization.
+- **bcrypt**: For hashing user passwords securely.

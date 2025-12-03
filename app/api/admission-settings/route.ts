@@ -5,7 +5,7 @@ import { type NextRequest, NextResponse } from "next/server"
 interface AdmissionSettingsInput {
   isOpen: boolean
   academicYear: string
-  openClasses: number[]
+  openClasses: string[]
   startDate?: string
   endDate?: string
   description?: string

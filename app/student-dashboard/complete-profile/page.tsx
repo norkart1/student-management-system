@@ -25,9 +25,16 @@ import {
 interface AdmissionSettings {
   isOpen: boolean
   academicYear: string
-  openClasses: number[]
+  openClasses: string[]
   description?: string
   requirements?: string
+}
+
+interface ClassData {
+  _id: string
+  name: string
+  section: string | null
+  academicYear: string
 }
 
 export default function CompleteProfilePage() {
@@ -37,12 +44,13 @@ export default function CompleteProfilePage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [settings, setSettings] = useState<AdmissionSettings | null>(null)
+  const [classes, setClasses] = useState<ClassData[]>([])
   const [studentName, setStudentName] = useState("")
   
   const [formData, setFormData] = useState({
     dateOfBirth: "",
     gender: "",
-    applyingForClass: 0,
+    applyingForClass: "",
     parentName: "",
     parentPhone: "",
     parentEmail: "",
@@ -73,14 +81,35 @@ export default function CompleteProfilePage() {
 
   const fetchAdmissionSettings = async () => {
     try {
-      const res = await fetch("/api/admission-settings")
-      if (res.ok) {
-        const data = await res.json()
+      const [settingsRes, classesRes] = await Promise.all([
+        fetch("/api/admission-settings"),
+        fetch("/api/classes")
+      ])
+      
+      if (settingsRes.ok) {
+        const data = await settingsRes.json()
         setSettings(data)
+      }
+      
+      if (classesRes.ok) {
+        const classesData = await classesRes.json()
+        setClasses(classesData)
       }
     } catch (err) {
       console.error("Failed to fetch admission settings:", err)
     }
+  }
+
+  const getOpenClasses = () => {
+    if (!settings?.openClasses?.length) return []
+    return classes.filter(c => settings.openClasses.includes(c._id))
+  }
+
+  const getClassDisplayName = (classData: ClassData) => {
+    if (classData.section) {
+      return `${classData.name} - ${classData.section}`
+    }
+    return classData.name
   }
 
   const handleLogout = () => {
@@ -89,11 +118,6 @@ export default function CompleteProfilePage() {
     router.push("/student-login")
   }
 
-  const getClassLabel = (num: number) => {
-    if (num <= 0) return "Select Class"
-    const suffix = num === 1 ? "st" : num === 2 ? "nd" : num === 3 ? "rd" : "th"
-    return `${num}${suffix} Class`
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -251,18 +275,16 @@ export default function CompleteProfilePage() {
                     <School className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 z-10" />
                     <select
                       value={formData.applyingForClass}
-                      onChange={(e) => setFormData({ ...formData, applyingForClass: parseInt(e.target.value) })}
+                      onChange={(e) => setFormData({ ...formData, applyingForClass: e.target.value })}
                       required
                       className="w-full h-10 pl-10 pr-3 bg-slate-900/50 border border-slate-700 rounded-md text-white focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
                     >
-                      <option value={0}>Select Class</option>
-                      {settings?.openClasses?.sort((a, b) => a - b).map(num => (
-                        <option key={num} value={num}>{getClassLabel(num)}</option>
-                      )) || (
-                        Array.from({ length: 10 }, (_, i) => i + 1).map(num => (
-                          <option key={num} value={num}>{getClassLabel(num)}</option>
-                        ))
-                      )}
+                      <option value="">Select Class</option>
+                      {getOpenClasses().map(classData => (
+                        <option key={classData._id} value={classData._id}>
+                          {getClassDisplayName(classData)}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -349,7 +371,7 @@ export default function CompleteProfilePage() {
 
               <Button
                 type="submit"
-                disabled={submitting || formData.applyingForClass === 0}
+                disabled={submitting || !formData.applyingForClass}
                 className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium"
               >
                 {submitting ? (

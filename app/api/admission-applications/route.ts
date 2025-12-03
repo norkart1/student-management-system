@@ -6,7 +6,7 @@ interface ApplicationInput {
   studentName: string
   dateOfBirth: string
   gender: string
-  applyingForClass: number
+  applyingForClass: string
   parentName: string
   parentPhone: string
   parentEmail: string
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     
     const query: any = {}
     if (status) query.status = status
-    if (classNum) query.applyingForClass = parseInt(classNum)
+    if (classNum) query.applyingForClass = classNum
 
     const applications = await db.collection("admissionApplications")
       .find(query)

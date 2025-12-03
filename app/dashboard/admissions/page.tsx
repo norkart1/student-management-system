@@ -42,7 +42,7 @@ interface AdmissionSettings {
   _id?: string
   isOpen: boolean
   academicYear: string
-  openClasses: number[]
+  openClasses: string[]
   description: string
   requirements: string
   startDate: string | null
@@ -55,7 +55,7 @@ interface Application {
   studentName: string
   dateOfBirth: string
   gender: string
-  applyingForClass: number
+  applyingForClass: string
   parentName: string
   parentPhone: string
   parentEmail: string
@@ -67,7 +67,12 @@ interface Application {
   createdAt: string
 }
 
-const allClasses = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+interface ClassData {
+  _id: string
+  name: string
+  section: string | null
+  academicYear: string
+}
 
 export default function AdmissionsPage() {
   const [activeTab, setActiveTab] = useState<"settings" | "applications">("applications")
@@ -81,6 +86,7 @@ export default function AdmissionsPage() {
     endDate: null
   })
   const [applications, setApplications] = useState<Application[]>([])
+  const [classes, setClasses] = useState<ClassData[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
@@ -94,9 +100,12 @@ export default function AdmissionsPage() {
   const fetchData = async () => {
     try {
       const token = getAuthToken()
-      const [settingsRes, appsRes] = await Promise.all([
+      const [settingsRes, appsRes, classesRes] = await Promise.all([
         fetch("/api/admission-settings"),
         fetch("/api/admission-applications", {
+          headers: { "Authorization": `Bearer ${token}` }
+        }),
+        fetch("/api/classes", {
           headers: { "Authorization": `Bearer ${token}` }
         })
       ])
@@ -109,6 +118,11 @@ export default function AdmissionsPage() {
       if (appsRes.ok) {
         const appsData = await appsRes.json()
         setApplications(appsData)
+      }
+
+      if (classesRes.ok) {
+        const classesData = await classesRes.json()
+        setClasses(classesData)
       }
     } catch (error) {
       console.error("Error fetching data:", error)
@@ -182,18 +196,28 @@ export default function AdmissionsPage() {
     }
   }
 
-  const toggleClass = (classNum: number) => {
+  const toggleClass = (classId: string) => {
     setSettings(prev => ({
       ...prev,
-      openClasses: prev.openClasses.includes(classNum)
-        ? prev.openClasses.filter(c => c !== classNum)
-        : [...prev.openClasses, classNum]
+      openClasses: prev.openClasses.includes(classId)
+        ? prev.openClasses.filter(c => c !== classId)
+        : [...prev.openClasses, classId]
     }))
   }
 
-  const getClassLabel = (num: number) => {
-    const suffix = num === 1 ? "st" : num === 2 ? "nd" : num === 3 ? "rd" : "th"
-    return `${num}${suffix} Class`
+  const getClassDisplayName = (classData: ClassData) => {
+    if (classData.section) {
+      return `${classData.name} - ${classData.section}`
+    }
+    return classData.name
+  }
+
+  const getClassNameById = (classId: string) => {
+    const classData = classes.find(c => c._id === classId)
+    if (classData) {
+      return getClassDisplayName(classData)
+    }
+    return classId
   }
 
   const getStatusStyle = (status: string) => {
@@ -379,29 +403,42 @@ export default function AdmissionsPage() {
                 <CardDescription className="text-slate-500">Select which classes are open for admission</CardDescription>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                  {allClasses.map(num => (
-                    <label
-                      key={num}
-                      className={`flex flex-col items-center justify-center p-4 rounded-xl cursor-pointer transition-all border-2 ${
-                        settings.openClasses.includes(num)
-                          ? "bg-emerald-50 border-emerald-500 text-emerald-700"
-                          : "bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300"
-                      }`}
-                    >
-                      <Checkbox
-                        checked={settings.openClasses.includes(num)}
-                        onCheckedChange={() => toggleClass(num)}
-                        className="sr-only"
-                      />
-                      <span className="text-2xl font-bold">{num}</span>
-                      <span className="text-xs">Class</span>
-                    </label>
-                  ))}
-                </div>
-                <p className="text-sm text-slate-500 mt-4 text-center">
-                  {settings.openClasses.length} class{settings.openClasses.length !== 1 ? "es" : ""} selected
-                </p>
+                {classes.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <GraduationCap className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <p className="text-slate-500 mb-2">No classes registered yet</p>
+                    <p className="text-sm text-slate-400">Go to Classes section to add classes first</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {classes.map(classData => (
+                        <label
+                          key={classData._id}
+                          className={`flex flex-col items-center justify-center p-4 rounded-xl cursor-pointer transition-all border-2 ${
+                            settings.openClasses.includes(classData._id)
+                              ? "bg-emerald-50 border-emerald-500 text-emerald-700"
+                              : "bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300"
+                          }`}
+                        >
+                          <Checkbox
+                            checked={settings.openClasses.includes(classData._id)}
+                            onCheckedChange={() => toggleClass(classData._id)}
+                            className="sr-only"
+                          />
+                          <span className="text-xl font-bold text-center">{classData.name}</span>
+                          {classData.section && <span className="text-sm">Section {classData.section}</span>}
+                          <span className="text-xs text-slate-400 mt-1">{classData.academicYear}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <p className="text-sm text-slate-500 mt-4 text-center">
+                      {settings.openClasses.length} class{settings.openClasses.length !== 1 ? "es" : ""} selected
+                    </p>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -456,7 +493,7 @@ export default function AdmissionsPage() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
                             <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center">
-                              <span className="text-white font-bold">{app.applyingForClass}</span>
+                              <GraduationCap className="w-6 h-6 text-white" />
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
@@ -466,7 +503,7 @@ export default function AdmissionsPage() {
                                 </span>
                               </div>
                               <p className="text-sm text-slate-500">
-                                {app.applicationNumber} - {getClassLabel(app.applyingForClass)}
+                                {app.applicationNumber} - {getClassNameById(app.applyingForClass)}
                               </p>
                             </div>
                           </div>
