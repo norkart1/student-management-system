@@ -128,6 +128,15 @@ The application runs automatically via the configured workflow:
 Database collections are automatically created on first run via `lib/init-db.ts`.
 
 ## Recent Changes
+- December 3, 2025: Multi-Step Student Registration Flow
+  - **Removed Admission Banner**: Removed the orange "NEW STUDENT ADMISSIONS OPEN!" header banner
+  - **Simplified Admission Card**: "New Admission" card now links directly to registration
+  - **Step 1 - Account Creation**: Students create account with basic info (name, email, phone, password)
+  - **Step 2 - Profile Completion**: After login, students complete admission details (DOB, gender, class, parent info)
+  - **Profile Completion Check**: Dashboard redirects incomplete profiles to /student-dashboard/complete-profile
+  - **New API**: /api/student-auth/complete-profile for saving admission details
+  - **Database Schema**: Added profileCompleted flag and admission fields to studentUsers
+
 - December 3, 2025: Teacher Username-Based Login & Credential Management
   - **Username Login**: Teachers now log in with username instead of email
   - **Admin Credential Setup**: Admin sets username and password when creating teacher accounts
