@@ -12,13 +12,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
 import { 
   FileQuestion,
   Plus,
   Trash2,
   Check,
   Clock,
-  Target
+  Target,
+  Globe
 } from "lucide-react"
 
 interface Question {
@@ -35,6 +37,7 @@ interface QuizData {
   description: string
   duration: number
   passingScore: number
+  isPublic?: boolean
   questions: Question[]
 }
 
@@ -52,6 +55,7 @@ export function AddQuizDialog({ open, onOpenChange, onSave, editData }: AddQuizD
     description: "",
     duration: 30,
     passingScore: 50,
+    isPublic: false,
   })
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestion, setCurrentQuestion] = useState<Question>({
@@ -69,10 +73,11 @@ export function AddQuizDialog({ open, onOpenChange, onSave, editData }: AddQuizD
         description: editData.description || "",
         duration: editData.duration || 30,
         passingScore: editData.passingScore || 50,
+        isPublic: editData.isPublic || false,
       })
       setQuestions(editData.questions || [])
     } else {
-      setFormData({ title: "", description: "", duration: 30, passingScore: 50 })
+      setFormData({ title: "", description: "", duration: 30, passingScore: 50, isPublic: false })
       setQuestions([])
     }
     setStep(1)
@@ -207,6 +212,29 @@ export function AddQuizDialog({ open, onOpenChange, onSave, editData }: AddQuizD
                     value={formData.passingScore}
                     onChange={(e) => setFormData({ ...formData, passingScore: Number(e.target.value) })}
                     className="h-11"
+                  />
+                </div>
+              </div>
+
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                      <Globe className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <Label htmlFor="isPublic" className="text-slate-800 font-medium cursor-pointer">
+                        Public Quiz
+                      </Label>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Allow anyone to participate without login
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    id="isPublic"
+                    checked={formData.isPublic}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isPublic: checked })}
                   />
                 </div>
               </div>

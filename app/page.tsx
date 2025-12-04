@@ -22,7 +22,11 @@ import {
   Info,
   X,
   ChevronDown,
-  UserCircle
+  UserCircle,
+  FileQuestion,
+  Clock,
+  Target,
+  PlayCircle
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AdmissionApplicationForm } from "@/components/admission-application-form"
@@ -48,6 +52,16 @@ interface Announcement {
   title: string
   content: string
   type: "general" | "exam" | "event" | "urgent"
+  createdAt: string
+}
+
+interface PublicQuiz {
+  _id: string
+  title: string
+  description: string
+  duration: number
+  passingScore: number
+  questionCount: number
   createdAt: string
 }
 
@@ -112,6 +126,8 @@ export default function LandingPage() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [loadingAnnouncements, setLoadingAnnouncements] = useState(true)
   const [admissionSettings, setAdmissionSettings] = useState<AdmissionSettings | null>(null)
+  const [publicQuizzes, setPublicQuizzes] = useState<PublicQuiz[]>([])
+  const [loadingQuizzes, setLoadingQuizzes] = useState(true)
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % schoolImages.length)
@@ -130,7 +146,22 @@ export default function LandingPage() {
     fetchPublishedExams()
     fetchAnnouncements()
     fetchAdmissionSettings()
+    fetchPublicQuizzes()
   }, [])
+
+  const fetchPublicQuizzes = async () => {
+    try {
+      const res = await fetch("/api/public/quizzes")
+      if (res.ok) {
+        const data = await res.json()
+        setPublicQuizzes(data)
+      }
+    } catch (err) {
+      console.error("Failed to fetch public quizzes:", err)
+    } finally {
+      setLoadingQuizzes(false)
+    }
+  }
 
   const fetchAdmissionSettings = async () => {
     try {
@@ -330,6 +361,52 @@ export default function LandingPage() {
                 <div className="mt-6">
                   <AdmissionApplicationForm />
                 </div>
+
+                {!loadingQuizzes && publicQuizzes.length > 0 && (
+                  <div className="mt-6 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 backdrop-blur-sm border border-emerald-500/20 rounded-2xl overflow-hidden">
+                    <div className="flex items-center gap-2 px-4 py-3 bg-emerald-500/20 border-b border-emerald-500/20">
+                      <FileQuestion className="w-5 h-5 text-emerald-400" />
+                      <h3 className="text-lg font-semibold text-white">Active Quizzes</h3>
+                      <span className="ml-auto px-2 py-0.5 bg-emerald-500 text-white text-xs font-bold rounded-full animate-pulse">
+                        LIVE
+                      </span>
+                    </div>
+                    <div className="divide-y divide-emerald-500/10">
+                      {publicQuizzes.map((quiz) => (
+                        <Link 
+                          key={quiz._id} 
+                          href={`/quiz/${quiz._id}`}
+                          className="block p-4 hover:bg-emerald-500/10 transition-colors"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                              <FileQuestion className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-white font-medium text-sm mb-1 line-clamp-1">
+                                {quiz.title}
+                              </h4>
+                              <div className="flex items-center gap-3 text-xs text-slate-400">
+                                <span className="flex items-center gap-1">
+                                  <FileQuestion className="w-3 h-3" />
+                                  {quiz.questionCount} questions
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  {quiz.duration} min
+                                </span>
+                              </div>
+                            </div>
+                            <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white gap-1.5 text-xs">
+                              <PlayCircle className="w-3.5 h-3.5" />
+                              Take Quiz
+                            </Button>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {!loadingAnnouncements && announcements.length > 0 && (
                   <div className="mt-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">

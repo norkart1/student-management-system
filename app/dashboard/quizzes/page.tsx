@@ -23,7 +23,8 @@ import {
   FileText,
   PlayCircle,
   StopCircle,
-  BarChart3
+  BarChart3,
+  Globe
 } from "lucide-react"
 
 interface Quiz {
@@ -33,6 +34,7 @@ interface Quiz {
   duration: number
   passingScore: number
   status: "draft" | "active" | "closed"
+  isPublic?: boolean
   questionCount: number
   attemptCount: number
   questions: any[]
@@ -293,9 +295,17 @@ export default function QuizzesPage() {
                               </div>
                             </div>
 
-                            <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig[quiz.status].color}`}>
-                              <StatusIcon className="w-3.5 h-3.5" />
-                              {statusConfig[quiz.status].label}
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig[quiz.status].color}`}>
+                                <StatusIcon className="w-3.5 h-3.5" />
+                                {statusConfig[quiz.status].label}
+                              </div>
+                              {quiz.isPublic && (
+                                <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                                  <Globe className="w-3 h-3" />
+                                  Public
+                                </div>
+                              )}
                             </div>
 
                             <div className="flex items-center gap-4 mt-4 text-sm text-slate-600">

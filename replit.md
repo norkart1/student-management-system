@@ -77,6 +77,14 @@ Do not modify the core authentication logic in `lib/auth.ts` or `lib/jwt.ts` wit
 - **bcrypt**: For hashing user passwords securely.
 
 ## Recent Changes
+- **December 4, 2025**: Added Public Quiz System allowing anyone to participate without login:
+    - Added `isPublic` flag to quiz schema for marking quizzes as publicly accessible.
+    - Created public quiz API endpoints (`/api/public/quizzes`, `/api/public/quiz-attempts`).
+    - Added public quiz notification section on home page showing active public quizzes with "LIVE" badge.
+    - Created public quiz participation page (`/quiz/[id]`) with registration form (image, name, phone, place).
+    - Added "Public Quiz" toggle in admin quiz creation dialog.
+    - Public participants tracked in `publicQuizAttempts` collection (one attempt per phone number).
+    - Updated image upload to support public (unauthenticated) uploads.
 - **December 4, 2025**: Implemented new Quiz System with the following features:
     - Admin quiz management page (`/dashboard/quizzes`) with create, edit, delete, and status controls.
     - Multi-step quiz creation dialog supporting multiple choice and true/false questions.

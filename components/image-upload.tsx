@@ -10,9 +10,11 @@ interface ImageUploadProps {
   value?: string
   onChange: (url: string) => void
   type?: "profile" | "book"
+  label?: string
+  isPublic?: boolean
 }
 
-export function ImageUpload({ value, onChange, type = "profile" }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, type = "profile", label, isPublic = false }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -38,13 +40,17 @@ export function ImageUpload({ value, onChange, type = "profile" }: ImageUploadPr
       const formData = new FormData()
       formData.append("file", file)
       formData.append("type", type)
+      if (isPublic) formData.append("isPublic", "true")
 
-      const token = getAuthToken()
+      const headers: Record<string, string> = {}
+      if (!isPublic) {
+        const token = getAuthToken()
+        headers.Authorization = `Bearer ${token}`
+      }
+
       const response = await fetch("/api/upload", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
         body: formData,
       })
 

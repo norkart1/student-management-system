@@ -69,6 +69,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (data.duration !== undefined) updateData.duration = Number(data.duration)
     if (data.passingScore !== undefined) updateData.passingScore = Number(data.passingScore)
     if (data.status !== undefined) updateData.status = data.status
+    if (data.isPublic !== undefined) updateData.isPublic = data.isPublic
     if (data.questions !== undefined) updateData.questions = data.questions
 
     await db.collection("quizzes").updateOne(

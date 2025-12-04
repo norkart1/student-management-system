@@ -9,6 +9,7 @@ interface QuizInput {
   duration?: number
   passingScore?: number
   status?: "draft" | "active" | "closed"
+  isPublic?: boolean
   questions?: QuestionInput[]
 }
 
@@ -89,6 +90,7 @@ export async function POST(request: NextRequest) {
       duration: data.duration || 30,
       passingScore: data.passingScore || 50,
       status: data.status || "draft",
+      isPublic: data.isPublic || false,
       questions: data.questions || [],
       createdAt: new Date(),
       updatedAt: new Date(),

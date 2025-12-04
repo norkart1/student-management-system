@@ -13,9 +13,14 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"]
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = validateAuth(request)
-    if (!auth.valid) {
-      return unauthorizedResponse(auth.error)
+    const formData = await request.formData()
+    const isPublic = formData.get("isPublic") === "true"
+    
+    if (!isPublic) {
+      const auth = validateAuth(request)
+      if (!auth.valid) {
+        return unauthorizedResponse(auth.error)
+      }
     }
 
     if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
@@ -25,7 +30,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const formData = await request.formData()
     const file = formData.get("file") as File
     const type = formData.get("type") as string || "profile"
 
