@@ -23,11 +23,13 @@ Do not modify the core authentication logic in `lib/auth.ts` or `lib/jwt.ts` wit
 - **Authentication**: JWT (JSON Web Tokens)
 
 ### UI/UX Decisions
-- **Dashboard Design**: Separate dashboards for Admin, Student, and Teacher roles.
+- **Dashboard Design**: Separate dashboards for Admin, Student, and Teacher roles. All dashboards use consistent emerald/slate/teal color themes.
 - **Mobile Navigation**: Redesigned mobile bottom navigation with a simplified 3-section layout (Home | Plus Menu | Profile & Settings) and a center floating "Plus" button for quick access to core modules.
 - **Form Workflows**: Multi-step student registration flow, streamlined exam scoring with real-time pass/fail feedback.
 - **Visual Feedback**: Color-coded results (green for pass, red for fail) for immediate understanding.
 - **Branding**: Customizable dashboard settings for school branding.
+- **Consistent Page Design**: Classes and Exam Categories pages share consistent card-based layouts with CardHeader, search inputs, and filtered grid views.
+- **Settings Checkboxes**: Use div wrappers with onClick handlers for better desktop click behavior (instead of label wrappers).
 
 ### Technical Implementations & Feature Specifications
 - **User Roles**: Admin, Teacher, and Student with distinct access levels and dashboards.

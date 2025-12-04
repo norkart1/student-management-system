@@ -20,10 +20,18 @@ import {
   Megaphone,
   AlertTriangle,
   Info,
-  X
+  X,
+  ChevronDown,
+  UserCircle
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AdmissionApplicationForm } from "@/components/admission-application-form"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface PublishedExam {
   _id: string
@@ -188,24 +196,50 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button asChild variant="outline" className="border-white/20 text-white hover:bg-white/10 font-medium hidden sm:flex">
-                <Link href="/student-login">
-                  <GraduationCap className="w-4 h-4 mr-2" />
-                  Student Login
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="border-white/20 text-white hover:bg-white/10 font-medium hidden sm:flex">
-                <Link href="/teacher-login">
-                  <Users className="w-4 h-4 mr-2" />
-                  Teacher Login
-                </Link>
-              </Button>
-              <Button asChild className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium shadow-lg shadow-amber-500/20">
-                <Link href="/login">
-                  <Lock className="w-4 h-4 mr-2" />
-                  Staff Login
-                </Link>
-              </Button>
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                  <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium shadow-lg shadow-amber-500/20">
+                    <Lock className="w-4 h-4 mr-2" />
+                    Login
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-slate-800 border-slate-700">
+                  <DropdownMenuItem asChild className="cursor-pointer text-white hover:bg-slate-700 focus:bg-slate-700 focus:text-white">
+                    <Link href="/student-login" className="flex items-center gap-3 py-3">
+                      <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                        <GraduationCap className="w-4 h-4 text-emerald-400" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Student</div>
+                        <div className="text-xs text-slate-400">Access student portal</div>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer text-white hover:bg-slate-700 focus:bg-slate-700 focus:text-white">
+                    <Link href="/teacher-login" className="flex items-center gap-3 py-3">
+                      <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                        <Users className="w-4 h-4 text-blue-400" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Teacher</div>
+                        <div className="text-xs text-slate-400">Access teacher dashboard</div>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer text-white hover:bg-slate-700 focus:bg-slate-700 focus:text-white">
+                    <Link href="/login" className="flex items-center gap-3 py-3">
+                      <div className="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center">
+                        <Shield className="w-4 h-4 text-amber-400" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Staff / Admin</div>
+                        <div className="text-xs text-slate-400">Access admin dashboard</div>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
