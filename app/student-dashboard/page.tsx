@@ -235,7 +235,7 @@ export default function StudentDashboardPage() {
       const res = await fetch("/api/announcements")
       if (res.ok) {
         const data = await res.json()
-        setAnnouncements(data.slice(0, 5))
+        setNotifications(data.slice(0, 5))
       }
     } catch (error) {
       console.error("Failed to fetch announcements:", error)
@@ -795,9 +795,9 @@ export default function StudentDashboardPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="px-4 sm:px-6">
-                  {announcements.length > 0 ? (
+                  {notifications.length > 0 ? (
                     <div className="space-y-2 sm:space-y-3">
-                      {announcements.map((announcement) => (
+                      {notifications.map((announcement: Notification) => (
                         <div
                           key={announcement._id}
                           className="p-2 sm:p-3 bg-gradient-to-r from-[#CFF4D2]/40 to-[#7BE495]/20 rounded-xl"
