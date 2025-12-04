@@ -6,6 +6,7 @@ import { getAuthToken } from "@/lib/auth"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/spinner"
+import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
 import Image from "next/image"
 import {
   Users,
@@ -40,6 +41,9 @@ export default function StudentAccountsPage() {
   const [loading, setLoading] = useState(true)
   const [expandedStudent, setExpandedStudent] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [studentToDelete, setStudentToDelete] = useState<StudentUser | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     fetchStudents()
@@ -63,21 +67,31 @@ export default function StudentAccountsPage() {
     }
   }
 
-  const handleDeleteStudent = async (studentId: string) => {
-    if (!confirm("Are you sure you want to delete this student account?")) return
+  const openDeleteDialog = (student: StudentUser) => {
+    setStudentToDelete(student)
+    setDeleteDialogOpen(true)
+  }
 
+  const handleDeleteStudent = async () => {
+    if (!studentToDelete) return
+
+    setDeleting(true)
     const token = getAuthToken()
     try {
-      const res = await fetch(`/api/student-users/${studentId}`, {
+      const res = await fetch(`/api/student-users/${studentToDelete._id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       })
 
       if (res.ok) {
         fetchStudents()
+        setDeleteDialogOpen(false)
+        setStudentToDelete(null)
       }
     } catch (error) {
       console.error("Failed to delete student:", error)
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -252,7 +266,7 @@ export default function StudentAccountsPage() {
                           variant="ghost"
                           onClick={(e) => {
                             e.stopPropagation()
-                            handleDeleteStudent(student._id)
+                            openDeleteDialog(student)
                           }}
                           className="text-slate-500 hover:text-red-600 hover:bg-red-50"
                         >
@@ -268,6 +282,15 @@ export default function StudentAccountsPage() {
           </div>
         )}
       </div>
+
+      <DeleteConfirmationDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteStudent}
+        title="Delete Student Account"
+        itemName={studentToDelete?.fullName}
+        loading={deleting}
+      />
     </ProtectedLayout>
   )
 }
