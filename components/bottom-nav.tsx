@@ -15,7 +15,8 @@ import {
   User,
   Settings,
   School,
-  UserPlus
+  UserPlus,
+  UserCheck
 } from "lucide-react"
 
 const expandedNavItems = [
@@ -48,6 +49,11 @@ const expandedNavItems = [
     name: "Admissions", 
     href: "/dashboard/admissions", 
     icon: UserPlus,
+  },
+  { 
+    name: "Accounts", 
+    href: "/dashboard/student-admissions", 
+    icon: UserCheck,
   },
 ]
 
