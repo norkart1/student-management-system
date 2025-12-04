@@ -216,25 +216,28 @@ export function AddQuizDialog({ open, onOpenChange, onSave, editData }: AddQuizD
                 </div>
               </div>
 
-              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                      <Globe className="w-5 h-5 text-amber-600" />
-                    </div>
-                    <div>
-                      <Label htmlFor="isPublic" className="text-slate-800 font-medium cursor-pointer">
-                        Public Quiz
-                      </Label>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        Allow anyone to participate without login
-                      </p>
-                    </div>
+              <div 
+                className="p-4 bg-amber-50 border border-amber-200 rounded-xl cursor-pointer"
+                onClick={() => setFormData({ ...formData, isPublic: !formData.isPublic })}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Globe className="w-5 h-5 text-amber-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <Label htmlFor="isPublic" className="text-slate-800 font-medium cursor-pointer block">
+                      Public Quiz
+                    </Label>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Allow anyone to participate without login
+                    </p>
                   </div>
                   <Switch
                     id="isPublic"
                     checked={formData.isPublic}
                     onCheckedChange={(checked) => setFormData({ ...formData, isPublic: checked })}
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex-shrink-0"
                   />
                 </div>
               </div>

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AddQuizDialog } from "@/components/add-quiz-dialog"
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
+import { ViewQuizResultsDialog } from "@/components/view-quiz-results-dialog"
 import { Spinner } from "@/components/spinner"
 import { toast } from "sonner"
 import { 
@@ -58,6 +59,9 @@ export default function QuizzesPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [quizToDelete, setQuizToDelete] = useState<Quiz | null>(null)
   const [deleting, setDeleting] = useState(false)
+  
+  const [resultsDialogOpen, setResultsDialogOpen] = useState(false)
+  const [quizForResults, setQuizForResults] = useState<Quiz | null>(null)
 
   useEffect(() => {
     fetchQuizzes()
@@ -183,6 +187,11 @@ export default function QuizzesPage() {
     } finally {
       setDeleting(false)
     }
+  }
+
+  const handleViewResults = (quiz: Quiz) => {
+    setQuizForResults(quiz)
+    setResultsDialogOpen(true)
   }
 
   const formatDate = (dateString: string) => {
@@ -365,6 +374,7 @@ export default function QuizzesPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
+                                onClick={() => handleViewResults(quiz)}
                                 className="gap-1.5 text-xs border-slate-200"
                               >
                                 <BarChart3 className="w-3.5 h-3.5" />
@@ -412,6 +422,12 @@ export default function QuizzesPage() {
         title="Delete Quiz"
         itemName={quizToDelete?.title}
         loading={deleting}
+      />
+
+      <ViewQuizResultsDialog
+        open={resultsDialogOpen}
+        onOpenChange={setResultsDialogOpen}
+        quiz={quizForResults}
       />
     </ProtectedLayout>
   )
