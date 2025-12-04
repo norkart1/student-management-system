@@ -34,7 +34,8 @@ import {
   FileText,
   Award,
   Megaphone,
-  CalendarDays
+  CalendarDays,
+  FileQuestion
 } from "lucide-react"
 
 interface Notification {
@@ -484,6 +485,23 @@ export default function StudentDashboardPage() {
               </div>
             </CardContent>
           </Card>
+
+          <Link href="/student-dashboard/quizzes" className="block">
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-[#329D9C]/10 to-[#56C596]/10 hover:shadow-2xl transition-all cursor-pointer group">
+              <CardContent className="py-4 sm:py-6 px-4 sm:px-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#329D9C] to-[#56C596] flex items-center justify-center text-white shadow-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <FileQuestion className="w-5 h-5 sm:w-6 sm:h-6" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-base sm:text-lg font-bold text-[#205072]">Take Quizzes</p>
+                    <p className="text-xs sm:text-sm text-[#329D9C]">Test your knowledge</p>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-[#329D9C] group-hover:translate-x-1 transition-transform" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {student.admissionStatus === "pending" && (

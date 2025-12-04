@@ -43,6 +43,16 @@ Do not modify the core authentication logic in `lib/auth.ts` or `lib/jwt.ts` wit
     - Workflow: `draft` → `scoring` → `published` with server-side validation.
     - Score entry with real-time pass/fail visual feedback.
     - Public result search requiring both registration number and date of birth for enhanced security.
+- **Quiz System**:
+    - Admin/teacher quiz creation with multiple choice and true/false questions.
+    - Configurable quiz settings: duration (minutes), passing score (percentage), points per question.
+    - Quiz workflow: `draft` → `active` → `closed`.
+    - Student quiz-taking interface with timer, progress tracking, and question navigation.
+    - Automatic grading with immediate results (score, percentage, pass/fail status).
+    - One attempt per student per quiz enforcement.
+    - Quiz history tracking for students.
+    - API routes: `/api/quizzes` (CRUD), `/api/quiz-attempts` (student submissions).
+    - MongoDB collections: `quizzes`, `quizAttempts`.
 - **Classes Registration System**: Management of classes with sections and academic years, allowing assignment of multiple students and teachers.
 - **Library System**: Tracking of books, loans, and returns.
 - **Event Calendar**: Scheduling and management of school events.
@@ -67,6 +77,13 @@ Do not modify the core authentication logic in `lib/auth.ts` or `lib/jwt.ts` wit
 - **bcrypt**: For hashing user passwords securely.
 
 ## Recent Changes
+- **December 4, 2025**: Implemented new Quiz System with the following features:
+    - Admin quiz management page (`/dashboard/quizzes`) with create, edit, delete, and status controls.
+    - Multi-step quiz creation dialog supporting multiple choice and true/false questions.
+    - Student quiz listing page (`/student-dashboard/quizzes`) with quiz history.
+    - Interactive quiz-taking interface with timer, question navigation, and immediate results.
+    - Added "Quizzes" to sidebar navigation and bottom nav.
+    - Added "Take Quizzes" quick access link on student dashboard.
 - **December 4, 2025**: Fixed student dashboard bug where `setAnnouncements`/`announcements` were used instead of `setNotifications`/`notifications`, causing errors for approved students accessing their dashboard.
 
 ## Development Setup

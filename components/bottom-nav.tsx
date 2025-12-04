@@ -16,7 +16,8 @@ import {
   Settings,
   School,
   UserPlus,
-  UserCheck
+  UserCheck,
+  FileQuestion
 } from "lucide-react"
 
 const expandedNavItems = [
@@ -39,6 +40,11 @@ const expandedNavItems = [
     name: "Exams", 
     href: "/dashboard/exams", 
     icon: ClipboardList,
+  },
+  { 
+    name: "Quizzes", 
+    href: "/dashboard/quizzes", 
+    icon: FileQuestion,
   },
   { 
     name: "Books", 
