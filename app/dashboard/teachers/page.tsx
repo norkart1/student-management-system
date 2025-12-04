@@ -219,23 +219,22 @@ export default function TeachersPage() {
         </Card>
 
         <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
-          <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-md">
+          <DialogContent className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-sm">
             <DialogHeader>
-              <DialogTitle className="text-slate-800 text-xl font-bold">
+              <DialogTitle className="text-slate-800 text-lg font-bold">
                 {teacherToEdit ? "Edit Teacher" : "Add New Teacher"}
               </DialogTitle>
-              <DialogDescription className="text-slate-500">Fill in the teacher details</DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-3">
               <ImageUpload
                 value={formData.imageUrl}
                 onChange={(url) => setFormData({ ...formData, imageUrl: url })}
                 type="profile"
               />
 
-              <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-slate-700 flex items-center gap-2">
-                  <User className="w-4 h-4 text-emerald-600" />
+              <div className="space-y-1">
+                <Label htmlFor="fullName" className="text-slate-700 text-sm flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-emerald-600" />
                   Full Name
                 </Label>
                 <Input
@@ -244,13 +243,13 @@ export default function TeachersPage() {
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: toTitleCase(e.target.value) })}
                   required
-                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 h-9"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700 flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-emerald-600" />
+              <div className="space-y-1">
+                <Label htmlFor="email" className="text-slate-700 text-sm flex items-center gap-1.5">
+                  <Mail className="w-3.5 h-3.5 text-emerald-600" />
                   Email
                 </Label>
                 <Input
@@ -260,13 +259,13 @@ export default function TeachersPage() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 h-9"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-slate-700 flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-emerald-600" />
+              <div className="space-y-1">
+                <Label htmlFor="phone" className="text-slate-700 text-sm flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-emerald-600" />
                   Phone Number
                 </Label>
                 <Input
@@ -275,67 +274,62 @@ export default function TeachersPage() {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   required
-                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 h-9"
                 />
               </div>
 
-              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl space-y-4">
-                <div className="flex items-center gap-2 text-emerald-700 font-medium">
-                  <Lock className="w-4 h-4" />
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl space-y-3">
+                <div className="flex items-center gap-1.5 text-emerald-700 font-medium text-sm">
+                  <Lock className="w-3.5 h-3.5" />
                   Login Credentials
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="username" className="text-slate-700 flex items-center gap-2">
-                    <UserCircle className="w-4 h-4 text-emerald-600" />
+                <div className="space-y-1">
+                  <Label htmlFor="username" className="text-slate-700 text-sm flex items-center gap-1.5">
+                    <UserCircle className="w-3.5 h-3.5 text-emerald-600" />
                     Username {!teacherToEdit && <span className="text-red-500">*</span>}
                   </Label>
                   <Input
                     id="username"
-                    placeholder="Enter username for teacher login"
+                    placeholder="Username for login"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/\s/g, '') })}
                     required={!teacherToEdit}
-                    className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+                    className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 h-9"
                   />
-                  <p className="text-xs text-slate-500">
-                    Teacher will use this username to login
-                  </p>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-slate-700 flex items-center gap-2">
-                    <Lock className="w-4 h-4 text-emerald-600" />
+                <div className="space-y-1">
+                  <Label htmlFor="password" className="text-slate-700 text-sm flex items-center gap-1.5">
+                    <Lock className="w-3.5 h-3.5 text-emerald-600" />
                     Password {!teacherToEdit && <span className="text-red-500">*</span>}
                   </Label>
                   <div className="relative">
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder={teacherToEdit ? "Leave blank to keep current password" : "Set password for teacher login"}
+                      placeholder={teacherToEdit ? "Leave blank to keep" : "Set password"}
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       required={!teacherToEdit}
-                      className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 pr-10"
+                      className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 pr-9 h-9"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
-                  <p className="text-xs text-slate-500">
-                    Teacher can view their password in their profile
-                  </p>
                 </div>
               </div>
 
-              <div className="flex gap-3 justify-end pt-4">
+              <div className="flex gap-2 justify-end pt-2">
                 <Button 
                   type="button" 
                   variant="outline" 
+                  size="sm"
                   onClick={() => setDialogOpen(false)}
                   className="border-slate-200 text-slate-600 hover:bg-slate-50"
                 >
@@ -343,10 +337,11 @@ export default function TeachersPage() {
                 </Button>
                 <Button 
                   type="submit" 
+                  size="sm"
                   disabled={saving}
                   className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md"
                 >
-                  {saving ? "Saving..." : (teacherToEdit ? "Update Teacher" : "Save Teacher")}
+                  {saving ? "Saving..." : (teacherToEdit ? "Update" : "Save")}
                 </Button>
               </div>
             </form>
