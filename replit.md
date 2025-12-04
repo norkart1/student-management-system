@@ -65,3 +65,10 @@ Do not modify the core authentication logic in `lib/auth.ts` or `lib/jwt.ts` wit
 - **Cloudinary**: Cloud-based image and video management service for handling uploads.
 - **JWT (JSON Web Tokens)**: For secure authentication and authorization.
 - **bcrypt**: For hashing user passwords securely.
+
+## Recent Changes
+- **December 4, 2025**: Fixed student dashboard bug where `setAnnouncements`/`announcements` were used instead of `setNotifications`/`notifications`, causing errors for approved students accessing their dashboard.
+
+## Development Setup
+- **Workflow**: `npm run dev` runs the Next.js development server on port 5000
+- **Deployment**: Configured for autoscale deployment with `npm run build` and `npm run start`
