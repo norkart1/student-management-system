@@ -77,6 +77,12 @@ Do not modify the core authentication logic in `lib/auth.ts` or `lib/jwt.ts` wit
 - **bcrypt**: For hashing user passwords securely.
 
 ## Recent Changes
+- **December 4, 2025**: Added Quiz Activation Announcements:
+    - When a quiz status changes to "active", an announcement is automatically created.
+    - Announcement appears in both student and teacher dashboard notification sections.
+    - Uses "exam" type for purple styling and appropriate visual feedback.
+    - Includes quiz title, description, and class name (if applicable).
+    - Duplicate announcement prevention via quizId tracking.
 - **December 4, 2025**: Added Public Quiz System allowing anyone to participate without login:
     - Added `isPublic` flag to quiz schema for marking quizzes as publicly accessible.
     - Created public quiz API endpoints (`/api/public/quizzes`, `/api/public/quiz-attempts`).

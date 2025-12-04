@@ -59,6 +59,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "Invalid quiz ID" }, { status: 400 })
     }
 
+    const existingQuiz = await db.collection("quizzes").findOne({ _id: new ObjectId(id) })
+    if (!existingQuiz) {
+      return NextResponse.json({ error: "Quiz not found" }, { status: 404 })
+    }
+
     const updateData: any = {
       updatedAt: new Date(),
     }
@@ -76,6 +81,41 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       { _id: new ObjectId(id) },
       { $set: updateData }
     )
+
+    const isBeingActivated = data.status === "active" && existingQuiz.status !== "active"
+    if (isBeingActivated) {
+      const existingAnnouncement = await db.collection("announcements").findOne({ quizId: id })
+      if (existingAnnouncement) {
+        return NextResponse.json({ success: true, message: "Quiz updated successfully" })
+      }
+
+      const quizTitle = data.title?.trim() || existingQuiz.title
+      const quizDescription = data.description?.trim() || existingQuiz.description || ""
+      const isPublic = data.isPublic !== undefined ? data.isPublic : existingQuiz.isPublic
+
+      const effectiveClassId = data.classId !== undefined ? data.classId : existingQuiz.classId
+      let className = null
+      if (effectiveClassId) {
+        const classDoc = await db.collection("classes").findOne({ _id: new ObjectId(effectiveClassId) })
+        className = classDoc?.name || classDoc?.classNumber
+      }
+
+      const announcement = {
+        title: `New Quiz Available: ${quizTitle}`,
+        content: quizDescription 
+          ? `A new quiz "${quizTitle}" is now available${className ? ` for ${className}` : ""}. ${quizDescription}`
+          : `A new quiz "${quizTitle}" is now available${className ? ` for ${className}` : ""}. Take it now!`,
+        type: "exam" as const,
+        pinned: false,
+        active: true,
+        targetRoles: isPublic ? ["student", "teacher", "all"] : ["student", "teacher"],
+        quizId: id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      await db.collection("announcements").insertOne(announcement)
+    }
 
     return NextResponse.json({ success: true, message: "Quiz updated successfully" })
   } catch (error) {
