@@ -21,7 +21,8 @@ import {
   Clock,
   Target,
   Globe,
-  Calendar
+  Calendar,
+  Zap
 } from "lucide-react"
 
 interface Question {
@@ -39,6 +40,7 @@ interface QuizData {
   duration: number
   passingScore: number
   isPublic?: boolean
+  instantFeedback?: boolean
   scheduledCloseTime?: string
   questions: Question[]
 }
@@ -58,6 +60,7 @@ export function AddQuizDialog({ open, onOpenChange, onSave, editData }: AddQuizD
     duration: 30,
     passingScore: 50,
     isPublic: false,
+    instantFeedback: false,
     scheduledCloseTime: "",
   })
   const [questions, setQuestions] = useState<Question[]>([])
@@ -77,11 +80,12 @@ export function AddQuizDialog({ open, onOpenChange, onSave, editData }: AddQuizD
         duration: editData.duration || 30,
         passingScore: editData.passingScore || 50,
         isPublic: editData.isPublic || false,
+        instantFeedback: editData.instantFeedback || false,
         scheduledCloseTime: editData.scheduledCloseTime || "",
       })
       setQuestions(editData.questions || [])
     } else {
-      setFormData({ title: "", description: "", duration: 30, passingScore: 50, isPublic: false, scheduledCloseTime: "" })
+      setFormData({ title: "", description: "", duration: 30, passingScore: 50, isPublic: false, instantFeedback: false, scheduledCloseTime: "" })
       setQuestions([])
     }
     setStep(1)
@@ -255,6 +259,32 @@ export function AddQuizDialog({ open, onOpenChange, onSave, editData }: AddQuizD
                     id="isPublic"
                     checked={formData.isPublic}
                     onCheckedChange={(checked) => setFormData({ ...formData, isPublic: checked })}
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex-shrink-0"
+                  />
+                </div>
+              </div>
+
+              <div 
+                className="p-4 bg-purple-50 border border-purple-200 rounded-xl cursor-pointer"
+                onClick={() => setFormData({ ...formData, instantFeedback: !formData.instantFeedback })}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Zap className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <Label htmlFor="instantFeedback" className="text-slate-800 font-medium cursor-pointer block">
+                      Instant Feedback Mode
+                    </Label>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Show correct/wrong answer instantly, auto-advance on correct answer
+                    </p>
+                  </div>
+                  <Switch
+                    id="instantFeedback"
+                    checked={formData.instantFeedback}
+                    onCheckedChange={(checked) => setFormData({ ...formData, instantFeedback: checked })}
                     onClick={(e) => e.stopPropagation()}
                     className="flex-shrink-0"
                   />

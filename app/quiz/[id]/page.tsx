@@ -25,7 +25,8 @@ import {
   XCircle,
   Trophy,
   Home,
-  GraduationCap
+  GraduationCap,
+  Zap
 } from "lucide-react"
 
 interface Question {
@@ -34,6 +35,7 @@ interface Question {
   type: "multiple_choice" | "true_false"
   options: string[]
   points: number
+  correctAnswer?: number
 }
 
 interface Quiz {
@@ -42,6 +44,7 @@ interface Quiz {
   description: string
   duration: number
   passingScore: number
+  instantFeedback: boolean
   questionCount: number
   questions: Question[]
 }
@@ -49,6 +52,7 @@ interface Quiz {
 interface Answer {
   questionIndex: number
   selectedAnswer: number
+  isCorrect?: boolean
 }
 
 export default function PublicQuizPage() {
@@ -73,25 +77,36 @@ export default function PublicQuizPage() {
   const [timeRemaining, setTimeRemaining] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   
+  // Instant feedback state
+  const [showingFeedback, setShowingFeedback] = useState(false)
+  const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean | null>(null)
+  const [feedbackAnswerIndex, setFeedbackAnswerIndex] = useState<number | null>(null)
+  
   const [result, setResult] = useState<{
     score: number
     totalPoints: number
     percentage: number
     passed: boolean
+    answeredCount: number
+    totalQuestions: number
+    timedOut: boolean
   } | null>(null)
 
   useEffect(() => {
     fetchQuiz()
   }, [quizId])
 
+  // Track if we've already submitted due to time expiry
+  const [timerExpired, setTimerExpired] = useState(false)
+  
   useEffect(() => {
-    if (step !== "quiz" || timeRemaining <= 0) return
+    if (step !== "quiz" || timeRemaining <= 0 || timerExpired) return
     
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 1) {
           clearInterval(timer)
-          handleSubmit()
+          setTimerExpired(true)
           return 0
         }
         return prev - 1
@@ -99,7 +114,30 @@ export default function PublicQuizPage() {
     }, 1000)
     
     return () => clearInterval(timer)
-  }, [step, timeRemaining])
+  }, [step, timeRemaining, timerExpired])
+  
+  // Handle timer expiry submission - wait for any pending feedback state to complete
+  useEffect(() => {
+    if (!timerExpired || submitting || step !== "quiz") return
+    
+    // If showing feedback for a wrong answer, finalize that question first
+    if (showingFeedback) {
+      // The answer is already saved, just clear the feedback state
+      setShowingFeedback(false)
+      setLastAnswerCorrect(null)
+      setFeedbackAnswerIndex(null)
+    }
+    
+    // Show time expired notification
+    toast.info("Time's up! Submitting your quiz...")
+    
+    // Small delay to ensure state updates before submission
+    const submitTimer = setTimeout(() => {
+      handleSubmit()
+    }, 100)
+    
+    return () => clearTimeout(submitTimer)
+  }, [timerExpired, submitting, step, showingFeedback])
 
   const fetchQuiz = async () => {
     try {
@@ -136,15 +174,62 @@ export default function PublicQuizPage() {
   }
 
   const handleSelectAnswer = (selectedAnswer: number) => {
-    setAnswers(prev => {
-      const existing = prev.findIndex(a => a.questionIndex === currentQuestionIndex)
-      if (existing >= 0) {
-        const updated = [...prev]
-        updated[existing] = { questionIndex: currentQuestionIndex, selectedAnswer }
-        return updated
+    if (showingFeedback) return
+    
+    const currentQuestion = quiz?.questions[currentQuestionIndex]
+    if (!currentQuestion) return
+    
+    if (quiz?.instantFeedback) {
+      // Instant feedback mode
+      const isCorrect = currentQuestion.correctAnswer === selectedAnswer
+      setFeedbackAnswerIndex(selectedAnswer)
+      setLastAnswerCorrect(isCorrect)
+      setShowingFeedback(true)
+      
+      // Save the answer
+      setAnswers(prev => {
+        const existing = prev.findIndex(a => a.questionIndex === currentQuestionIndex)
+        const newAnswer = { questionIndex: currentQuestionIndex, selectedAnswer, isCorrect }
+        if (existing >= 0) {
+          const updated = [...prev]
+          updated[existing] = newAnswer
+          return updated
+        }
+        return [...prev, newAnswer]
+      })
+      
+      if (isCorrect) {
+        // If correct, auto-advance after a short delay
+        setTimeout(() => {
+          advanceToNextQuestion()
+        }, 1000)
       }
-      return [...prev, { questionIndex: currentQuestionIndex, selectedAnswer }]
-    })
+      // If wrong, user needs to click "Continue" to proceed
+    } else {
+      // Traditional mode
+      setAnswers(prev => {
+        const existing = prev.findIndex(a => a.questionIndex === currentQuestionIndex)
+        if (existing >= 0) {
+          const updated = [...prev]
+          updated[existing] = { questionIndex: currentQuestionIndex, selectedAnswer }
+          return updated
+        }
+        return [...prev, { questionIndex: currentQuestionIndex, selectedAnswer }]
+      })
+    }
+  }
+
+  const advanceToNextQuestion = () => {
+    setShowingFeedback(false)
+    setLastAnswerCorrect(null)
+    setFeedbackAnswerIndex(null)
+    
+    if (quiz && currentQuestionIndex < quiz.questionCount - 1) {
+      setCurrentQuestionIndex(prev => prev + 1)
+    } else {
+      // Quiz complete - auto submit
+      handleSubmit()
+    }
   }
 
   const handleSubmit = useCallback(async () => {
@@ -177,7 +262,10 @@ export default function PublicQuizPage() {
         score: data.score,
         totalPoints: data.totalPoints,
         percentage: data.percentage,
-        passed: data.passed
+        passed: data.passed,
+        answeredCount: answers.length,
+        totalQuestions: quiz?.questionCount || 0,
+        timedOut: timerExpired
       })
       setStep("result")
     } catch (err) {
@@ -228,10 +316,21 @@ export default function PublicQuizPage() {
   }
 
   if (step === "result" && result) {
+    const unansweredCount = result.totalQuestions - result.answeredCount
+    
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
         <Card className="max-w-md w-full bg-slate-800 border-slate-700">
           <CardContent className="pt-8 text-center">
+            {result.timedOut && (
+              <div className="mb-4 p-3 bg-amber-500/20 border border-amber-500/30 rounded-xl">
+                <p className="text-amber-300 text-sm flex items-center justify-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Time expired - Quiz submitted automatically
+                </p>
+              </div>
+            )}
+            
             <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
               result.passed ? "bg-emerald-500/20" : "bg-red-500/20"
             }`}>
@@ -253,6 +352,12 @@ export default function PublicQuizPage() {
               <div className="text-5xl font-bold text-white mb-2">{result.percentage}%</div>
               <p className="text-slate-400">
                 Score: {result.score} / {result.totalPoints} points
+              </p>
+              <p className="text-slate-500 text-sm mt-1">
+                Answered: {result.answeredCount} / {result.totalQuestions} questions
+                {unansweredCount > 0 && (
+                  <span className="text-amber-400 ml-1">({unansweredCount} unanswered)</span>
+                )}
               </p>
               <div className={`inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-medium ${
                 result.passed ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"
@@ -305,25 +410,40 @@ export default function PublicQuizPage() {
             </div>
           </div>
           
+          {/* Progress bar */}
           <div className="flex gap-1 mb-6">
             {quiz.questions.map((_, idx) => {
-              const isAnswered = answers.some(a => a.questionIndex === idx)
+              const answer = answers.find(a => a.questionIndex === idx)
               const isCurrent = idx === currentQuestionIndex
+              
+              let bgColor = "bg-slate-700"
+              if (quiz.instantFeedback && answer) {
+                bgColor = answer.isCorrect ? "bg-emerald-500" : "bg-red-500"
+              } else if (answer) {
+                bgColor = "bg-emerald-500"
+              }
+              if (isCurrent) {
+                bgColor = "bg-amber-500"
+              }
+              
               return (
-                <button
+                <div
                   key={idx}
-                  onClick={() => setCurrentQuestionIndex(idx)}
-                  className={`flex-1 h-2 rounded-full transition-colors ${
-                    isCurrent 
-                      ? "bg-amber-500" 
-                      : isAnswered 
-                        ? "bg-emerald-500" 
-                        : "bg-slate-700"
-                  }`}
+                  className={`flex-1 h-2 rounded-full transition-colors ${bgColor}`}
                 />
               )
             })}
           </div>
+          
+          {/* Instant feedback badge */}
+          {quiz.instantFeedback && (
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">
+                <Zap className="w-3.5 h-3.5" />
+                Instant Feedback Mode
+              </div>
+            </div>
+          )}
           
           <Card className="bg-slate-800 border-slate-700 mb-6">
             <CardContent className="pt-6">
@@ -335,63 +455,127 @@ export default function PublicQuizPage() {
               </div>
               
               <div className="space-y-3">
-                {currentQuestion.options.map((option, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSelectAnswer(idx)}
-                    className={`w-full p-4 rounded-xl text-left transition-all ${
-                      selectedAnswer === idx
-                        ? "bg-amber-500 text-white border-2 border-amber-400"
-                        : "bg-slate-700/50 text-slate-300 border-2 border-transparent hover:bg-slate-700 hover:border-slate-600"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-medium ${
-                        selectedAnswer === idx ? "bg-white/20" : "bg-slate-600"
-                      }`}>
-                        {String.fromCharCode(65 + idx)}
+                {currentQuestion.options.map((option, idx) => {
+                  const isSelected = feedbackAnswerIndex === idx || (!showingFeedback && selectedAnswer === idx)
+                  const isCorrectAnswer = quiz.instantFeedback && showingFeedback && currentQuestion.correctAnswer === idx
+                  const isWrongSelection = quiz.instantFeedback && showingFeedback && feedbackAnswerIndex === idx && !lastAnswerCorrect
+                  
+                  let buttonClass = "bg-slate-700/50 text-slate-300 border-2 border-transparent hover:bg-slate-700 hover:border-slate-600"
+                  
+                  if (quiz.instantFeedback && showingFeedback) {
+                    if (isCorrectAnswer) {
+                      buttonClass = "bg-emerald-500 text-white border-2 border-emerald-400"
+                    } else if (isWrongSelection) {
+                      buttonClass = "bg-red-500 text-white border-2 border-red-400"
+                    } else {
+                      buttonClass = "bg-slate-700/30 text-slate-500 border-2 border-transparent"
+                    }
+                  } else if (isSelected) {
+                    buttonClass = "bg-amber-500 text-white border-2 border-amber-400"
+                  }
+                  
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => handleSelectAnswer(idx)}
+                      disabled={showingFeedback}
+                      className={`w-full p-4 rounded-xl text-left transition-all ${buttonClass} ${showingFeedback ? 'cursor-not-allowed' : ''}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-medium ${
+                          isCorrectAnswer ? "bg-white/20" : 
+                          isWrongSelection ? "bg-white/20" :
+                          isSelected ? "bg-white/20" : "bg-slate-600"
+                        }`}>
+                          {isCorrectAnswer ? (
+                            <CheckCircle className="w-5 h-5" />
+                          ) : isWrongSelection ? (
+                            <XCircle className="w-5 h-5" />
+                          ) : (
+                            String.fromCharCode(65 + idx)
+                          )}
+                        </div>
+                        <span className="flex-1">{option}</span>
+                        {!quiz.instantFeedback && isSelected && (
+                          <CheckCircle className="w-5 h-5" />
+                        )}
                       </div>
-                      <span className="flex-1">{option}</span>
-                      {selectedAnswer === idx && (
-                        <CheckCircle className="w-5 h-5" />
-                      )}
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  )
+                })}
               </div>
             </CardContent>
           </Card>
           
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
-              disabled={currentQuestionIndex === 0}
-              className="flex-1 h-12 border-slate-600 text-slate-300 hover:bg-slate-700"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Previous
-            </Button>
-            
-            {currentQuestionIndex === quiz.questionCount - 1 ? (
+          {/* Feedback message and continue button for wrong answers */}
+          {quiz.instantFeedback && showingFeedback && (
+            <div className={`mb-6 p-4 rounded-xl ${
+              lastAnswerCorrect ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-red-500/20 border border-red-500/30"
+            }`}>
+              <div className="flex items-center gap-3">
+                {lastAnswerCorrect ? (
+                  <>
+                    <CheckCircle className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+                    <div>
+                      <p className="text-emerald-300 font-medium">Correct!</p>
+                      <p className="text-emerald-400/70 text-sm">Moving to next question...</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-6 h-6 text-red-400 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-red-300 font-medium">Wrong Answer</p>
+                      <p className="text-red-400/70 text-sm">
+                        The correct answer is: {currentQuestion.options[currentQuestion.correctAnswer || 0]}
+                      </p>
+                    </div>
+                    <Button
+                      onClick={advanceToNextQuestion}
+                      className="bg-slate-700 hover:bg-slate-600 text-white"
+                    >
+                      {currentQuestionIndex === quiz.questionCount - 1 ? "Finish" : "Continue"}
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+          
+          {/* Navigation buttons for traditional mode */}
+          {!quiz.instantFeedback && (
+            <div className="flex gap-3">
               <Button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="flex-1 h-12 bg-emerald-500 hover:bg-emerald-600 text-white"
+                variant="outline"
+                onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
+                disabled={currentQuestionIndex === 0}
+                className="flex-1 h-12 border-slate-600 text-slate-300 hover:bg-slate-700"
               >
-                {submitting ? "Submitting..." : "Submit Quiz"}
-                <CheckCircle className="w-4 h-4 ml-2" />
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Previous
               </Button>
-            ) : (
-              <Button
-                onClick={() => setCurrentQuestionIndex(prev => Math.min(quiz.questionCount - 1, prev + 1))}
-                className="flex-1 h-12 bg-amber-500 hover:bg-amber-600 text-white"
-              >
-                Next
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            )}
-          </div>
+              
+              {currentQuestionIndex === quiz.questionCount - 1 ? (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="flex-1 h-12 bg-emerald-500 hover:bg-emerald-600 text-white"
+                >
+                  {submitting ? "Submitting..." : "Submit Quiz"}
+                  <CheckCircle className="w-4 h-4 ml-2" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => setCurrentQuestionIndex(prev => Math.min(quiz.questionCount - 1, prev + 1))}
+                  className="flex-1 h-12 bg-amber-500 hover:bg-amber-600 text-white"
+                >
+                  Next
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+            </div>
+          )}
           
           <div className="mt-6 text-center">
             <p className="text-slate-400 text-sm">
@@ -448,6 +632,15 @@ export default function PublicQuizPage() {
                 <div className="text-xs text-slate-400">To Pass</div>
               </div>
             </div>
+            
+            {quiz.instantFeedback && (
+              <div className="flex items-center justify-center gap-2 p-3 bg-purple-500/20 border border-purple-500/30 rounded-xl">
+                <Zap className="w-5 h-5 text-purple-400" />
+                <div className="text-sm text-purple-300">
+                  <span className="font-medium">Instant Feedback Mode:</span> See answers immediately!
+                </div>
+              </div>
+            )}
             
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-white">Enter Your Details</h3>

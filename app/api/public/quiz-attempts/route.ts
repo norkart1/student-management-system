@@ -46,6 +46,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Quiz not found or not available" }, { status: 404 })
     }
 
+    // Check if quiz has passed its scheduled close time
+    if (quiz.scheduledCloseTime && new Date(quiz.scheduledCloseTime) <= new Date()) {
+      // Auto-close the quiz
+      await db.collection("quizzes").updateOne(
+        { _id: new ObjectId(data.quizId) },
+        { $set: { status: "closed", updatedAt: new Date() } }
+      )
+      return NextResponse.json({ error: "This quiz has been automatically closed" }, { status: 404 })
+    }
+
     const existingAttempt = await db.collection("publicQuizAttempts").findOne({
       quizId: data.quizId,
       participantPhone: data.participantPhone.trim()

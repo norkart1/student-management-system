@@ -77,6 +77,15 @@ Do not modify the core authentication logic in `lib/auth.ts` or `lib/jwt.ts` wit
 - **bcrypt**: For hashing user passwords securely.
 
 ## Recent Changes
+- **December 4, 2025**: Enhanced Quiz System with new features:
+    - **Instant Feedback Mode**: New quiz mode where clicking correct answer auto-advances to next question, clicking wrong answer shows correct answer before continuing. No submit button needed - quiz auto-completes after last question.
+    - **Auto-Close Time**: Quizzes can have a scheduled close time that automatically closes them when the time passes.
+    - **Participant Tabs**: Quiz results dialog now has tabs to filter between "All", "Students", and "Public" participants separately.
+    - **Print Results**: Added print functionality to export quiz results as a formatted printable report.
+    - Added `instantFeedback` field to quiz schema.
+    - Updated quiz creation dialog with Instant Feedback Mode toggle.
+    - Timer expiry now properly finalizes feedback state before submission.
+    - Auto-close logic runs on both public and admin API endpoints.
 - **December 4, 2025**: Added Quiz Activation Announcements:
     - When a quiz status changes to "active", an announcement is automatically created.
     - Announcement appears in both student and teacher dashboard notification sections.

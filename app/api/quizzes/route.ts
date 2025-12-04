@@ -10,6 +10,7 @@ interface QuizInput {
   passingScore?: number
   status?: "draft" | "active" | "closed"
   isPublic?: boolean
+  instantFeedback?: boolean
   scheduledCloseTime?: string
   questions?: QuestionInput[]
 }
@@ -33,6 +34,18 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get("status")
     const classId = searchParams.get("classId")
+    
+    // Auto-close any quizzes that have passed their scheduled close time
+    const now = new Date()
+    await db.collection("quizzes").updateMany(
+      {
+        status: "active",
+        scheduledCloseTime: { $lte: now, $ne: null }
+      },
+      {
+        $set: { status: "closed", updatedAt: now }
+      }
+    )
     
     const query: any = {}
     if (status) query.status = status
@@ -92,6 +105,7 @@ export async function POST(request: NextRequest) {
       passingScore: data.passingScore || 50,
       status: data.status || "draft",
       isPublic: data.isPublic || false,
+      instantFeedback: data.instantFeedback || false,
       scheduledCloseTime: data.scheduledCloseTime ? new Date(data.scheduledCloseTime) : null,
       questions: data.questions || [],
       createdAt: new Date(),

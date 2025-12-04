@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -17,7 +17,9 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  Globe
+  Globe,
+  Printer,
+  GraduationCap
 } from "lucide-react"
 
 interface Quiz {
@@ -56,10 +58,13 @@ export function ViewQuizResultsDialog({ open, onOpenChange, quiz }: ViewQuizResu
   const [attempts, setAttempts] = useState<QuizAttempt[]>([])
   const [publicAttempts, setPublicAttempts] = useState<QuizAttempt[]>([])
   const [loading, setLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState<"all" | "students" | "public">("all")
+  const printRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (open && quiz) {
       fetchAttempts()
+      setActiveTab("all")
     }
   }, [open, quiz])
 
@@ -93,6 +98,181 @@ export function ViewQuizResultsDialog({ open, onOpenChange, quiz }: ViewQuizResu
     }
   }
 
+  const handlePrint = () => {
+    if (!quiz) return
+    
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+
+    const attemptsToShow = getFilteredAttempts()
+    const sortedAttempts = [...attemptsToShow].sort((a, b) => b.percentage - a.percentage)
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Quiz Results - ${quiz.title}</title>
+          <style>
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              padding: 40px;
+              color: #1e293b;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              border-bottom: 2px solid #e2e8f0;
+              padding-bottom: 20px;
+            }
+            .header h1 {
+              margin: 0;
+              color: #0f766e;
+              font-size: 24px;
+            }
+            .header p {
+              margin: 5px 0;
+              color: #64748b;
+            }
+            .stats {
+              display: flex;
+              justify-content: center;
+              gap: 30px;
+              margin-bottom: 30px;
+              flex-wrap: wrap;
+            }
+            .stat {
+              text-align: center;
+              padding: 15px 25px;
+              background: #f8fafc;
+              border-radius: 10px;
+            }
+            .stat-value {
+              font-size: 28px;
+              font-weight: bold;
+              color: #0f766e;
+            }
+            .stat-label {
+              font-size: 12px;
+              color: #64748b;
+              text-transform: uppercase;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 20px;
+            }
+            th, td {
+              padding: 12px;
+              text-align: left;
+              border-bottom: 1px solid #e2e8f0;
+            }
+            th {
+              background: #f1f5f9;
+              font-weight: 600;
+              color: #475569;
+            }
+            tr:nth-child(even) {
+              background: #f8fafc;
+            }
+            .passed {
+              color: #16a34a;
+              font-weight: 500;
+            }
+            .failed {
+              color: #dc2626;
+              font-weight: 500;
+            }
+            .rank-1 {
+              background: #fef3c7 !important;
+            }
+            .trophy {
+              color: #f59e0b;
+            }
+            .tab-info {
+              text-align: center;
+              margin-bottom: 20px;
+              padding: 10px;
+              background: #f1f5f9;
+              border-radius: 8px;
+              color: #475569;
+            }
+            @media print {
+              body { padding: 20px; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>${quiz.title}</h1>
+            <p>Quiz Results Report</p>
+            <p style="font-size: 12px;">Generated on ${new Date().toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}</p>
+          </div>
+          
+          <div class="tab-info">
+            ${activeTab === "all" ? "All Participants" : activeTab === "students" ? "Students Only" : "Public Participants Only"}
+          </div>
+          
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-value">${sortedAttempts.length}</div>
+              <div class="stat-label">Participants</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">${sortedAttempts.filter(a => a.passed).length}</div>
+              <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">${sortedAttempts.filter(a => !a.passed).length}</div>
+              <div class="stat-label">Failed</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">${sortedAttempts.length > 0 ? Math.round(sortedAttempts.reduce((sum, a) => sum + a.percentage, 0) / sortedAttempts.length) : 0}%</div>
+              <div class="stat-label">Average Score</div>
+            </div>
+          </div>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Score</th>
+                <th>Percentage</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sortedAttempts.map((attempt, index) => `
+                <tr class="${index === 0 ? 'rank-1' : ''}">
+                  <td>${index + 1}${index === 0 ? ' 🏆' : ''}</td>
+                  <td>${attempt.studentName || attempt.participantName || 'Anonymous'}</td>
+                  <td>${attempt.studentId ? 'Student' : (attempt.participantPlace || 'Public')}</td>
+                  <td>${attempt.score}/${attempt.totalPoints}</td>
+                  <td>${attempt.percentage}%</td>
+                  <td class="${attempt.passed ? 'passed' : 'failed'}">${attempt.passed ? 'Passed' : 'Failed'}</td>
+                  <td>${new Date(attempt.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `)
+    
+    printWindow.document.close()
+    setTimeout(() => {
+      printWindow.print()
+    }, 250)
+  }
+
   if (!quiz) return null
 
   const allAttempts = [
@@ -100,10 +280,24 @@ export function ViewQuizResultsDialog({ open, onOpenChange, quiz }: ViewQuizResu
     ...publicAttempts.map(a => ({ ...a, type: 'public' as const }))
   ]
 
-  const filteredAttempts = allAttempts.filter(attempt => {
-    const name = attempt.studentName || attempt.participantName || ""
-    return name.toLowerCase().includes(searchTerm.toLowerCase())
-  })
+  const getFilteredAttempts = () => {
+    let filtered = allAttempts
+    
+    if (activeTab === "students") {
+      filtered = allAttempts.filter(a => a.type === 'student')
+    } else if (activeTab === "public") {
+      filtered = allAttempts.filter(a => a.type === 'public')
+    }
+    
+    if (searchTerm) {
+      const name = (a: typeof allAttempts[0]) => a.studentName || a.participantName || ""
+      filtered = filtered.filter(a => name(a).toLowerCase().includes(searchTerm.toLowerCase()))
+    }
+    
+    return filtered
+  }
+
+  const filteredAttempts = getFilteredAttempts()
 
   const totalParticipants = allAttempts.length
   const passedCount = allAttempts.filter(a => a.passed).length
@@ -145,6 +339,15 @@ export function ViewQuizResultsDialog({ open, onOpenChange, quiz }: ViewQuizResu
                   {quiz.title}
                 </DialogDescription>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrint}
+                className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-50"
+              >
+                <Printer className="w-4 h-4" />
+                Print
+              </Button>
             </div>
           </DialogHeader>
         </div>
@@ -154,7 +357,7 @@ export function ViewQuizResultsDialog({ open, onOpenChange, quiz }: ViewQuizResu
             <Spinner message="Loading results..." />
           </div>
         ) : (
-          <div className="flex-1 overflow-auto px-6 space-y-4">
+          <div className="flex-1 overflow-auto px-6 space-y-4" ref={printRef}>
             <div className="bg-slate-50 rounded-xl p-4 space-y-2">
               <div className="flex flex-wrap items-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
@@ -210,6 +413,48 @@ export function ViewQuizResultsDialog({ open, onOpenChange, quiz }: ViewQuizResu
               </div>
             )}
 
+            {/* Tab buttons for filtering */}
+            {(attempts.length > 0 || publicAttempts.length > 0) && (
+              <div className="flex gap-2 border-b border-slate-200 pb-3">
+                <button
+                  onClick={() => setActiveTab("all")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    activeTab === "all" 
+                      ? "bg-emerald-500 text-white" 
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  All ({allAttempts.length})
+                </button>
+                {attempts.length > 0 && (
+                  <button
+                    onClick={() => setActiveTab("students")}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                      activeTab === "students" 
+                        ? "bg-emerald-500 text-white" 
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    <GraduationCap className="w-4 h-4" />
+                    Students ({attempts.length})
+                  </button>
+                )}
+                {publicAttempts.length > 0 && (
+                  <button
+                    onClick={() => setActiveTab("public")}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                      activeTab === "public" 
+                        ? "bg-amber-500 text-white" 
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    <Globe className="w-4 h-4" />
+                    Public ({publicAttempts.length})
+                  </button>
+                )}
+              </div>
+            )}
+
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input
@@ -252,10 +497,16 @@ export function ViewQuizResultsDialog({ open, onOpenChange, quiz }: ViewQuizResu
                                 {attempt.type === 'public' ? (
                                   <span className="flex items-center gap-1">
                                     <Globe className="w-3 h-3" />
+                                    {attempt.participantPhone && (
+                                      <span className="mr-1">{attempt.participantPhone}</span>
+                                    )}
                                     {attempt.participantPlace || "Public"}
                                   </span>
                                 ) : (
-                                  "Student"
+                                  <span className="flex items-center gap-1">
+                                    <GraduationCap className="w-3 h-3" />
+                                    Student
+                                  </span>
                                 )}
                               </span>
                             </div>
