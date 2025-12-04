@@ -1,12 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="8" fill="url(#grad)"/>
-  <path d="M8 12C8 10.8954 8.89543 10 10 10H22C23.1046 10 24 10.8954 24 12V13C24 14.1046 23.1046 15 22 15H10C8.89543 15 8 14.1046 8 13V12Z" fill="white"/>
-  <path d="M10 18H22V19C22 20.6569 20.6569 22 19 22H13C11.3431 22 10 20.6569 10 19V18Z" fill="white" fill-opacity="0.8"/>
-  <circle cx="16" cy="12.5" r="1.5" fill="url(#grad)"/>
-  <defs>
-    <linearGradient id="grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#10B981"/>
-      <stop offset="1" stop-color="#14B8A6"/>
-    </linearGradient>
-  </defs>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 32 32"><rect width="32" height="32" fill="url(#grad)" rx="8"/><path fill="#fff" d="M8 12C8 10.8954 8.89543 10 10 10H22C23.1046 10 24 10.8954 24 12V13C24 14.1046 23.1046 15 22 15H10C8.89543 15 8 14.1046 8 13V12Z"/><path fill="#fff" fill-opacity=".8" d="M10 18H22V19C22 20.6569 20.6569 22 19 22H13C11.3431 22 10 20.6569 10 19V18Z"/><circle cx="16" cy="12.5" r="1.5" fill="url(#grad)"/><defs><linearGradient id="grad" x1="0" x2="32" y1="0" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#10B981"/><stop offset="1" stop-color="#14B8A6"/></linearGradient></defs></svg>
