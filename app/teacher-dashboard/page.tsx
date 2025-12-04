@@ -263,34 +263,34 @@ export default function TeacherDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#1a365d] via-[#2563eb] to-[#3b82f6] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 text-white animate-spin mx-auto mb-4" />
-          <p className="text-white/80">Loading your dashboard...</p>
+          <Loader2 className="w-10 h-10 text-emerald-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate-600">Loading your dashboard...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a365d] via-[#2563eb] to-[#3b82f6]">
-      <header className="bg-[#1a365d]/90 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
+      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/25 flex-shrink-0">
                 <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
               <div className="min-w-0">
-                <span className="font-bold text-white text-sm sm:text-base block truncate">Bright Future Academy</span>
-                <span className="text-xs text-blue-200 hidden sm:block">Teacher Portal</span>
+                <span className="font-bold text-slate-800 text-sm sm:text-base block truncate">Teacher Dashboard</span>
+                <span className="text-xs text-slate-500 hidden sm:block">Bright Future Academy</span>
               </div>
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4">
               <div className="flex items-center gap-2 sm:gap-3">
                 <Link href="/teacher-dashboard/profile" className="flex items-center gap-2">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 overflow-hidden ring-2 ring-blue-300 flex-shrink-0">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-100 overflow-hidden ring-2 ring-emerald-200 flex-shrink-0">
                     {teacher?.imageUrl ? (
                       <Image
                         src={teacher.imageUrl}
@@ -301,11 +301,11 @@ export default function TeacherDashboardPage() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <User className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                        <User className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
                       </div>
                     )}
                   </div>
-                  <span className="text-sm font-medium text-white hidden sm:block">
+                  <span className="text-sm font-medium text-slate-700 hidden sm:block">
                     {teacher?.fullName}
                   </span>
                 </Link>
@@ -314,7 +314,7 @@ export default function TeacherDashboardPage() {
                 variant="ghost"
                 size="sm"
                 onClick={handleLogout}
-                className="text-white/70 hover:text-white hover:bg-white/10 p-2"
+                className="text-slate-500 hover:text-slate-700 hover:bg-slate-100 p-2"
               >
                 <LogOut className="w-4 h-4" />
               </Button>
@@ -325,102 +325,42 @@ export default function TeacherDashboardPage() {
 
       <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-xl sm:text-2xl font-bold text-white">
-            Welcome back, {teacher?.fullName.split(" ")[0]}!
+          <p className="text-slate-500 text-sm">Welcome back</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
+            {teacher?.fullName.split(" ")[0]}'s Dashboard
           </h1>
-          <p className="text-sm sm:text-base text-blue-200">Here's your teacher dashboard</p>
         </div>
 
         {successMessage && (
-          <div className="mb-6 p-4 bg-emerald-500/20 backdrop-blur-sm border border-emerald-400/30 rounded-xl flex items-center gap-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-300" />
-            <span className="text-emerald-100">{successMessage}</span>
+          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            <span className="text-emerald-700">{successMessage}</span>
           </div>
         )}
 
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
-          <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
-            <CardContent className="pt-4 pb-4 px-4 sm:px-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-lg flex-shrink-0">
-                  <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-lg sm:text-xl font-bold text-[#1a365d]">{students.length}</p>
-                  <p className="text-xs sm:text-sm text-blue-600">My Students</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
-            <CardContent className="pt-4 pb-4 px-4 sm:px-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg flex-shrink-0">
-                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-lg sm:text-xl font-bold text-[#1a365d]">{books.length}</p>
-                  <p className="text-xs sm:text-sm text-blue-600">Library Books</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
-            <CardContent className="pt-4 pb-4 px-4 sm:px-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-lg flex-shrink-0">
-                  <Bell className="w-5 h-5 sm:w-6 sm:h-6" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-lg sm:text-xl font-bold text-[#1a365d]">
-                    {notifications.filter(n => n.isNew).length}
-                  </p>
-                  <p className="text-xs sm:text-sm text-blue-600">New Notifications</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm sm:col-span-2 lg:col-span-1">
-            <CardContent className="pt-4 pb-4 px-4 sm:px-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white shadow-lg flex-shrink-0">
-                  <User className="w-5 h-5 sm:w-6 sm:h-6" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-lg sm:text-xl font-bold text-[#1a365d] truncate">{teacher?.username}</p>
-                  <p className="text-xs sm:text-sm text-blue-600">My Account</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
-          <Card className="lg:col-span-2 border-0 shadow-xl bg-white/95 backdrop-blur-sm rounded-2xl">
-            <CardHeader className="border-b border-slate-100 pb-4">
+          <Card className="lg:col-span-2 border border-slate-200 bg-white shadow-sm rounded-2xl">
+            <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
                     <GraduationCap className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg text-[#1a365d]">My Students</CardTitle>
-                    <p className="text-sm text-blue-600">{students.length} students in your classes</p>
+                    <CardTitle className="text-lg text-slate-800">My Students</CardTitle>
+                    <p className="text-sm text-slate-500">{students.length} students in your classes</p>
                   </div>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="pt-4">
+            <CardContent className="p-6">
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name, registration number, or email..."
-                  className="pl-10 border-slate-200"
+                  className="pl-10 h-11 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20 rounded-xl"
                 />
               </div>
 
@@ -453,7 +393,7 @@ export default function TeacherDashboardPage() {
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+                              <div className="w-10 h-10 rounded-full bg-emerald-100 overflow-hidden flex-shrink-0">
                                 {student.imageUrl ? (
                                   <Image
                                     src={student.imageUrl}
@@ -464,13 +404,13 @@ export default function TeacherDashboardPage() {
                                   />
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center">
-                                    <User className="w-5 h-5 text-slate-400" />
+                                    <User className="w-5 h-5 text-emerald-600" />
                                   </div>
                                 )}
                               </div>
                               <div>
-                                <h3 className="font-medium text-[#1a365d]">{student.fullName}</h3>
-                                <p className="text-sm text-blue-600">
+                                <h3 className="font-medium text-slate-800">{student.fullName}</h3>
+                                <p className="text-sm text-slate-500">
                                   {student.registrationNumber || "No Reg #"} • {student.email}
                                 </p>
                               </div>
@@ -484,7 +424,7 @@ export default function TeacherDashboardPage() {
                                     e.stopPropagation()
                                     handleEditStudent(student)
                                   }}
-                                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                  className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
                                 >
                                   <Edit className="w-4 h-4" />
                                 </Button>
@@ -605,15 +545,15 @@ export default function TeacherDashboardPage() {
           </Card>
 
           <div className="space-y-6">
-            <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm rounded-2xl">
-              <CardHeader className="border-b border-slate-100 pb-4">
+            <Card className="border border-slate-200 bg-white shadow-sm rounded-2xl">
+              <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
                       <Bell className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg text-[#1a365d]">Notifications</CardTitle>
+                      <CardTitle className="text-lg text-slate-800">Notifications</CardTitle>
                       {notifications.filter(n => n.isNew).length > 0 && (
                         <span className="text-xs text-amber-600 font-medium">
                           {notifications.filter(n => n.isNew).length} new
@@ -623,7 +563,7 @@ export default function TeacherDashboardPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="pt-4">
+              <CardContent className="p-6">
                 {notifications.length === 0 ? (
                   <div className="text-center py-8">
                     <Bell className="w-10 h-10 text-slate-300 mx-auto mb-2" />
@@ -642,7 +582,7 @@ export default function TeacherDashboardPage() {
                           {getNotificationIcon(notification.type)}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <h4 className="font-medium text-[#1a365d] text-sm truncate">
+                              <h4 className="font-medium text-slate-800 text-sm truncate">
                                 {notification.title}
                               </h4>
                               {notification.isNew && (
@@ -663,31 +603,31 @@ export default function TeacherDashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-xl bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl">
-              <CardHeader className="border-b border-blue-100 pb-4">
+            <Card className="border border-slate-200 bg-white shadow-sm rounded-2xl">
+              <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
                     <User className="w-5 h-5 text-white" />
                   </div>
-                  <CardTitle className="text-lg text-[#1a365d]">My Account</CardTitle>
+                  <CardTitle className="text-lg text-slate-800">My Account</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="pt-4">
+              <CardContent className="p-6">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm">
-                    <Mail className="w-4 h-4 text-blue-500" />
+                    <Mail className="w-4 h-4 text-emerald-500" />
                     <span className="text-slate-600">{teacher?.email}</span>
                   </div>
                   {teacher?.username && (
                     <div className="flex items-center gap-2 text-sm">
-                      <User className="w-4 h-4 text-blue-500" />
+                      <User className="w-4 h-4 text-emerald-500" />
                       <span className="text-slate-600">@{teacher.username}</span>
                     </div>
                   )}
                 </div>
                 <Link
                   href="/teacher-dashboard/profile"
-                  className="mt-4 block w-full text-center py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors"
+                  className="mt-4 block w-full text-center py-2.5 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-xl text-sm font-medium transition-colors"
                 >
                   View My Profile
                 </Link>
@@ -696,16 +636,16 @@ export default function TeacherDashboardPage() {
           </div>
         </div>
 
-        <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm rounded-2xl">
-          <CardHeader className="border-b border-slate-100 pb-4">
+        <Card className="border border-slate-200 bg-white shadow-sm rounded-2xl">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-4">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
                   <BookMarked className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg text-[#1a365d]">Library Books</CardTitle>
-                  <p className="text-sm text-blue-600">{books.length} books available</p>
+                  <CardTitle className="text-lg text-slate-800">Library Books</CardTitle>
+                  <p className="text-sm text-slate-500">{books.length} books available</p>
                 </div>
               </div>
               <div className="relative w-full sm:w-auto">
@@ -714,12 +654,12 @@ export default function TeacherDashboardPage() {
                   value={bookSearchQuery}
                   onChange={(e) => setBookSearchQuery(e.target.value)}
                   placeholder="Search books..."
-                  className="pl-10 border-slate-200 w-full sm:w-64"
+                  className="pl-10 h-11 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20 rounded-xl w-full sm:w-64"
                 />
               </div>
             </div>
           </CardHeader>
-          <CardContent className="pt-4">
+          <CardContent className="p-6">
             {filteredBooks.length === 0 ? (
               <div className="text-center py-12">
                 <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-3" />
@@ -732,7 +672,7 @@ export default function TeacherDashboardPage() {
                 {filteredBooks.map((book) => (
                   <div
                     key={book._id}
-                    className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:shadow-md transition-shadow"
+                    className="p-4 bg-white rounded-xl border border-slate-200 hover:shadow-lg transition-all"
                   >
                     <div className="flex items-start gap-3">
                       <div className="w-12 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -749,10 +689,10 @@ export default function TeacherDashboardPage() {
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-[#1a365d] text-sm line-clamp-2">
+                        <h4 className="font-medium text-slate-800 text-sm line-clamp-2">
                           {book.title}
                         </h4>
-                        <p className="text-xs text-blue-600 mt-1">{book.author}</p>
+                        <p className="text-xs text-slate-500 mt-1">{book.author}</p>
                         {book.isbn && (
                           <p className="text-xs text-slate-400 mt-1">ISBN: {book.isbn}</p>
                         )}
@@ -761,7 +701,7 @@ export default function TeacherDashboardPage() {
                             {book.classNumbers.slice(0, 3).map((num) => (
                               <span
                                 key={num}
-                                className="px-1.5 py-0.5 bg-purple-100 text-purple-600 text-[10px] rounded font-medium"
+                                className="px-1.5 py-0.5 bg-emerald-100 text-emerald-600 text-[10px] rounded font-medium"
                               >
                                 Class {num}
                               </span>

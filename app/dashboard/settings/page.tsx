@@ -768,8 +768,12 @@ export default function SettingsPage() {
                     Dashboard Widgets
                   </Label>
                   <div className="space-y-3">
-                    <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                    <div 
+                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors"
+                      onClick={() => setDashboardSettings({ ...dashboardSettings, showStudentStats: !dashboardSettings.showStudentStats })}
+                    >
                       <Checkbox
+                        id="showStudentStats"
                         checked={dashboardSettings.showStudentStats}
                         onCheckedChange={(checked) => setDashboardSettings({ ...dashboardSettings, showStudentStats: !!checked })}
                       />
@@ -777,9 +781,13 @@ export default function SettingsPage() {
                         <GraduationCap className="w-4 h-4 text-slate-500" />
                         <span className="text-sm text-slate-700">Show Student Statistics</span>
                       </div>
-                    </label>
-                    <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                    </div>
+                    <div 
+                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors"
+                      onClick={() => setDashboardSettings({ ...dashboardSettings, showTeacherStats: !dashboardSettings.showTeacherStats })}
+                    >
                       <Checkbox
+                        id="showTeacherStats"
                         checked={dashboardSettings.showTeacherStats}
                         onCheckedChange={(checked) => setDashboardSettings({ ...dashboardSettings, showTeacherStats: !!checked })}
                       />
@@ -787,9 +795,13 @@ export default function SettingsPage() {
                         <Users className="w-4 h-4 text-slate-500" />
                         <span className="text-sm text-slate-700">Show Teacher Statistics</span>
                       </div>
-                    </label>
-                    <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                    </div>
+                    <div 
+                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors"
+                      onClick={() => setDashboardSettings({ ...dashboardSettings, showBookStats: !dashboardSettings.showBookStats })}
+                    >
                       <Checkbox
+                        id="showBookStats"
                         checked={dashboardSettings.showBookStats}
                         onCheckedChange={(checked) => setDashboardSettings({ ...dashboardSettings, showBookStats: !!checked })}
                       />
@@ -797,9 +809,13 @@ export default function SettingsPage() {
                         <BookOpen className="w-4 h-4 text-slate-500" />
                         <span className="text-sm text-slate-700">Show Book Statistics</span>
                       </div>
-                    </label>
-                    <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                    </div>
+                    <div 
+                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors"
+                      onClick={() => setDashboardSettings({ ...dashboardSettings, showWeeklyChart: !dashboardSettings.showWeeklyChart })}
+                    >
                       <Checkbox
+                        id="showWeeklyChart"
                         checked={dashboardSettings.showWeeklyChart}
                         onCheckedChange={(checked) => setDashboardSettings({ ...dashboardSettings, showWeeklyChart: !!checked })}
                       />
@@ -807,9 +823,13 @@ export default function SettingsPage() {
                         <BarChart3 className="w-4 h-4 text-slate-500" />
                         <span className="text-sm text-slate-700">Show Weekly Chart</span>
                       </div>
-                    </label>
-                    <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                    </div>
+                    <div 
+                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors"
+                      onClick={() => setDashboardSettings({ ...dashboardSettings, showActivityChart: !dashboardSettings.showActivityChart })}
+                    >
                       <Checkbox
+                        id="showActivityChart"
                         checked={dashboardSettings.showActivityChart}
                         onCheckedChange={(checked) => setDashboardSettings({ ...dashboardSettings, showActivityChart: !!checked })}
                       />
@@ -817,7 +837,7 @@ export default function SettingsPage() {
                         <Activity className="w-4 h-4 text-slate-500" />
                         <span className="text-sm text-slate-700">Show Activity Chart</span>
                       </div>
-                    </label>
+                    </div>
                   </div>
                 </div>
               </div>
