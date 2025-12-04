@@ -20,7 +20,8 @@ import {
   Check,
   Clock,
   Target,
-  Globe
+  Globe,
+  Calendar
 } from "lucide-react"
 
 interface Question {
@@ -38,6 +39,7 @@ interface QuizData {
   duration: number
   passingScore: number
   isPublic?: boolean
+  scheduledCloseTime?: string
   questions: Question[]
 }
 
@@ -56,6 +58,7 @@ export function AddQuizDialog({ open, onOpenChange, onSave, editData }: AddQuizD
     duration: 30,
     passingScore: 50,
     isPublic: false,
+    scheduledCloseTime: "",
   })
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestion, setCurrentQuestion] = useState<Question>({
@@ -74,10 +77,11 @@ export function AddQuizDialog({ open, onOpenChange, onSave, editData }: AddQuizD
         duration: editData.duration || 30,
         passingScore: editData.passingScore || 50,
         isPublic: editData.isPublic || false,
+        scheduledCloseTime: editData.scheduledCloseTime || "",
       })
       setQuestions(editData.questions || [])
     } else {
-      setFormData({ title: "", description: "", duration: 30, passingScore: 50, isPublic: false })
+      setFormData({ title: "", description: "", duration: 30, passingScore: 50, isPublic: false, scheduledCloseTime: "" })
       setQuestions([])
     }
     setStep(1)
@@ -214,6 +218,21 @@ export function AddQuizDialog({ open, onOpenChange, onSave, editData }: AddQuizD
                     className="h-11"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="scheduledCloseTime" className="text-slate-700 font-medium flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Auto-Close Time (Optional)
+                </Label>
+                <Input
+                  id="scheduledCloseTime"
+                  type="datetime-local"
+                  value={formData.scheduledCloseTime}
+                  onChange={(e) => setFormData({ ...formData, scheduledCloseTime: e.target.value })}
+                  className="h-11"
+                />
+                <p className="text-xs text-slate-500">Quiz will automatically close at this time</p>
               </div>
 
               <div 
